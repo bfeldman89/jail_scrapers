@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup
 from nameparser import HumanName
 from airtable import Airtable
 from tabulate import tabulate
-from lea_parser import get_mcdc_lea, get_prcdf_lea, get_tcdc_lea, get_jcdc_lea, get_lcdc_lea, get_hcdc_lea, get_ccdc_lea, get_jcj_lea
+import standardize
+
 
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
                   os.environ['AIRTABLE_API_KEY'])
@@ -96,18 +97,7 @@ def mcdc_scraper(log_id, print_table=False):
                 get_name(data[1 + data.index('Name:')], this_dict)
                 this_dict['DOB'] = data[1 + data.index('DOB:')]
                 this_dict['intake_age'] = int(data[1 + data.index('AGE:')])
-                if data[1 + data.index('RACE:')] == 'BLACK':
-                    this_dict['race'] = 'B'
-                elif data[1 + data.index('RACE:')] == 'WHITE':
-                    this_dict['race'] = 'W'
-                elif data[1 + data.index('RACE:')] == 'HISPANIC':
-                    this_dict['race'] = 'H'
-                elif data[1 + data.index('RACE:')] == 'ASIAN IS':
-                    this_dict['race'] = 'AS'
-                elif data[1 + data.index('RACE:')] == 'AMERICAN':
-                    this_dict['race'] = 'AI'
-                elif data[1 + data.index('RACE:')] == 'OTHER':
-                    this_dict['race'] = 'O'
+                this_dict['race'] = standardize.mcdc_race(raw_race=data[1 + data.index('RACE:')])
                 this_dict['sex'] = data[1 + data.index('SEX:')]
                 if data[1 + data.index('OFF DATE:')] != '00/00/0000':
                     this_dict['DOO'] = data[1 + data.index('OFF DATE:')]
@@ -152,7 +142,7 @@ def mcdc_scraper(log_id, print_table=False):
                     fields='recent_text',
                 )
                 if not m:
-                    this_dict['LEA'] = get_mcdc_lea(raw_lea)
+                    this_dict['LEA'] = standardize.mcdc_lea(raw_lea)
                     this_dict['html'] = soup.prettify()
                     attachments_array = []
                     image_url = {'url': this_dict['img_src']}
@@ -161,7 +151,7 @@ def mcdc_scraper(log_id, print_table=False):
                     airtab.insert(this_dict, typecast=True)
                     new_intakes += 1
                 else:
-                    update_record(this_dict, soup, m, lea_parser=get_mcdc_lea, raw_lea=raw_lea)
+                    update_record(this_dict, soup, m, lea_parser=standardize.mcdc_lea, raw_lea=raw_lea)
             except ValueError:
                 print('there was a value error for', this_dict['bk'])
     wrap_it_up('mcdc', start_time, new_intakes, total_intakes, log_id, print_table)
@@ -213,20 +203,7 @@ def prcdf_scraper(log_id, print_table=False):
             get_name(data[1 + data.index('Name:')], this_dict)
             this_dict['DOB'] = data[1 + data.index('DOB:')]
             this_dict['intake_age'] = int(data[1 + data.index('AGE:')])
-            if data[1 + data.index('RACE:')] == 'BLACK':
-                this_dict['race'] = 'B'
-            elif data[1 + data.index('RACE:')] == 'WHITE':
-                this_dict['race'] = 'W'
-            elif data[1 + data.index('RACE:')] == 'HISPANIC':
-                this_dict['race'] = 'H'
-            elif data[1 + data.index('RACE:')] == 'ASIAN':
-                this_dict['race'] = 'AS'
-            elif data[1 + data.index('RACE:')] == 'INDIAN':
-                this_dict['race'] = 'AI'
-            elif data[1 + data.index('RACE:')] == 'OTHER':
-                this_dict['race'] = 'O'
-            elif data[1 + data.index('RACE:')] == 'UNKNOWN':
-                this_dict['race'] = 'U'
+            this_dict['race'] = standardize.prcdf_race(raw_race=data[1 + data.index('RACE:')])
             this_dict['sex'] = data[1 + data.index('SEX:')]
             if data[1 + data.index('OFF DATE:')] != '00/00/0000':
                 this_dict['DOO'] = data[1 + data.index('OFF DATE:')]
@@ -275,7 +252,7 @@ def prcdf_scraper(log_id, print_table=False):
                 fields='recent_text',
             )
             if not m:
-                this_dict['LEA'] = get_prcdf_lea(raw_lea)
+                this_dict['LEA'] = standardize.prcdf_lea(raw_lea)
                 this_dict['html'] = soup.prettify()
                 attachments_array = []
                 image_url = {'url': this_dict['img_src']}
@@ -284,7 +261,7 @@ def prcdf_scraper(log_id, print_table=False):
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
             else:
-                update_record(this_dict, soup, m, get_prcdf_lea, raw_lea)
+                update_record(this_dict, soup, m, standardize.prcdf_lea, raw_lea)
     wrap_it_up('prcdf', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
@@ -328,19 +305,8 @@ def lcdc_scraper(log_id, print_table=False):
             this_dict['html'] = soup.prettify()
             if soup.find(id='lblBookingDate').string:
                 this_dict['DOI'] = soup.find(id='lblBookingDate').string
-            this_dict['LEA'] = get_lcdc_lea(raw_lea)
-            if soup.find(id='lblRace').string == 'Caucasian':
-                this_dict['race'] = 'W'
-            elif soup.find(id='lblRace').string == 'African American':
-                this_dict['race'] = 'B'
-            elif soup.find(id='lblRace').string == 'Hispanic':
-                this_dict['race'] = 'H'
-            elif soup.find(id='lblRace').string == 'Asian':
-                this_dict['race'] = 'AS'
-            elif soup.find(id='lblRace').string == 'Native American':
-                this_dict['race'] = 'AI'
-            elif soup.find(id='lblRace').string == 'Other':
-                this_dict['race'] = 'O'
+            this_dict['LEA'] = standardize.lcdc_lea(raw_lea)
+            this_dict['race'] = standardize.lcdc_race(raw_race=soup.find(id='lblRace').string)
             get_name(soup.find(id='lblInmateName').string, this_dict)
             this_dict['DOB'] = soup.find(id='lblBirthdate').string
             this_dict['intake_age'] = int(soup.find(id='lblAge').string)
@@ -352,7 +318,7 @@ def lcdc_scraper(log_id, print_table=False):
             airtab.insert(this_dict, typecast=True)
             new_intakes += 1
         else:
-            update_record(this_dict, soup, m, get_lcdc_lea, raw_lea)
+            update_record(this_dict, soup, m, standardize.lcdc_lea, raw_lea)
     wrap_it_up('lcdc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
@@ -420,7 +386,7 @@ def jcdc_scraper(log_id, print_table=False):
                 else:
                     this_dict['race'] = data[1 + data.index('Race:')]
                 if raw_lea:
-                    this_dict['LEA'] = get_jcdc_lea(raw_lea)
+                    this_dict['LEA'] = standardize.jcdc_lea(raw_lea)
                 this_dict['DOI'] = datetime.strptime(
                     data[1 + data.index('Booking Date:')], '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %I:%M%p')
                 c = data[1 + data.index('Charges:')]
@@ -440,7 +406,7 @@ def jcdc_scraper(log_id, print_table=False):
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
             else:
-                update_record(this_dict, soup, m, get_jcdc_lea, raw_lea)
+                update_record(this_dict, soup, m, standardize.jcdc_lea, raw_lea)
         wrap_it_up('jcdc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
@@ -504,7 +470,7 @@ def tcdc_scraper(log_id, print_table=False):
             if data[1 + data.index('Race:')] != 'Arresting Agency:':
                 this_dict['race'] = data[1 + data.index('Race:')]
             if raw_lea:
-                this_dict['LEA'] = get_tcdc_lea(raw_lea)
+                this_dict['LEA'] = standardize.tcdc_lea(raw_lea)
             this_dict['DOI'] = datetime.strptime(data[1 + data.index('Booking Date:')],
                                                  '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %H:%M')
             c = data[1 + data.index('Charges:')]
@@ -523,7 +489,7 @@ def tcdc_scraper(log_id, print_table=False):
             airtab.insert(this_dict, typecast=True)
             new_intakes += 1
         else:
-            update_record(this_dict, soup, m, get_tcdc_lea, raw_lea)
+            update_record(this_dict, soup, m, standardize.tcdc_lea, raw_lea)
     wrap_it_up('tcdc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
@@ -571,15 +537,7 @@ def kcdc_scraper(log_id, print_table=False):
                     this_dict['intake_age'] = int(data[1 + data.index('Age:')])
                 this_dict['sex'] = data[1 + data.index('Gender:')][:1]
                 if 'Race:' in data:
-                    raw_race = data[1 + data.index('Race:')]
-                    if raw_race == 'African American':
-                        this_dict['race'] = 'B'
-                    elif raw_race == 'Caucasian':
-                        this_dict['race'] = 'W'
-                    elif raw_race == 'Hispanic':
-                        this_dict['race'] = 'H'
-                    else:
-                        this_dict['race'] = raw_race
+                    this_dict['race'] = standardize.kcdc_race(raw_race=data[1 + data.index('Race:')])
                 this_dict['DOI'] = datetime.strptime(
                     data[1 + data.index('Booking Date:')], '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %I:%M%p')
                 c = data[1 + data.index('Charges:')]
@@ -672,7 +630,7 @@ def hcdc_scraper(log_id, print_table=False):
                         else:
                             this_dict['DOI'] = f"{raw_doi} 11:59pm"
                         raw_lea = data[1 + data.index('Arresting Agency')]
-                        this_dict['LEA'] = get_hcdc_lea(raw_lea)
+                        this_dict['LEA'] = standardize.hcdc_lea(raw_lea)
                         this_dict['charge_1'] = data[1 + data.index('Charge 1')]
                         airtab.insert(this_dict, typecast=True)
                         new_intakes += 1
@@ -730,15 +688,7 @@ def ccdc_scraper(log_id, print_table=False):
         get_name(data[data.index('Booking #:') - 1], this_dict)
         this_dict['intake_age'] = int(data[1 + data.index('Age:')])
         this_dict['sex'] = data[1 + data.index('Gender:')][:1]
-        raw_race = data[1 + data.index('Race:')]
-        if raw_race == 'BLACK':
-            this_dict['race'] = 'B'
-        elif raw_race == 'WHITE':
-            this_dict['race'] = 'W'
-        elif raw_race == 'Native Haw':
-            this_dict['race'] = 'NHPI'
-        else:
-            this_dict['race'] = raw_race
+        this_dict['race'] = standardize.ccdc_race(raw_race=data[1 + data.index('Race:')])
         this_dict['DOI'] = datetime.strptime(data[1 + data.index('Booking Date:')],
                                              '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %I:%M%p')
         c = data[1 + data.index('Charges:')]
@@ -751,7 +701,7 @@ def ccdc_scraper(log_id, print_table=False):
         raw_lea = data[1 + data.index('Arresting Agency:')]
         m = airtab.match('bk', this_dict['bk'], view='ccdc', fields='recent_text')
         if not m:
-            this_dict['LEA'] = get_ccdc_lea(raw_lea)
+            this_dict['LEA'] = standardize.ccdc_lea(raw_lea)
             this_dict[
                 'img_src'] = f"http://www.claysheriffms.org/templates/claysheriffms.org/images/inmates/{this_dict['bk']}.jpg"
             image_url = {'url': this_dict['img_src']}
@@ -761,7 +711,7 @@ def ccdc_scraper(log_id, print_table=False):
             airtab.insert(this_dict, typecast=True)
             new_intakes += 1
         else:
-            update_record(this_dict, soup, m, get_ccdc_lea, raw_lea)
+            update_record(this_dict, soup, m, standardize.ccdc_lea, raw_lea)
     wrap_it_up('ccdc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
@@ -900,13 +850,13 @@ def jcj_scraper(log_id, print_table=False):
                 attachments_array = []
                 attachments_array.append(image_url)
                 this_dict['PHOTO'] = attachments_array
-                this_dict['LEA'] = get_jcj_lea(raw_lea)
+                this_dict['LEA'] = standardize.jcj_lea(raw_lea)
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
             else:
                 if this_dict['recent_text'] != m['fields']['recent_text']:
                     this_dict['updated'] = True
-                    this_dict['LEA'] = get_jcj_lea(raw_lea)
+                    this_dict['LEA'] = standardize.jcj_lea(raw_lea)
                 else:
                     pass
                 airtab.update(m['id'], this_dict, typecast=True)
