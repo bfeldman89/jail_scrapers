@@ -76,8 +76,8 @@ def mcdc_scraper(log_id, print_table=False):
                 continue
             this_dict['charge_1'] = cells[8].string.replace('\xa0', '')
             if this_dict['charge_1'] == '18USC132518USC1325 ILLEGAL ENTRY-ALIEN':
-                this_dict['charge_1 statute'] = '8 U.S.C. 1325'
-                this_dict['charge_1 title'] = 'UNLAWFUL ENTRY'
+                this_dict['charge_1_statute'] = '8 U.S.C. 1325'
+                this_dict['charge_1_title'] = 'UNLAWFUL ENTRY'
             this_dict['bk'] = cells[2].string.replace('\xa0', '')
             this_dict['last_verified'] = (
                 datetime.utcnow()
@@ -183,8 +183,8 @@ def prcdf_scraper(log_id, print_table=False):
             else:
                 this_dict['charge_1'] = charge_1
             if charge_1 == '18USC132518USC1325 ILLEGAL ENTRY-ALIEN':
-                this_dict['charge_1 statute'] = '8 U.S.C. 1325'
-                this_dict['charge_1 title'] = 'UNLAWFUL ENTRY'
+                this_dict['charge_1_statute'] = '8 U.S.C. 1325'
+                this_dict['charge_1_title'] = 'UNLAWFUL ENTRY'
             this_dict['bk'] = cells[2].string.replace('\xa0', '')
             this_dict['last_verified'] = (
                 datetime.utcnow()
@@ -330,7 +330,7 @@ def jcdc_scraper(log_id, print_table=False):
     docket_pages.add(url)
     try:
         r = requests.get(url)
-    except:
+    except requests.ConnectionError as err:
         print('jcdc website is still down')
     else:
         soup = BeautifulSoup(r.text, 'html.parser')
