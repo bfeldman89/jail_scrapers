@@ -196,10 +196,10 @@ def parse_charge_1():
         elif re.search("[0-9][A-Z]", record["fields"]["charge_1"]):
             x = re.search("[0-9][A-Z]", record["fields"]["charge_1"])
         if x:
-            this_dict["charge_1 statute"] = record["fields"]["charge_1"][
+            this_dict["charge_1_statute"] = record["fields"]["charge_1"][
                 : x.start() + 1
             ]
-            this_dict["charge_1 title"] = record["fields"]["charge_1"][x.end() - 1:]
+            this_dict["charge_1_title"] = record["fields"]["charge_1"][x.end() - 1:]
             try:
                 airtab.update(record["id"], this_dict)
             except:
