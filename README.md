@@ -46,16 +46,16 @@ field | description
 `bk` | Most jails' intake sheets have an explicit booking number field, but the numbers for LCDC, JCDC and HCDC are not booking numbers per se. Unlike,  MCDC & PRCDF, however, LCDC, JCDC and HCDC do not shuffle intakes among a fixed number of url addresses. Rather, each inmate, has a unique url. The numbers are the unique parameter from the intake urls.
 `intake_number` | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a 'Booking #' field, and an `intake_number` is constructed by combining `bk` with that number.
 `intake_case_number` | only exists for mcdc & prcdf
-`dc_id` |
-`dc_title` |
-`first name` | first name
-`last name` | last name
-`middle name` | middle name
-`suffix` | suffix
-`charge_1` | The first charge listed isn't necessarily meaningful, but mcdc & prcdf include the MS code section for the top charge, which is then parsed into `charge_1_statute` and `charge_1_title`
+`dc_id` | the unique documentcloud id. The `dc_id` is used to formulate the `PDF` and `dc_canonical_url` fields.
+`dc_title` | the title of the pdf uploaded to documentcloud.
+`first_name` | first name extracted from the full name via nameparser python package
+`last_name` | last name extracted from the full name via nameparser python package
+`middle_name` | middle name extracted from the full name via nameparser python package
+`suffix` | suffix extracted from the full name via nameparser python package
+`charge_1` | The first charge listed isn't necessarily meaningful, but mcdc & prcdf include the code section for the top charge, which is then parsed into `charge_1_statute` and `charge_1_title`
 `charge_1_title` | the title of the top charge
 `LEA` | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP')
-`COURT` | the court exercising jurisdiction (only provided by mcdc & prcdf)
+`courts` | the court exercising jurisdiction (only provided by mcdc & prcdf)
 `intake_hair` |
 `intake_eye` |
 `intake_compl` |
@@ -74,6 +74,7 @@ field | description
 field | description
 ---|---
 `intake_age`| every jail except hcdc provides the incarcerated person's age. This field represents the incarcerated person's current age (rather than age at the time of booking)
+`dc_pages`| the number of pages of the documentcloud pdf
 
 ### currency fields
 
@@ -87,14 +88,15 @@ field | description
 
 field | description
 ---|---
-`glasses` | only provided by lcdc
 `jail` | mcdc, prcdf, lcdc, jcdc, etc.
 `dc_access` | public, private, pending, or error
 `sex` | M (male) or F (female)
 `race` | W (white), AI (indigenous), AS (Asian), B (Black), H (Hispanic), O (other), and U (unknown)
 `charge_1_statute` | the code section for the top charge for mcdc & prcdf intakes |
+`glasses` | only provided by lcdc
 
 ### url fields
+
 field | description
 ---|---
 `link` | the most recently provided url to the intake sheet on the county docket's website. The link for most intakes are constant, but be cautious with using the links for mcdc and prcdf. The link should usually point to the accurate intake sheet bc the scraper not only updates incarceration status each hour, but also updates the`link` and `img_src` fields if they've changed.
@@ -111,12 +113,10 @@ field | description
 
 field | description
 ---|---
+`html` | the html of the most recent version of intake sheet
 `recent_text` | the plain text of the most recent version of intake sheet
 `dc_full_text` | the full text from the pdf of the initial version of the intake sheet
 `charges` | all charges listed on the most recent version of intake sheet
-`total charges` | the count of items in the `charge(s)` field
-`html` | the html of the most recent version of intake sheet
-`recent_text` | the plain text of the most recent version of intake sheet
 `bond_ammounts` |
 `fine_ammounts` |
 
@@ -125,12 +125,19 @@ field | description
 field | description
 ---|---
 `charge(s)` | unfortunately, these are not yet standardized. In the full dataset, there are over a thousand unique charges, but that includes stylistic differences of substatively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
+`issue(s)` | a field for flagging an issue presented by the record.
+
+### count fields
+
+field | description
+---|---
+`total_charges` | the count of items in the `charge(s)` field
 
 ### formula fields
 
 - `UID`: unique ID
 
-```
+```Airtable
 IF(jail='ccdc', bk, jail & '_' &
 IF(AND(LEN(bk) = 12, LEN(intake_number) = 18), SUBSTITUTE(SUBSTITUTE(intake_number, ' - ', '_'), 'BK', ''),
 IF(AND(LEN(bk) = 12, intake_number = ''), SUBSTITUTE(bk, 'BK', '') & '_xxx',
@@ -145,19 +152,19 @@ IF(LEN(bk) = 2, '00000000' & bk, ''))))))))))
 
 - `uid_for_humans`:
 
-```
-UPPER(LEFT({first name}, 1)) & '. ' & UPPER({last name}) & ' ' & DATETIME_FORMAT(DOI, 'YYYY-MM-DD')
+```Airtable
+UPPER(LEFT({first_name}, 1)) & '. ' & UPPER({last_name}) & ' ' & DATETIME_FORMAT(DOI, 'YYYY-MM-DD')
 ```
 
 - `PDF`:the url for a pdf of the initial version of the intake sheet
 
-```
+```Airtable
 IF(NOT(dc_id=''), "https://assets.documentcloud.org/documents/" & SUBSTITUTE(dc_id, '-', '/', 1) & ".pdf")
 ```
 
-- `pixelated url`: url to be uploaded for `PIXELATED_IMG`
+- `pixelated_url`: url to be uploaded for `PIXELATED_IMG`
 
-```
+```Airtable
 IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg",
 IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg",
 IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
@@ -170,13 +177,13 @@ IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_
 
 - `dc_canonical_url`:
 
-```
+```Airtable
 IF(dc_id = "", "", "https://www.documentcloud.org/documents/" & dc_id & ".html")
 ```
 
 - `status`: ✔️✔️✔️✔️ (was identified on the docket w/in the last 12 hours), ✔️✔️✔️ (24 hours), ✔️✔️ (7 days), ✔️ (30 days), or ❌ (31+ days)
 
-```
+```Airtable
 IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12, '✔️✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24, '✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7, '✔️✔️',
 IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️',
 '❌'))))
@@ -184,7 +191,7 @@ IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️',
 
 - `blurb`: summary for humans
 
-```
+```Airtable
 SUBSTITUTE(
     SUBSTITUTE(
         SUBSTITUTE(
@@ -222,31 +229,31 @@ SUBSTITUTE(
 
 - `AGE`: the age provided by the most recent version of the intake sheet (the current age of the incarcerated individual)
 
-```
+```Airtable
 IF(jail = 'hcdc', DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'), intake_age)
 ```
 
-- `age at time of arrest`: the age at the time of arrest (only available for intakes that include `DOB`)
+- `age_at_time_of_arrest`: the age at the time of arrest (only available for intakes that include `DOB`)
 
-```
+```Airtable
 IF(DOB != '', DATETIME_DIFF(DOI, DOB, 'years'))
 ```
 
 - `hours_incarcerated`: the calculated number of hours the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the time difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
 
-```
+```Airtable
 IF(NOT(DOR = ''), DATETIME_DIFF(DOR, DOI, 'hours'), DATETIME_DIFF(SET_TIMEZONE(last_verified, 'America/Chicago'), DOI, 'hours'))
 ```
 
 - `days_incarcerated`: the calculated number of days the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
 
-```
+```Airtable
 IF(hours_incarcerated = '-23.0', VALUE('0.0'), IF(hours_incarcerated != '', hours_incarcerated / 24))
 ```
 
 - `total_admissions_filter`:
 
-```
+```Airtable
 IF(AND(jail='hcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2018-12-28'), 'days') >= 0), 'booked during jail scraper project',
 IF(AND(jail='kcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-04-06'), 'days') >= 0), 'booked during jail scraper project',
 IF(AND(jail='tcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-04-06'), 'days') >= 0), 'booked during jail scraper project',
