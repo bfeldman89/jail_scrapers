@@ -23,9 +23,9 @@ muh_headers = {
 def get_name(raw_name, this_dict):
     name = HumanName(raw_name)
     name.capitalize()
-    this_dict['first name'] = name.first
-    this_dict['last name'] = name.last
-    this_dict['middle name'] = name.middle
+    this_dict['first_name'] = name.first
+    this_dict['last_name'] = name.last
+    this_dict['middle_name'] = name.middle
     this_dict['suffix'] = name.suffix
 
 
