@@ -50,13 +50,7 @@ field | description | formula
 `recent_text` | the plain text of the most recent version of intake sheet |
 `PDF` | the url for a pdf of the initial version of the intake sheet | ```IF(NOT(dc_id=''), "https://assets.documentcloud.org/documents/" & SUBSTITUTE(dc_id, '-', '/', 1) & ".pdf")```
 `dc_full_text` | the full text from the pdf of the initial version of the intake sheet |
-`pixelated url` | url to be uploaded for `PIXELATED_IMG` | ```IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg",
-IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg",
-IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
-IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg",
-IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg",
-IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg", IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
-"https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))```
+`pixelated url` | url to be uploaded for `PIXELATED_IMG` | ```IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg", IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg", IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg", IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg", IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg", IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg", IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))```
 `PIXELATED_IMG` | a translucent, pixelated version of the "mugshot" |
 `AGE` | the age provided by the most recent version of the intake sheet (the current age of the incarcerated individual) | ```IF(jail = 'hcdc', DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'), intake_age)```
 `DOB` | date of birth (only provided by mcdc, prcdf, lcdc, and hcdc) |
@@ -89,7 +83,5 @@ IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate
 `intake_section` | only provided by hcdc |
 `intake_location` | only provided by hcdc |
 `intake_pod` | only provided by hcdc |
-`status` | | ```IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12, '✔️✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24, '✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7, '✔️✔️',
-IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️',
-'❌'))))```
-`blurb` | |
+`status` | ✔️✔️✔️✔️ (was identified on the docket w/in the last 12 hours), ✔️✔️✔️ (24 hours), ✔️✔️ (7 days), ✔️ (30 days), or ❌ (31+ days)| ```IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12, '✔️✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24, '✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7, '✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️', '❌'))))```
+`blurb` | summary for humans | ```SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(CONCATENATE("On ",DATETIME_FORMAT(DOI, 'MMM. D, YYYY'),", a ",AGE,"yo ",SWITCH(race, "W", "white ", "B", "Black ", "AS", "Asian ","H", "Latinx ","AI", "Native American"),SWITCH(sex, 'M', 'man', 'F', 'woman'), " was jailed at ", UPPER(jail), ". ", IF(status != '✔️✔️✔️✔️', CONCATENATE( "The docket indicated ", SWITCH(sex, 'M', 'he', 'F', 'she'), " was incarcerated for ", ROUND({days_incarcerated}, 1), " days."), CONCATENATE("As of ", DATETIME_FORMAT(SET_TIMEZONE(last_verified, 'America/Chicago'), 'MMM. D, YYYY'), ", ", SWITCH(sex, 'M', 'he', 'F', 'she'), " is still in jail."))), " 1 days", " 1 day"), 'May. ', 'May '), "a 18", "an 18")```
