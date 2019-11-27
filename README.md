@@ -254,6 +254,8 @@ IF(AND(jail='jcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2018-12-14'), 'days') >= 
 IF(AND(jail='mcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2018-09-06'), 'days') >= 0), 'booked during jail scraper project',
 IF(AND(jail='prcdf', DATETIME_DIFF(DOI, DATETIME_PARSE('2018-09-06'), 'days') >= 0), 'booked during jail scraper project',
 IF(AND(jail='lcdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2018-12-01'), 'days') >= 0), 'booked during jail scraper project',
-IF(AND(jail='acdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-05-25'), 'days') >= 0), 'booked during jail scraper project', IF(AND(jail='ccdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-05-24'), 'days') >= 0), 'booked during jail scraper project', IF(AND(jail='jcj', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-06-02'), 'days') >= 0), 'booked during jail scraper project',
+IF(AND(jail='acdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-05-25'), 'days') >= 0), 'booked during jail scraper project',
+IF(AND(jail='ccdc', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-05-24'), 'days') >= 0), 'booked during jail scraper project',
+IF(AND(jail='jcj', DATETIME_DIFF(DOI, DATETIME_PARSE('2019-06-02'), 'days') >= 0), 'booked during jail scraper project',
 'booked prior to project'))))))))))
 ```
