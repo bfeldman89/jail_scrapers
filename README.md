@@ -1,19 +1,19 @@
 # summary
 
-About once every hour, a python script scrapes the online jail dockets for nine separate county jails in Mississippi.
-When a booking is detected for the first time, a pdf is created and uploaded to documentcloud.org, and the raw data is programatically entered into the Airtable base.
+Every hour at 15min past the hour, a python script scrapes the online jail dockets for ten separate county jails in Mississippi.
+When an individual booking is detected for the first time, a pdf is created and uploaded to documentcloud.org, and the raw data is programatically entered into an Airtable base.
 The script also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration.
 A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided.
 Occassionally, the initial booking data is updated, and the scraper will update the Airtable accordingly, but a new pdf is not generated for every version of the intake sheet.
 
 ## jails scraped
 
-jail | abreviation | start date | end date
+jail | abreviation | started scraping | discontinued scraping
 ---|---|---|---
 Madison County Detention Center | `mcdc` | Sep. 6, 2018 | present
 Pearl River County Detention Facility | `prcdf` | Sep. 6, 2018 | present
 Lee County Detention Center | `lcdc` | Dec. 1, 2018 | present
-Jones County Detention Center | `jcdc` | Dec. 14, 2018 | Nov. 1, 2019
+Jones County Detention Center | `jcdc` | Dec. 14, 2018 | Nov. 1, 2019*
 Hinds County Detention Center | `hcdc` | Dec. 28, 2018 | present
 Kemper County Detention Center | `kcdc` | Apr. 6, 2019 | present
 Tunica County Detention Center | `tcdc` | Apr. 6, 2019 | present
@@ -21,9 +21,15 @@ Adams County Detention Center | `acdc` | May 25, 2019 | present
 Clay County Detention Center | `ccdc` | May 24, 2019 | present
 Jasper County Jail | `jcj` | Jun. 3, 2019 | present
 
-As of Nov. 27, the Airtable base includes data for 6,554 mcdc admissions, 1,659 prcdf admissions, 5,107 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 617 tcdc admissions, 562 ccdc admissions, 770 acdc admissions, and 345 jcj admissions.
+\* Since Nov. 1, 2019, the Jones County Sheriff's Office website has been down.
 
-As of Nov., 2019: Only a fraction of the data is provided via the links at [bfeldman89.com/projects/jails](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). If you are a journalist, activist, or civil rights attorney interested in the data, email me.
+As of Nov. 27, the Airtable base includes data for 6,555 mcdc admissions, 1,661 prcdf admissions, 5,119 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 672 tcdc admissions, 563 ccdc admissions, 772 acdc admissions, and 345 jcj admissions.
+
+## access to the data
+
+At this time, only a fraction of the data is provided via the links at [bfeldman89.com/projects/jails](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, email me.**
+
+The remainder of this README documents and defines the fields in the Airtable base.
 
 ## fields by field type
 
@@ -54,8 +60,8 @@ field | description
 `suffix` | suffix extracted from the full name via nameparser python package
 `charge_1` | The first charge listed isn't necessarily meaningful, but mcdc & prcdf include the code section for the top charge, which is then parsed into `charge_1_statute` and `charge_1_title`
 `charge_1_title` | the title of the top charge
-`LEA` | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP')
-`courts` | the court exercising jurisdiction (only provided by mcdc & prcdf)
+`LEA` | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP'). This has narrowed the number of unique LEAs down to [154](https://airtable.com/shrCgqWuMFH54ePVx).
+`courts` | the court exercising jurisdiction (only provided by mcdc & prcdf). By standardizing data for this field (accounting for stylistic differences between mcdc & prcdf), the number of unique courts is narrowed to [12](https://airtable.com/shrIHbiAyOTDArn8l).
 `intake_hair` |
 `intake_eye` |
 `intake_compl` |
@@ -124,7 +130,7 @@ field | description
 
 field | description
 ---|---
-`charge(s)` | unfortunately, these are not yet standardized. In the full dataset, there are over a thousand unique charges, but that includes stylistic differences of substatively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
+`charge(s)` | unfortunately, these are not yet standardized. In the full dataset, there are over 2,000 unique charges, but that includes stylistic differences of substatively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
 `issue(s)` | a field for flagging an issue presented by the record.
 
 ### count fields
