@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
                   os.environ['AIRTABLE_API_KEY'])
 
+muh_headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
 records = airtab.get_all(view='needs pdf')
 for record in records:
@@ -20,8 +22,6 @@ for record in records:
         pdfkit.from_url(record['fields']['link'],
                         f"{record['fields']['intake_number']}.pdf", options)
     elif record['fields']['jail'] in {'mcdc', 'prcdf'}:
-        muh_headers = {
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
         r = requests.get(record['fields']['link'], headers=muh_headers)
         data = []
         soup = BeautifulSoup(r.text, 'html.parser')
