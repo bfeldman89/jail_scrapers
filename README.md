@@ -36,8 +36,8 @@ field | description
 `DOI` | date of intake
 `DOO` | date of offense (only provided by mcdc & prcdf)
 `DOR` | date of release (only provided by jcdc, kcdc, tcdc, ccdc, and jcj)
-`last_verified` | the datetime of the most recent instance that the scraper detected tbe intake sheet on the online docket. every hour, the script runs, and if the individual is still listed on the docket, this field is updated, which allows for `DAYS_INCARCERATED` to be calculated and `currently_incarcerated` to be maintained.
-`scheduled_release_date` | occassionally provided by lcdc, suggesting the detention is not pretrial
+`last_verified` | the datetime of the most recent instance that the scraper detected tbe intake sheet on the online docket. This field is used to calculate `status`, and -- for intakes that lack an explicit `DOR` -- it is also used to calculate `days_incarcerated` and `hours_incarcerated`.
+`scheduled_release_date` | occassionally provided by lcdc, seemingly indicating the detention is not pretrial
 
 ### single line text fields
 
@@ -163,7 +163,8 @@ IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate
 IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
 IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg",
 IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg",
-IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg", IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
+IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg",
+IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
 "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))
 ```
 
