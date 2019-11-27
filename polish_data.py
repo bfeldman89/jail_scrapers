@@ -52,7 +52,7 @@ def get_pixelated_mug():
             print("cloudinary can't accept that shit")
         # 2.b. Upload transformed mugshot to airtab
         attachments_array = []
-        image_url = {"url": record["fields"]["pixelated url"]}
+        image_url = {"url": record["fields"]["pixelated_url"]}
         attachments_array.append(image_url)
         this_dict["PIXELATED_IMG"] = attachments_array
         airtab.update(record["id"], this_dict)
