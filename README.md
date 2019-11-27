@@ -1,9 +1,12 @@
-About once every hour, a python script scrapes the online jail dockets for nine separate county jails in Mississippi. 
-When a booking is detected for the first time, a pdf is created and uploaded to documentcloud.org, and the raw data is programatically entered into the Airtable base. 
-The script also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration.
-A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. 
-Occassionally, the initial booking data is updated, and the scraper will update the Airtable accordingly, but a new pdf is not generated for every version of the intake sheet. 
+# summary
 
+About once every hour, a python script scrapes the online jail dockets for nine separate county jails in Mississippi.
+When a booking is detected for the first time, a pdf is created and uploaded to documentcloud.org, and the raw data is programatically entered into the Airtable base.
+The script also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration.
+A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided.
+Occassionally, the initial booking data is updated, and the scraper will update the Airtable accordingly, but a new pdf is not generated for every version of the intake sheet.
+
+## jails scraped
 
 jail | abreviation | start date | end date
 ---|---|---|---
@@ -18,17 +21,16 @@ Adams County Detention Center | `acdc` | May 25, 2019 | present
 Clay County Detention Center | `ccdc` | May 24, 2019 | present
 Jasper County Jail | `jcj` | Jun. 3, 2019 | present
 
-
-
 As of Nov. 27, the Airtable base includes data for 6,554 mcdc admissions, 1,659 prcdf admissions, 5,107 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 617 tcdc admissions, 562 ccdc admissions, 770 acdc admissions, and 345 jcj admissions.
 
-As of Nov., 2019: Only a fraction of the data is provided via the above links. Once I get all the data 100% cleaned and the incarcerated arrestees anonymized to a degree that I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency).
-If you are a journalist, activist, or civil rights attorney interested in the data, email me.
+As of Nov., 2019: Only a fraction of the data is provided via the links at [bfeldman89.com/projects/jails](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). If you are a journalist, activist, or civil rights attorney interested in the data, email me.
+
+## field descriptions
 
 field | description
 ---|---
 `UID` | unique ID
-`bk` | Most jails' intake sheets have an explicit booking number field, but the numbers for LCDC, JCDC and HCDC are not booking numbers per se. Unlike,  MCDC & PRCDF, however, LCDC, JCDC and HCDC do not shuffle intakes among a fixed number of url addresses. Rather, each inmate, has a unique url. The numbers are the unique parameter from the intake urls. 
+`bk` | Most jails' intake sheets have an explicit booking number field, but the numbers for LCDC, JCDC and HCDC are not booking numbers per se. Unlike,  MCDC & PRCDF, however, LCDC, JCDC and HCDC do not shuffle intakes among a fixed number of url addresses. Rather, each inmate, has a unique url. The numbers are the unique parameter from the intake urls.
 `intake_number` | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a 'Booking #' field, and an `intake_number` is constructed by combining `bk` with that number.
 `intake_case_number` | only exists for mcdc & prcdf
 `first name` | first name
@@ -59,20 +61,20 @@ field | description
 `last_verified` | the datetime of the most recent instance that the scraper detected tbe intake sheet on the online docket. every hour, the script runs, and if the individual is still listed on the docket, this field is updated, which allows for `DAYS_INCARCERATED` to be calculated and `currently_incarcerated` to be maintained.
 `hours_incarcerated` | the calculated number of hours the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the time difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
 `days_incarcerated` | the calculated number of days the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
-`scheduled_release_date` | occassionally provided by lcdc, suggesting the detention is not pretrial 
+`scheduled_release_date` | occassionally provided by lcdc, suggesting the detention is not pretrial
 `sex` | standardized sex categories (M (male) or F (female))
 `race` | standardized race categories (W (white), AI (indigenous), AS (Asian), B (Black), H (Hispanic), O (other), and U (unknown))
-`intake_hair` | 
-`intake_eye` | 
-`intake_compl` | 
-`intake_height` | 
-`intake_weight` | 
+`intake_hair` |
+`intake_eye` |
+`intake_compl` |
+`intake_height` |
+`intake_weight` |
 `glasses` | only provided by lcdc
-`intake_bond_written` | 
-`intake_bond_cash` | 
-`intake_fine_ammount` | 
-`bond_ammounts` | 
-`fine_ammounts` | 
+`intake_bond_written` |
+`intake_bond_cash` |
+`intake_fine_ammount` |
+`bond_ammounts` |
+`fine_ammounts` |
 `intake_address_line_1` | only provided by hcdc
 `intake_address_line_2` | only provided by hcdc
 `intake_pin` | only provided by hcdc
@@ -80,6 +82,5 @@ field | description
 `intake_section` | only provided by hcdc
 `intake_location` | only provided by hcdc
 `intake_pod` | only provided by hcdc
-`status` | 
-`blurb` | 
- 
+`status` |
+`blurb` |
