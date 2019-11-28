@@ -2,11 +2,9 @@
 
 ## summary
 
-Every hour at 15min past the hour, a python script scrapes the online jail dockets for ten separate county jails in Mississippi.
-When an individual booking is detected for the first time, a pdf is created and uploaded to documentcloud.org, and the raw data is programatically entered into an Airtable base.
-The script also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration.
-A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided.
-Occassionally, the initial booking data is updated, and the scraper will update the Airtable accordingly, but a new pdf is not generated for every version of the intake sheet.
+Every hour at 15min past the hour, a `scrapers.py` scrapes the online jail dockets for ten separate county jails in Mississippi and tprogramatically enters the raw data into an Airtable base. When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates and uploads a pdf of the intake sheet to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data standardization and cleaning.
+
+`scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. Occassionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
 
 ## jails scraped
 
@@ -33,7 +31,7 @@ At this time, only a fraction of the data is provided via the links at [bfeldman
 
 The remainder of this README documents and defines the fields in the Airtable base.
 
-## fields
+### fields
 
 field | field type | description
 ---|---|---
