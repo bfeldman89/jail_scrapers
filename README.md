@@ -38,18 +38,18 @@ The remainder of this README documents and defines the fields in the Airtable ba
 field | field type | description
 ---|---|---
 `UID`| formula<sup>[1](#UID)</sup> | unique ID
-`uid_for_humans`| formula<sup>[2](#uid_for_humans)</sup> | unique composed of abbreviated version of incarcerated person's name and date of incarceration
-`jail` | single select | mcdc, prcdf, lcdc, jcdc, etc.
-`bk` | single line text | Most jails' intake sheets have an explicit booking number field, but the numbers for LCDC, JCDC and HCDC are not booking numbers per se. Unlike,  MCDC & PRCDF, however, LCDC, JCDC and HCDC do not shuffle intakes among a fixed number of url addresses. Rather, each inmate, has a unique url. The numbers are the unique parameter from the intake urls.
-`intake_number` | single line text | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a 'Booking #' field, and an `intake_number` is constructed by combining `bk` with that number.
-`intake_case_number` | single line text | only exists for mcdc & prcdf
-`dc_id` single line text | | the unique documentcloud id. The `dc_id` is used to formulate the `PDF` and `dc_canonical_url` fields.
+`uid_for_humans`| formula<sup>[2](#uid_for_humans)</sup> | unique id composed of first initial, last name and date of incarceration (e.g., "S. SMITH 2019-11-16")
+`jail` | single select | mcdc, prcdf, lcdc, jcdc, hcdc, kcdc, tcdc, acdc, ccdc, or jcj
+`bk` | single line text | Most jails' intake sheets have an explicit booking number field, but the `bk` for LCDC is extracted from the unique intake url parameter, `iid`. For example, the `bk` for an intake sheet available at `https://tcsi-roster.azurewebsites.net/InmateInfo.aspx?i=26&code=Lee&type=roster&iid=283176` would be `283176`.
+`intake_number` | single line text | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a "Booking #" that indicates how many times the individual has been booked into the jail before, and an `intake_number` is constructed by combining `bk` with that number.
+`intake_case_number` | single line text | This only exists for intakes on the mcdc & prcdf dockets. It can be helpful for requesting incident reports via the MS Pub. Records Act.
+`dc_id` | single line text | the unique documentcloud id. The `dc_id` is used to formulate the `PDF` and `dc_canonical_url` fields.
 `link` | url | the most recently provided url to the intake sheet on the county docket's website. The link for most intakes are constant, but be cautious with using the links for mcdc and prcdf. The link should usually point to the accurate intake sheet bc the scraper not only updates incarceration status each hour, but also updates the`link` and `img_src` fields if they've changed.
 `html` | long text | the html of the most recent version of intake sheet
 `recent_text` | long text | the plain text of the most recent version of intake sheet
 `PDF`| formula<sup>[3](#PDF)</sup> | the url for a pdf of the initial version of the intake sheet
 `dc_canonical_url` | formula<sup>[4](#dc_canonical_url)</sup> | the url for the canonical documentcloud url for the initial version of the intake sheet
-`dc_title` | the title of the pdf uploaded to documentcloud.
+`dc_title` | single line text | the title of the pdf uploaded to documentcloud
 `dc_pages`| number | the number of pages of the documentcloud pdf
 `dc_access` | single select | public, private, pending, or error
 `dc_full_text` | long text | the full text from the pdf of the initial version of the intake sheet
@@ -93,14 +93,13 @@ field | field type | description
 `total_charges` | count | the count of items in the `charge(s)` field
 `LEA` | single line text | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP'). This has narrowed the number of unique LEAs down to [154](https://airtable.com/shrCgqWuMFH54ePVx).
 `courts` | single line text | the court exercising jurisdiction (only provided by mcdc & prcdf). By standardizing data for this field (accounting for stylistic differences between mcdc & prcdf), the number of unique courts is narrowed to [12](https://airtable.com/shrIHbiAyOTDArn8l).
-`intake_bond_written` | currency |
-`intake_bond_cash` | currency |
-`intake_fine_ammount` | currency |
-`bond_ammounts` | long text |
-`fine_ammounts` | long text |
-`img_src` | url | mugshot url
+`intake_bond_written` | currency | only provided by mcdc & prcdf
+`intake_bond_cash` | currency | only provided by mcdc, prcdf, lcdc, jcdc, tcdc, acdc, and ccdc
+`bond_ammounts` | long text | itemized bond amounts, only provided by mcdc, prcdf, and lcdc
+`intake_fine_ammount` | currency | only provided by lcdc
+`fine_ammounts` | long text | itemized fine amounts, only provided by lcdc
+`img_src` | url | mugshot url (In May 2019, lcdc [stopped posting mugshots](https://www.wcbi.com/lee-county-ends-practice-posting-mugshots) bc of the negative consequences for defendants)
 `pixelated_url`| formula<sup>[10](#pixelated_url)</sup> | url to be uploaded for `PIXELATED_IMG`
-`PHOTO` | attachment | "mugshot" (In May 2019, lcdc [stopped posting mugshots](https://www.wcbi.com/lee-county-ends-practice-posting-mugshots) bc of the negative consequences for defendants)
 `PIXELATED_IMG` | attachment | a translucent, pixelated version of the "mugshot"
 `issue(s)` | multiple select |a field for flagging an issue presented by the record.
 `blurb` | formula<sup>[11](#blurb)</sup> | summary for humans
