@@ -2,7 +2,9 @@
 
 ## summary
 
-Every hour at 15min past the hour, a `scrapers.py` scrapes the online jail dockets for ten separate county jails in Mississippi and tprogramatically enters the raw data into an Airtable base. When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates and uploads a pdf of the intake sheet to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data standardization and cleaning.
+Every hour at 15min past the hour, a `scrapers.py` scrapes the online jail dockets for ten separate county jails in Mississippi and programatically enters the raw data into an Airtable base. The functions in `standardization.py` standardize the LEA and race accross jails.
+
+When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the total admissions and the total jail population per jail for the day.
 
 `scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. Occassionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
 
@@ -40,7 +42,7 @@ field | field type | description
 `jail` | single select | mcdc, prcdf, lcdc, jcdc, etc.
 `bk` | single line text | Most jails' intake sheets have an explicit booking number field, but the numbers for LCDC, JCDC and HCDC are not booking numbers per se. Unlike,  MCDC & PRCDF, however, LCDC, JCDC and HCDC do not shuffle intakes among a fixed number of url addresses. Rather, each inmate, has a unique url. The numbers are the unique parameter from the intake urls.
 `intake_number` | single line text | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a 'Booking #' field, and an `intake_number` is constructed by combining `bk` with that number.
-`intake_case_number` single line text | | only exists for mcdc & prcdf
+`intake_case_number` | single line text | only exists for mcdc & prcdf
 `dc_id` single line text | | the unique documentcloud id. The `dc_id` is used to formulate the `PDF` and `dc_canonical_url` fields.
 `link` | url | the most recently provided url to the intake sheet on the county docket's website. The link for most intakes are constant, but be cautious with using the links for mcdc and prcdf. The link should usually point to the accurate intake sheet bc the scraper not only updates incarceration status each hour, but also updates the`link` and `img_src` fields if they've changed.
 `html` | long text | the html of the most recent version of intake sheet
