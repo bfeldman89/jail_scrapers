@@ -104,6 +104,9 @@ field | field type | description
 `PIXELATED_IMG` | attachment | a translucent, pixelated version of the "mugshot"
 `issue(s)` | multiple select |a field for flagging an issue presented by the record.
 `blurb` | formula<sup>[11](#blurb)</sup> | summary for humans
+`total_admissions_filter` | formula<sup>[12](#total_admissions_filter)</sup> | specifies whether the date of intake predates the date the scraper began scraping the respective jail. In other words, it allows for filtering out the intakes from dates for which we do not have complete admission data.
+
+___
 
 ### Airtable formulas
 
@@ -134,19 +137,6 @@ UPPER(LEFT({first_name}, 1)) & '. ' & UPPER({last_name}) & ' ' & DATETIME_FORMAT
 IF(NOT(dc_id=''), "https://assets.documentcloud.org/documents/" & SUBSTITUTE(dc_id, '-', '/', 1) & ".pdf")
 ```
 
-#### pixelated_url
-
-```Airtable
-IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg",
-IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg",
-IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
-IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg",
-IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg",
-IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg",
-IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
-"https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))
-```
-
 #### dc_canonical_url
 
 ```Airtable
@@ -159,6 +149,43 @@ IF(dc_id = "", "", "https://www.documentcloud.org/documents/" & dc_id & ".html")
 IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12, '✔️✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24, '✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7, '✔️✔️',
 IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️',
 '❌'))))
+```
+
+#### days_incarcerated
+
+```Airtable
+IF(hours_incarcerated = '-23.0', VALUE('0.0'), IF(hours_incarcerated != '', hours_incarcerated / 24))
+```
+
+#### hours_incarcerated
+
+```Airtable
+IF(NOT(DOR = ''), DATETIME_DIFF(DOR, DOI, 'hours'), DATETIME_DIFF(SET_TIMEZONE(last_verified, 'America/Chicago'), DOI, 'hours'))
+```
+
+#### age_at_time_of_arrest
+
+```Airtable
+IF(DOB != '', DATETIME_DIFF(DOI, DOB, 'years'))
+```
+
+#### AGE
+
+```Airtable
+IF(jail = 'hcdc', DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'), intake_age)
+```
+
+#### pixelated_url
+
+```Airtable
+IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg",
+IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg",
+IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
+IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg",
+IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg",
+IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg",
+IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
+"https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))
 ```
 
 #### blurb
@@ -197,30 +224,6 @@ SUBSTITUTE(
                 ), " 1 days", " 1 day"),
         'May. ', 'May '),
     "a 18", "an 18")
-```
-
-#### AGE
-
-```Airtable
-IF(jail = 'hcdc', DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'), intake_age)
-```
-
-#### age_at_time_of_arrest
-
-```Airtable
-IF(DOB != '', DATETIME_DIFF(DOI, DOB, 'years'))
-```
-
-#### hours_incarcerated
-
-```Airtable
-IF(NOT(DOR = ''), DATETIME_DIFF(DOR, DOI, 'hours'), DATETIME_DIFF(SET_TIMEZONE(last_verified, 'America/Chicago'), DOI, 'hours'))
-```
-
-#### days_incarcerated
-
-```Airtable
-IF(hours_incarcerated = '-23.0', VALUE('0.0'), IF(hours_incarcerated != '', hours_incarcerated / 24))
 ```
 
 #### total_admissions_filter
