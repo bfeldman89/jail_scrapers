@@ -112,7 +112,9 @@ ___
 #### UID
 
 ```Airtable
-IF(jail='ccdc', bk, jail & '_' &
+IF(jail='ccdc', bk,
+IF(jail='jcadc', SUBSTITUTE(LOWER(bk), 'c0', 'c_0'),
+jail & '_' &
 IF(AND(LEN(bk) = 12, LEN(intake_number) = 18), SUBSTITUTE(SUBSTITUTE(intake_number, ' - ', '_'), 'BK', ''),
 IF(AND(LEN(bk) = 12, intake_number = ''), SUBSTITUTE(bk, 'BK', '') & '_xxx',
 IF(LEN(bk) = 10, bk,
@@ -121,7 +123,7 @@ IF(LEN(bk) = 6, '0000' & bk,
 IF(LEN(bk) = 5, '00000' & bk,
 IF(LEN(bk) = 4, '000000' & bk,
 IF(LEN(bk) = 3, '0000000' & bk,
-IF(LEN(bk) = 2, '00000000' & bk, ''))))))))))
+IF(LEN(bk) = 2, '00000000' & bk, '')))))))))))
 ```
 
 #### uid_for_humans
@@ -145,46 +147,68 @@ IF(dc_id = "", "", "https://www.documentcloud.org/documents/" & dc_id & ".html")
 #### status
 
 ```Airtable
-IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12, '✔️✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24, '✔️✔️✔️', IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7, '✔️✔️',
-IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30, '✔️',
-'❌'))))
+IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12,
+   '✔️✔️✔️✔️',
+   IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24,
+      '✔️✔️✔️',
+      IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7,
+         '✔️✔️',
+         IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30,
+            '✔️',
+            '❌'))))
 ```
 
 #### days_incarcerated
 
 ```Airtable
-IF(hours_incarcerated = '-23.0', VALUE('0.0'), IF(hours_incarcerated != '', hours_incarcerated / 24))
+IF(hours_incarcerated = '-23.0',
+   VALUE('0.0'),
+   IF(hours_incarcerated != '',
+   hours_incarcerated / 24)
+   )
 ```
 
 #### hours_incarcerated
 
 ```Airtable
-IF(NOT(DOR = ''), DATETIME_DIFF(DOR, DOI, 'hours'), DATETIME_DIFF(SET_TIMEZONE(last_verified, 'America/Chicago'), DOI, 'hours'))
+IF(NOT(DOR = ''),
+   DATETIME_DIFF(DOR,
+                 DOI,
+                 'hours'),
+   DATETIME_DIFF(SET_TIMEZONE(last_verified, 'America/Chicago'),
+                 DOI,
+                 'hours')
+    )
 ```
 
 #### age_at_time_of_arrest
 
 ```Airtable
-IF(DOB != '', DATETIME_DIFF(DOI, DOB, 'years'))
+IF(DOB != '',
+   DATETIME_DIFF(DOI, DOB, 'years')
+   )
 ```
 
 #### AGE
 
 ```Airtable
-IF(jail = 'hcdc', DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'), intake_age)
+IF(jail = 'hcdc',
+   DATETIME_DIFF(NOW(), DATETIME_PARSE(DOB), 'years'),
+   intake_age)
 ```
 
 #### pixelated_url
 
 ```Airtable
-IF(jail = "jcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:8/" & UID & ".jpg",
-IF(jail = "mcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:20/o_45/" & UID & ".jpg",
-IF(jail = "prcdf", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:15/o_60/" & UID & ".jpg",
-IF(jail = "lcdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:13/o_80/" & UID & ".jpg",
-IF(jail = "ccdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:5/" & UID & ".jpg",
-IF(jail = "acdc", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/" & UID & ".jpg",
-IF(jail = "jcj", "https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:10/o_75/" & UID & ".jpg",
-"https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:16/o_90/" & UID & ".jpg")))))))
+"https://res.cloudinary.com/bfeldman89/image/upload/e_pixelate_faces:" &
+IF(jail = "mcdc", "20/o_45/",
+IF(jail = "prcdf", "15/o_60/",
+IF(jail = "lcdc", "13/o_80/",
+IF(jail = "ccdc", "5/",
+IF(jail = "acdc", "10/",
+IF(jail = "jcj", "10/o_75/",
+IF(jail = "jcadc", "11/o_45/",
+"16/o_90/"))))))) & UID & ".jpg"
 ```
 
 #### blurb
