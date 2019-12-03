@@ -11,8 +11,6 @@ from airtable import Airtable
 from documentcloud import DocumentCloud
 import send2trash
 
-airtab_log = Airtable(os.environ['jail_scrapers_db'],
-                      "log", os.environ['AIRTABLE_API_KEY'])
 
 airtab = Airtable(os.environ['jail_scrapers_db'],
                   'intakes', os.environ['AIRTABLE_API_KEY'])
@@ -23,6 +21,7 @@ dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'],
 jails_lst = [['mcdc', 'intake_number'],
              ['prcdf', 'intake_number'],
              ['lcdc', 'intake_number'],
+             ['jcadc', 'intake_number'],
              ['tcdc', 'bk'],
              ['kcdc', 'bk'],
              ['ccdc', 'bk'],
@@ -73,14 +72,13 @@ def get_dor_if_possible():
                 "quiet": "",
                 "footer-font-size": 10,
                 "footer-left": record["fields"]["link"],
-                "footer-right": time.strftime("%x %X"),
+                "footer-right": time.strftime('%c'),
             }
             fn = f"{record['fields']['bk']} (final).pdf"
             pdfkit.from_url(record["fields"]["link"], fn, options=options)
             this_dict["DOR"] = datetime.datetime.strptime(
                 data[1 + data.index("Release Date:")], "%m-%d-%Y - %I:%M %p"
-            ).strftime("%Y-%m-%d %H:%M")
-            this_dict["updated"] = True
+            ).strftime('%m/%d/%Y %H:%M')
             airtab.update(record["id"], this_dict)
 
 
