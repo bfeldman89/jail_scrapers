@@ -10,11 +10,14 @@ from bs4 import BeautifulSoup
 from documentcloud import DocumentCloud
 
 t0 = time.time()
+
 airtab = Airtable("appTKQNP7jG9BVcoo", 'intakes',
                   os.environ['AIRTABLE_API_KEY'])
+
 airtab_log = Airtable("appTKQNP7jG9BVcoo", "log",
                       os.environ['AIRTABLE_API_KEY'])
 log_dict = {}
+
 dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'],
                    os.environ['DOCUMENT_CLOUD_PW'])
 cloudinary.config(cloud_name='bfeldman89',
@@ -41,7 +44,7 @@ def polish_data(log_id, quiet=True):
 def get_pixelated_mug():
     """This function uploads the raw image to cloudinary and then uploads the pixelated version to the airtable record."""
     records = airtab.get_all(view="needs pixelated mug")
-    start = len(records)
+    # start = len(records)
     for record in records:
         this_dict = {}
         # 2.a. Upload raw mugshots to cloudinary
@@ -58,8 +61,8 @@ def get_pixelated_mug():
         airtab.update(record["id"], this_dict)
     time.sleep(2)
     records = airtab.get_all(view="needs pixelated mug")
-    log_dict["needs pixelated mug"] = len(records)
-    log_dict["pixelated mugs"] = start - len(records)
+    # log_dict["needs pixelated mug"] = len(records)
+    # log_dict["pixelated mugs"] = start - len(records)
 
 
 def update_summary():
