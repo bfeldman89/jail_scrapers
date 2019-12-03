@@ -12,30 +12,46 @@ airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
 muh_headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
-records = airtab.get_all(view='needs pdf')
-for record in records:
-    os.chdir(
-        f"{os.getenv('HOME')}/code/jail_scrapers/output/{record['fields']['jail']}")
-    if record['fields']['jail'] == 'lcdc':
-        options = {'zoom': '.75', 'viewport-size': '1000x1400', 'quiet': '',
-                   'footer-left': record['fields']['link'], 'footer-font-size': 9, 'footer-right': time.strftime('%c')}
-        pdfkit.from_url(record['fields']['link'],
-                        f"{record['fields']['intake_number']}.pdf", options)
-    elif record['fields']['jail'] in {'mcdc', 'prcdf'}:
-        r = requests.get(record['fields']['link'], headers=muh_headers)
+output_path = f"{os.getenv('HOME')}/code/jail_scrapers/output"
+
+
+def web_to_pdf(this_record):
+    url = this_record['fields']['link']
+    jail = this_record['fields']['jail']
+    os.chdir(f"{output_path}/{jail}")
+    if jail in {'mcdc', 'prcdf', 'lcdc', 'jcadc'}:
+        fn = f"{this_record['fields']['intake_number']}.pdf"
+    else:
+        fn = f"{this_record['fields']['bk']}.pdf"
+    options = {
+        'quiet': '',
+        'footer-right': time.strftime('%c'),
+        'footer-left': url}
+    if jail == 'lcdc':
+        options['zoom'] = '.75'
+        options['viewport-size'] = '1000x1400'
+        options['footer-font-size'] = 9
+    else:
+        options['footer-font-size'] = 10
+    if jail in {'mcdc', 'prcdf'}:
+        r = requests.get(url, headers=muh_headers)
         data = []
         soup = BeautifulSoup(r.text, 'html.parser')
         for string in soup.stripped_strings:
             data.append(str(string))
-        if record['fields']['intake_number'] == data[1 + data.index('INTAKE #:')]:
-            options = {'quiet': '', 'footer-font-size': 10,
-                       'footer-left': record['fields']['link'], 'footer-right': time.strftime('%c')}
-            pdfkit.from_url(
-                record['fields']['link'], f"{record['fields']['intake_number']}.pdf", options)
+        if this_record['fields']['intake_number'] == data[1 + data.index('INTAKE #:')]:
+            pdfkit.from_url(url, fn, options)
         else:
-            print('intake numbers didn\'t match')
+            print('the intake number does not match!')
     else:
-        options = {'quiet': '', 'footer-font-size': 10,
-                   'footer-left': record['fields']['link'], 'footer-right': time.strftime('%c')}
-        pdfkit.from_url(record['fields']['link'],
-                        f"{record['fields']['bk']}.pdf", options)
+        pdfkit.from_url(url, fn, options)
+
+
+def main():
+    records = airtab.get_all(view='needs pdf')
+    for record in records:
+        web_to_pdf(record)
+
+
+if __name__ == "__main__":
+    main()
