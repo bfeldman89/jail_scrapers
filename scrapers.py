@@ -78,11 +78,7 @@ def mcdc_scraper(log_id, print_table=False):
                 this_dict['charge_1_statute'] = '8 U.S.C. 1325'
                 this_dict['charge_1_title'] = 'UNLAWFUL ENTRY'
             this_dict['bk'] = cells[2].string.replace('\xa0', '')
-            this_dict['last_verified'] = (
-                datetime.utcnow()
-                .replace(tzinfo=timezone.utc)
-                .strftime('%Y-%m-%d %H:%M')
-            )
+            this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             this_dict['img_src'] = (
                 this_dict['link'].replace('ICUD', 'ICUP').replace('HTM', 'jpg')
             )
@@ -183,11 +179,7 @@ def prcdf_scraper(log_id, print_table=False):
                 this_dict['charge_1_statute'] = '8 U.S.C. 1325'
                 this_dict['charge_1_title'] = 'UNLAWFUL ENTRY'
             this_dict['bk'] = cells[2].string.replace('\xa0', '')
-            this_dict['last_verified'] = (
-                datetime.utcnow()
-                .replace(tzinfo=timezone.utc)
-                .strftime('%Y-%m-%d %H:%M')
-            )
+            this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             this_dict['img_src'] = (
                 this_dict['link'].replace('ICUD', 'ICUP').replace('HTM', 'jpg')
             )
@@ -283,7 +275,7 @@ def lcdc_scraper(log_id, print_table=False):
         except requests.ConnectionError as err:
             damn_it(err)
             continue
-        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M'))
+        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         this_dict['bk'] = url[-6:]
         soup = BeautifulSoup(r.text, 'html.parser')
         raw_intake_number = soup.find(id='lblBookingNumber').string
@@ -352,11 +344,7 @@ def tcdc_scraper(log_id, print_table=False):
         except requests.ConnectionError as err:
             damn_it(err)
             continue
-        this_dict['last_verified'] = (
-            datetime.utcnow()
-            .replace(tzinfo=timezone.utc)
-            .strftime('%Y-%m-%d %H:%M')
-        )
+        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         soup = BeautifulSoup(r.text, 'html.parser')
         data = []
         for string in soup.stripped_strings:
@@ -428,10 +416,7 @@ def kcdc_scraper(log_id, print_table=False):
                 damn_it(err)
                 continue
             this_dict['bk'] = x.replace('roster_view.php?booking_num=', '')
-            this_dict['last_verified'] = (
-                datetime.utcnow()
-                .replace(tzinfo=timezone.utc)
-                .strftime('%Y-%m-%d %H:%M'))
+            this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             soup = BeautifulSoup(r.text, 'html.parser').find(id='intContentContainer')
             data = []
             for string in soup.stripped_strings:
@@ -495,13 +480,8 @@ def hcdc_scraper(log_id, print_table=False):
             if len(cells) == 7:
                 total_intakes += 1
                 this_dict = {'jail': 'hcdc', 'linking': ['recHHRRooPmwkCBtP']}
-                # this_dict['bk'] = row.a.get('href').replace('inmate_detail.asp?ID=', '')
-                this_dict['bk'] = row.a.string
-                this_dict['last_verified'] = (
-                    datetime.utcnow()
-                    .replace(tzinfo=timezone.utc)
-                    .strftime('%Y-%m-%d %H:%M')
-                )
+                this_dict['bk'] = row.a.get('href').replace('inmate_detail.asp?ID=', '')
+                this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
                 m = airtab.match('bk', this_dict['bk'], view='hcdc', fields='recent_text')
                 if m:
                     airtab.update(m['id'], this_dict)
@@ -579,11 +559,7 @@ def ccdc_scraper(log_id, print_table=False):
         except requests.ConnectionError as err:
             damn_it(err)
             continue
-        this_dict['last_verified'] = (
-            datetime.utcnow()
-            .replace(tzinfo=timezone.utc)
-            .strftime('%m/%d/%Y %H:%M')
-        )
+        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         soup = BeautifulSoup(r.text, 'html.parser').find_all('table')[6]
         data = []
         for string in soup.stripped_strings:
@@ -646,11 +622,7 @@ def acdc_scraper(log_id, print_table=False):
         this_dict = {'jail': 'acdc', 'linking': ['rec9n9Df51OsDc67a']}
         data = []
         this_dict['link'] = intake
-        this_dict['last_verified'] = (
-            datetime.utcnow()
-            .replace(tzinfo=timezone.utc)
-            .strftime('%m/%d/%Y %I:%M%p')
-        )
+        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         try:
             r = requests.get(intake)
         except requests.ConnectionError as err:
@@ -744,11 +716,7 @@ def jcj_scraper(log_id, print_table=False):
             this_dict['charges'] = ', '.join(cleaned_charges)
             this_dict['recent_text'] = '\n'.join(data)
             this_dict['html'] = x.prettify()
-            this_dict['last_verified'] = (
-                datetime.utcnow()
-                .replace(tzinfo=timezone.utc)
-                .strftime('%Y-%m-%d %H:%M')
-            )
+            this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             raw_lea = data[1 + data.index('Arrest Agency:')]
             m = airtab.match('bk', this_dict['bk'], view='jcj')
             if not m:
@@ -792,8 +760,7 @@ def jcadc_scraper():
             data = []
             this_dict = {'jail': 'jcadc', 'linking': ['recuOxbqCtAERIdBQ']}
             this_dict['bk'] = intake["Book_Number"]
-            this_dict['last_verified'] = (datetime.utcnow().replace(
-                tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M'))
+            this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             m = airtab.match('bk', this_dict['bk'])
             if m:
                 airtab.update(m['id'], this_dict, typecast=True)
@@ -839,7 +806,7 @@ def main():
         'hcdc': hcdc_scraper,
         'jcadc': jcadc_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcacd']
+    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcadc']
     jails_str = sys.argv[1]
     if jails_str == 'all':
         jails = keynames
@@ -849,11 +816,13 @@ def main():
         nap_length = int(sys.argv[2])
     else:
         nap_length = 0
+    if 'jcadc' in jails:
+        jails.remove('jcadc')
+        jcadc_scraper()
     for jail in jails[:-1]:
         fndict[jail.strip()](log_id, print_table=False)
         time.sleep(nap_length)
     fndict[jails[-1]](log_id, print_table=True)
-
 
 if __name__ == '__main__':
     main()
