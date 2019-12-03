@@ -55,8 +55,7 @@ def damn_it(error_message):
 
 
 def mcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     root_url = 'http://mydcstraining.com/agencyinfo/MS/4360/inmate/'
     main_url = root_url + 'ICURRENT.HTM'
     page = requests.get(main_url, headers=muh_headers)
@@ -158,8 +157,7 @@ def mcdc_scraper(log_id, print_table=False):
 
 
 def prcdf_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     root_url = 'http://mydcstraining.com/agencyinfo/MS/0055/inmate/'
     main_url = root_url + 'ICURRENT.HTM'
     page = requests.get(main_url, headers=muh_headers)
@@ -266,8 +264,7 @@ def prcdf_scraper(log_id, print_table=False):
 
 
 def lcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     main_url = ('https://tcsi-roster.azurewebsites.net/Default.aspx?i=26&code=Lee&type=roster')
     r = requests.get(main_url)
     urls = set()
@@ -325,96 +322,93 @@ def lcdc_scraper(log_id, print_table=False):
 
 
 def jcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     url = 'https://www.jonesso.com/roster.php'
     docket_pages = set()
     docket_pages.add(url)
-    try:
-        r = requests.get(url)
-    except requests.ConnectionError as err:
+    r = requests.get(url)
+    if r.status_code != 200:
         print('jcdc website is still down')
-    else:
+        return False
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for x in soup.find_all('a', class_='page_num'):
+        page = urllib.parse.urljoin(url, x.get('href'))
+        docket_pages.add(page)
+    intakes = []
+    for page in docket_pages:
+        try:
+            r = requests.get(page)
+        except requests.ConnectionError as err:
+            damn_it(err)
+            continue
         soup = BeautifulSoup(r.text, 'html.parser')
-        for x in soup.find_all('a', class_='page_num'):
-            page = urllib.parse.urljoin(url, x.get('href'))
-            docket_pages.add(page)
-        intakes = []
-        for page in docket_pages:
-            try:
-                r = requests.get(page)
-            except requests.ConnectionError as err:
-                damn_it(err)
-                continue
-            soup = BeautifulSoup(r.text, 'html.parser')
-            for x in soup.find_all('a'):
-                link = x.get('href')
-                if link is not None:
-                    if link.startswith('roster_view.php?booking_num'):
-                        intakes.append(link)
-        total_intakes = len(intakes)
-        for x in intakes:
-            this_dict = {'jail': 'jcdc', 'linking': ['recuLxs8EEAfHcYfd']}
-            this_dict['link'] = f"https://www.jonesso.com/{x}"
-            try:
-                r = requests.get(this_dict['link'])
-            except requests.ConnectionError as err:
-                damn_it(err)
-                continue
-            this_dict['bk'] = x[-5:]
-            this_dict['last_verified'] = (
-                datetime.utcnow()
-                .replace(tzinfo=timezone.utc)
-                .strftime('%Y-%m-%d %H:%M')
-            )
-            soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
-            data = []
-            for string in soup.stripped_strings:
-                data.append(str(string))
-            this_dict['recent_text'] = '\n'.join(data[0: len(data) - 1])
-            if 'Arresting Agency:' in data:
-                raw_lea = data[1 + data.index('Arresting Agency:')]
+        for x in soup.find_all('a'):
+            link = x.get('href')
+            if link is not None:
+                if link.startswith('roster_view.php?booking_num'):
+                    intakes.append(link)
+    total_intakes = len(intakes)
+    for x in intakes:
+        this_dict = {'jail': 'jcdc', 'linking': ['recuLxs8EEAfHcYfd']}
+        this_dict['link'] = f"https://www.jonesso.com/{x}"
+        try:
+            r = requests.get(this_dict['link'])
+        except requests.ConnectionError as err:
+            damn_it(err)
+            continue
+        this_dict['bk'] = x[-5:]
+        this_dict['last_verified'] = (
+            datetime.utcnow()
+            .replace(tzinfo=timezone.utc)
+            .strftime('%Y-%m-%d %H:%M')
+        )
+        soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
+        data = []
+        for string in soup.stripped_strings:
+            data.append(str(string))
+        this_dict['recent_text'] = '\n'.join(data[0: len(data) - 1])
+        if 'Arresting Agency:' in data:
+            raw_lea = data[1 + data.index('Arresting Agency:')]
+        else:
+            raw_lea = ''
+        m = airtab.match('bk', this_dict['bk'], view='jcdc', fields='recent_text')
+        if not m:
+            this_dict['html'] = soup.prettify()
+            get_name(data[data.index('Booking #:') - 1], this_dict)
+            if 'Age:' in data:
+                this_dict['intake_age'] = int(data[1 + data.index('Age:')])
+            this_dict['sex'] = data[1 + data.index('Gender:')]
+            if data[1 + data.index('Race:')] == 'I':
+                this_dict['race'] = 'AI'
             else:
-                raw_lea = ''
-            m = airtab.match('bk', this_dict['bk'], view='jcdc', fields='recent_text')
-            if not m:
-                this_dict['html'] = soup.prettify()
-                get_name(data[data.index('Booking #:') - 1], this_dict)
-                if 'Age:' in data:
-                    this_dict['intake_age'] = int(data[1 + data.index('Age:')])
-                this_dict['sex'] = data[1 + data.index('Gender:')]
-                if data[1 + data.index('Race:')] == 'I':
-                    this_dict['race'] = 'AI'
-                else:
-                    this_dict['race'] = data[1 + data.index('Race:')]
-                if raw_lea:
-                    this_dict['LEA'] = standardize.jcdc_lea(raw_lea)
-                this_dict['DOI'] = datetime.strptime(
-                    data[1 + data.index('Booking Date:')], '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %I:%M%p')
-                c = data[1 + data.index('Charges:')]
-                if c.startswith('Note:'):
-                    this_dict['charge_1'] = ''
-                else:
-                    this_dict['charge_1'] = c
-                if 'Bond:' in data:
-                    this_dict['intake_bond_cash'] = data[1 + data.index('Bond:')]
-                this_dict['img_src'] = f"https://www.jonesso.com/templates/jonesso.com/images/inmates/{this_dict['bk']}.jpg"
-                image_url = {'url': this_dict['img_src']}
-                attachments_array = []
-                attachments_array.append(image_url)
-                this_dict['PHOTO'] = attachments_array
-                if this_dict['img_src'] == 'https://www.jonesso.com/common/images/pna.gif':
-                    this_dict['PIXELATED_IMG'] = attachments_array
-                airtab.insert(this_dict, typecast=True)
-                new_intakes += 1
+                this_dict['race'] = data[1 + data.index('Race:')]
+            if raw_lea:
+                this_dict['LEA'] = standardize.jcdc_lea(raw_lea)
+            this_dict['DOI'] = datetime.strptime(
+                data[1 + data.index('Booking Date:')], '%m-%d-%Y - %I:%M %p').strftime('%m/%d/%Y %I:%M%p')
+            c = data[1 + data.index('Charges:')]
+            if c.startswith('Note:'):
+                this_dict['charge_1'] = ''
             else:
-                update_record(this_dict, soup, m, standardize.jcdc_lea, raw_lea)
-        wrap_it_up('jcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+                this_dict['charge_1'] = c
+            if 'Bond:' in data:
+                this_dict['intake_bond_cash'] = data[1 + data.index('Bond:')]
+            this_dict['img_src'] = f"https://www.jonesso.com/templates/jonesso.com/images/inmates/{this_dict['bk']}.jpg"
+            image_url = {'url': this_dict['img_src']}
+            attachments_array = []
+            attachments_array.append(image_url)
+            this_dict['PHOTO'] = attachments_array
+            if this_dict['img_src'] == 'https://www.jonesso.com/common/images/pna.gif':
+                this_dict['PIXELATED_IMG'] = attachments_array
+            airtab.insert(this_dict, typecast=True)
+            new_intakes += 1
+        else:
+            update_record(this_dict, soup, m, standardize.jcdc_lea, raw_lea)
+    wrap_it_up('jcdc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
 def tcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     url = 'https://www.tunicamssheriff.com/roster.php?grp=10'
     docket_pages = set()
     docket_pages.add(url)
@@ -496,8 +490,7 @@ def tcdc_scraper(log_id, print_table=False):
 
 
 def kcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     docket_pages = set()
     docket_pages.add('roster.php?grp=10')
     r = requests.get('https://www.kempercountysheriff.com/roster.php?grp=10')
@@ -568,8 +561,7 @@ def kcdc_scraper(log_id, print_table=False):
 
 
 def hcdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     try:
         r = requests.get('http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp')
     except requests.ConnectionError as err:
@@ -642,8 +634,7 @@ def hcdc_scraper(log_id, print_table=False):
 
 
 def ccdc_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     url = 'http://www.claysheriffms.org/roster.php?grp=10'
     docket_pages = set()
     docket_pages.add(url)
@@ -794,8 +785,7 @@ def acdc_scraper(log_id, print_table=False):
 
 
 def jcj_scraper(log_id, print_table=False):
-    start_time = time.time()
-    new_intakes, total_intakes = 0, 0
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     urls = [
         'http://jasperso.com/inmate-roster/',
         'http://jasperso.com/48-hour-release/',
@@ -866,6 +856,54 @@ def jcj_scraper(log_id, print_table=False):
     wrap_it_up('jcj', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
+root = 'https://services.co.jackson.ms.us/jaildocket'
+
+def get_pages():
+    r = requests.post(
+        f"{root}/_inmateList.php?Function=count", headers=muh_headers)
+    count = r.json()
+    last_page = int(count / 15)
+    return range(1, last_page + 1)
+
+
+def jcadc_scraper():
+    pages = get_pages()
+    for pg in pages:
+        r = requests.post(
+            f"{root}/_inmateList.php?Function=list&Page={pg}&Order=BookDesc&Search=0",
+            headers=muh_headers)
+        intakes = r.json()
+        for intake in intakes:
+            data = []
+            this_dict = {'jail': 'jcadc', 'linking': ['recuOxbqCtAERIdBQ']}
+            this_dict['bk'] = intake["Book_Number"]
+            this_dict['last_verified'] = (datetime.utcnow().replace(
+                tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M'))
+            m = airtab.match('bk', this_dict['bk'])
+            if m:
+                airtab.update(m['id'], this_dict, typecast=True)
+            else:
+                raw_name = f"{intake['Name_First_MI']} {intake['Name_Middle']} {intake['Name_Last']} {intake['Name_Suffix']}"
+                get_name(raw_name, this_dict)
+                this_dict['DOI'] = intake["BookDate"]
+                this_dict['DOA'] = intake["ArrestDate"]
+                this_dict['LEA'] = intake["Arrest_Agency"]
+                this_dict['id'] = intake["ID_Number"].strip()
+                this_dict[
+                    'link'] = f"{root}/inmate/_inmatedetails.php?id={this_dict['id']}"
+                r = requests.get(this_dict['link'], headers=muh_headers)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                for string in soup.stripped_strings:
+                    data.append(string)
+                this_dict['recent_text'] = '\n'.join(data[1:])
+                articles = soup.find_all('articles')
+                this_dict['html'] = f"<html>\n<body>\n{articles[0].prettify()}\n{articles[1].prettify()}\n</body>\n</html>"
+                this_dict[
+                    'img_url'] = f"{root}/inmate/{this_dict['id']}.jpg"
+                this_dict['mug'] = [{'url': this_dict['img_url']}]
+                airtab.insert(this_dict, typecast=True)
+
+
 def main():
     airtable_log = Airtable('appTKQNP7jG9BVcoo', 'log', os.environ['AIRTABLE_API_KEY'])
     log_entry = airtable_log.insert({'code': 'jail_scraper.py'})
@@ -880,9 +918,10 @@ def main():
         'acdc': acdc_scraper,
         'ccdc': ccdc_scraper,
         'jcj': jcj_scraper,
-        'hcdc': hcdc_scraper
+        'hcdc': hcdc_scraper,
+        'jcadc': jcadc_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'jcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc']
+    keynames = ['mcdc', 'prcdf', 'lcdc', 'jcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcacd']
     jails_str = sys.argv[1]
     if jails_str == 'all':
         jails = keynames
