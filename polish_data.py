@@ -136,7 +136,7 @@ def get_charges_from_recent_text():
                         charges.append(good)
                 this_dict["charges"] = ", ".join(goods[1:])
                 airtab.update(record["id"], this_dict)
-        elif record["fields"]["jail"] in {"ccdc", "jcdc", "tcdc"}:
+        elif record["fields"]["jail"] in {"ccdc", "tcdc"}:
             charges = []
             text = record["fields"]["recent_text"]
             x = text.find("\nCharges:") + 9
