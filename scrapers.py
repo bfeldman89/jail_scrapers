@@ -158,8 +158,7 @@ def mcdc_scraper(log_id, print_table=False):
 
 def prcdf_scraper(log_id, print_table=False):
     start_time, new_intakes, total_intakes = time.time(), 0, 0
-    root_url = 'http://mydcstraining.com/agencyinfo/MS/0055/inmate/'
-    main_url = root_url + 'ICURRENT.HTM'
+    main_url = 'http://mydcstraining.com/agencyinfo/MS/0055/inmate/ICURRENT.HTM'
     page = requests.get(main_url, headers=muh_headers)
     soup = BeautifulSoup(page.text, 'html.parser')
     dk_rows = soup.find_all('tr')
@@ -169,7 +168,7 @@ def prcdf_scraper(log_id, print_table=False):
         if len(cells) == 9:
             total_intakes += 1
             this_dict = {'jail': 'prcdf', 'linking': ['recoCsH694PGGUc33']}
-            this_dict['link'] = root_url + dk_row.a.get('href')
+            this_dict['link'] = urllib.parse.urljoin(main_url, dk_row.a.get('href'))
             try:
                 r = requests.get(this_dict['link'], headers=muh_headers)
             except requests.ConnectionError as err:
@@ -265,7 +264,8 @@ def prcdf_scraper(log_id, print_table=False):
 
 def lcdc_scraper(log_id, print_table=False):
     start_time, new_intakes, total_intakes = time.time(), 0, 0
-    main_url = ('https://tcsi-roster.azurewebsites.net/Default.aspx?i=26&code=Lee&type=roster')
+    root_url = 'https://tcsi-roster.azurewebsites.net/'
+    main_url = (root_url + 'Default.aspx?i=26&code=Lee&type=roster')
     r = requests.get(main_url)
     urls = set()
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -277,7 +277,7 @@ def lcdc_scraper(log_id, print_table=False):
     for url in urls:
         total_intakes += 1
         this_dict = {'jail': 'lcdc', 'linking': ['rec20ZcCFysboY8GP']}
-        this_dict['link'] = 'https://tcsi-roster.azurewebsites.net/' + url
+        this_dict['link'] = root_url + url
         try:
             r = requests.get(this_dict['link'])
         except requests.ConnectionError as err:
@@ -476,8 +476,9 @@ def kcdc_scraper(log_id, print_table=False):
 
 def hcdc_scraper(log_id, print_table=False):
     start_time, new_intakes, total_intakes = time.time(), 0, 0
+    main_url = 'http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp'
     try:
-        r = requests.get('http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp')
+        r = requests.get(main_url)
     except requests.ConnectionError as err:
         damn_it(err)
         return
@@ -485,9 +486,8 @@ def hcdc_scraper(log_id, print_table=False):
     total_pages = int(soup.h3.string.split()[3])
     pages = list(range(1, total_pages + 1))
     for page in pages:
-        root_url = 'http://www.co.hinds.ms.us/pgs/apps/inmate/'
-        url = f"{root_url}inmate_list.asp?name_sch=Date&SS1=1&search_by_city=&search_by=&ScrollAction=Page+{page}"
-        r = requests.get(url)
+        param_str = f"name_sch=Date&SS1=1&ScrollAction=Page+{page}"
+        r = requests.get(f"{main_url}?{param_str}")
         soup = BeautifulSoup(r.text, 'html.parser')
         rows = soup.find_all('tr')
         for row in rows:
@@ -495,7 +495,8 @@ def hcdc_scraper(log_id, print_table=False):
             if len(cells) == 7:
                 total_intakes += 1
                 this_dict = {'jail': 'hcdc', 'linking': ['recHHRRooPmwkCBtP']}
-                this_dict['bk'] = row.a.get('href').replace('inmate_detail.asp?ID=', '')
+                # this_dict['bk'] = row.a.get('href').replace('inmate_detail.asp?ID=', '')
+                this_dict['bk'] = row.a.string
                 this_dict['last_verified'] = (
                     datetime.utcnow()
                     .replace(tzinfo=timezone.utc)
@@ -505,7 +506,7 @@ def hcdc_scraper(log_id, print_table=False):
                 if m:
                     airtab.update(m['id'], this_dict)
                 else:
-                    this_dict['link'] = f"{root_url}{row.a.get('href')}"
+                    this_dict['link'] = urllib.parse.urljoin(main_url, row.a.get('href'))
                     try:
                         r = requests.get(this_dict['link'])
                     except requests.ConnectionError as err:
@@ -808,17 +809,17 @@ def jcadc_scraper():
                 this_dict['LEA'] = intake["Arrest_Agency"]
                 this_dict['intake_number'] = intake["ID_Number"].strip()
                 this_dict[
-                    'link'] = f"{root}/inmate/_inmatedetails.php?id={this_dict['id']}"
+                    'link'] = f"{root}/inmate/_inmatedetails.php?id={this_dict['intake_number']}"
                 r = requests.get(this_dict['link'], headers=muh_headers)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 for string in soup.stripped_strings:
                     data.append(string)
                 this_dict['recent_text'] = '\n'.join(data[1:])
-                articles = soup.find_all('articles')
+                articles = soup.find_all('article')
                 this_dict['html'] = f"<html>\n<body>\n{articles[0].prettify()}\n{articles[1].prettify()}\n</body>\n</html>"
                 this_dict[
-                    'img_url'] = f"{root}/inmate/{this_dict['id']}.jpg"
-                this_dict['PHOTO'] = [{'url': this_dict['img_url']}]
+                    'img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
 
 
@@ -830,7 +831,6 @@ def main():
         'mcdc': mcdc_scraper,
         'prcdf': prcdf_scraper,
         'lcdc': lcdc_scraper,
-        'jcdc': jcdc_scraper,
         'kcdc': kcdc_scraper,
         'tcdc': tcdc_scraper,
         'acdc': acdc_scraper,
@@ -839,12 +839,10 @@ def main():
         'hcdc': hcdc_scraper,
         'jcadc': jcadc_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'jcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcacd']
+    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcacd']
     jails_str = sys.argv[1]
     if jails_str == 'all':
         jails = keynames
-    elif jails_str == 'most':
-        jails = keynames[:9]
     else:
         jails = jails_str.split(',')
     if len(sys.argv[1:]) == 2:
