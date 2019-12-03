@@ -9,8 +9,8 @@ airtab_intakes = Airtable(
 airtab_daily = Airtable(
     os.environ['jail_scrapers_db'], 'daily stats', os.environ['AIRTABLE_API_KEY'])
 
-county_jails = [('Madison', 'mcdc'), ('Pearl River', 'prcdf'), ('Lee', 'lcdc'), ('Jones', 'jcdc'), ('Hinds', 'hcdc'),
-                ('Kemper', 'kcdc'), ('Tunica', 'tcdc'), ('Clay', 'ccdc'), ('Adams', 'acdc'), ('Jasper', 'jcj')]
+county_jails = [('Madison', 'mcdc'), ('Pearl River', 'prcdf'), ('Lee', 'lcdc'), ('Hinds', 'hcdc'),
+                ('Kemper', 'kcdc'), ('Tunica', 'tcdc'), ('Clay', 'ccdc'), ('Adams', 'acdc'), ('Jasper', 'jcj'), 'Jackson', 'jcadc']
 
 
 def pop_otd(day, county, jail, quiet=True):
