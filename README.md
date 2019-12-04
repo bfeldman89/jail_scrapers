@@ -10,18 +10,18 @@ When an intake sheet is detected for the first time, not only is the data entere
 
 ## jails scraped
 
-jail | abreviation | started scraping | discontinued scraping
----|---|---|---
-Madison County Detention Center | `mcdc` | Sep. 6, 2018 | present
-Pearl River County Detention Facility | `prcdf` | Sep. 6, 2018 | present
-Lee County Detention Center | `lcdc` | Dec. 1, 2018 | present
-Jones County Detention Center | `jcdc` | Dec. 14, 2018 | Nov. 1, 2019*
-Hinds County Detention Center | `hcdc` | Dec. 28, 2018 | present
-Kemper County Detention Center | `kcdc` | Apr. 6, 2019 | present
-Tunica County Detention Center | `tcdc` | Apr. 6, 2019 | present
-Adams County Detention Center | `acdc` | May 25, 2019 | present
-Clay County Detention Center | `ccdc` | May 24, 2019 | present
-Jasper County Jail | `jcj` | Jun. 3, 2019 | present
+| jail                                  | abreviation | started scraping | discontinued scraping |
+|---------------------------------------|-------------|------------------|-----------------------|
+| Madison County Detention Center       | `mcdc`      | Sep. 6, 2018     | present               |
+| Pearl River County Detention Facility | `prcdf`     | Sep. 6, 2018     | present               |
+| Lee County Detention Center           | `lcdc`      | Dec. 1, 2018     | present               |
+| Jones County Detention Center         | `jcdc`      | Dec. 14, 2018    | Nov. 1, 2019*         |
+| Hinds County Detention Center         | `hcdc`      | Dec. 28, 2018    | present               |
+| Kemper County Detention Center        | `kcdc`      | Apr. 6, 2019     | present               |
+| Tunica County Detention Center        | `tcdc`      | Apr. 6, 2019     | present               |
+| Adams County Detention Center         | `acdc`      | May 25, 2019     | present               |
+| Clay County Detention Center          | `ccdc`      | May 24, 2019     | present               |
+| Jasper County Jail                    | `jcj`       | Jun. 3, 2019     | present               |
 
 \* Since Nov. 1, 2019, the Jones County Sheriff's Office website has been down.
 
