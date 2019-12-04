@@ -31,6 +31,7 @@ def polish_data(quiet=True):
     remove_weird_character()
     parse_charge_1()
     fix_charges_to_by_lines()
+    get_all_intake_deets()
     if not quiet:
         duration = round((time.time() - t0) / 60, 2)
         print(f"polishing: 👌\n (it took {duration} mins.")
@@ -222,6 +223,47 @@ def get_full_text():
         this_dict["dc_pages"] = obj.pages
         this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
         airtab.update(record["id"], this_dict)
+
+
+def get_all_intake_deets():
+    records = airtab.get_all(view='needs_jcadc_deets', fields='recent_text')
+    for record in records:
+        charges = []
+        bond_ammts = []
+        classifications = []
+        this_dict = {}
+        txt_str = record['fields']['recent_text']
+        chunks = txt_str.split('\nRequest Victim Notification\n')
+        match_1 = re.search(r"(\w+)\s+(Male|Female)", chunks[0])
+        this_dict['race'] = match_1.group(1)[0]
+        this_dict['sex'] = match_1.group(2)[0]
+        try:
+            this_dict['intake_weight'] = re.search(r"(\d+) Pounds", chunks[0]).group(1)
+        except AttributeError:
+            print('there isnt weight info')
+        try:
+            this_dict['intake_height'] = re.search(r"(\d Ft. \d+ In.)", chunks[0]).group(1)
+        except AttributeError:
+            print('idk how tall this person is')
+        try:
+            this_dict['intake_eye'] = re.search(r"(\w+)\s+Eyes", chunks[0]).group(1)
+        except AttributeError:
+            print('eye color is a mystery')
+        this_dict['intake_age'] = re.search(r"(\d\d) Years Old", chunks[0]).group(1)
+        crim_details = chunks[1].splitlines()
+        for ln in crim_details:
+            results = re.search(r"([MF]\w+) - Bond: (\$.*)", ln)
+            if results:
+                bond_ammts.append(results.group(2))
+                classifications.append(results.group(1))
+            elif ', ' in ln:
+                charges.append(f"\"{ln}\"")
+            else:
+                charges.append(ln)
+        this_dict['charges'] = ', '.join(charges)
+        this_dict['bond_ammounts'] = '\n'.join(bond_ammts)
+        this_dict['charge_classifications'] = ', '.join(classifications)
+        airtab.update(record['id'], this_dict, typecast=True)
 
 
 def main():
