@@ -210,6 +210,20 @@ def remove_weird_character():
         airtab.update(record['id'], this_dict)
 
 
+def get_full_text():
+    """This function does blah blah."""
+    records = airtab.get_all(
+        view='needs full text', fields=['dc_id'])
+    for record in records:
+        this_dict = {}
+        obj = dc.documents.get(record['fields']['dc_id'])
+        this_dict["dc_title"] = obj.title
+        this_dict["dc_access"] = obj.access
+        this_dict["dc_pages"] = obj.pages
+        this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
+        airtab.update(record["id"], this_dict)
+
+
 def main():
     """This function does blah blah."""
     polish_data(quiet=False)
