@@ -740,18 +740,12 @@ def jcj_scraper(log_id, print_table=False):
     wrap_it_up('jcj', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
-root = 'https://services.co.jackson.ms.us/jaildocket'
-
-def get_pages():
-    r = requests.post(
-        f"{root}/_inmateList.php?Function=count", headers=muh_headers)
+def jcadc_scraper():
+    root = 'https://services.co.jackson.ms.us/jaildocket'
+    r = requests.post(f"{root}/_inmateList.php?Function=count", headers=muh_headers)
     count = r.json()
     last_page = int(count / 15)
-    return range(1, last_page + 1)
-
-
-def jcadc_scraper():
-    pages = get_pages()
+    pages =  range(1, last_page + 1)
     for pg in pages:
         r = requests.post(
             f"{root}/_inmateList.php?Function=list&Page={pg}&Order=BookDesc&Search=0",
@@ -762,6 +756,13 @@ def jcadc_scraper():
             this_dict = {'jail': 'jcadc', 'linking': ['recuOxbqCtAERIdBQ']}
             this_dict['bk'] = intake["Book_Number"]
             this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
+            this_dict['intake_number'] = intake["ID_Number"].strip()
+            this_dict['link'] = f"{root}/inmate/_inmatedetails.php?id={this_dict['intake_number']}"
+            r = requests.get(this_dict['link'], headers=muh_headers)
+            soup = BeautifulSoup(r.text, 'html.parser')
+            for string in soup.stripped_strings:
+                data.append(string)
+            this_dict['recent_text'] = '\n'.join(data[1:])
             m = airtab.match('bk', this_dict['bk'])
             if m:
                 airtab.update(m['id'], this_dict, typecast=True)
@@ -775,18 +776,9 @@ def jcadc_scraper():
                     this_dict['DOI'] = f"{raw_doi} 11:59pm"
                 this_dict['DOA'] = intake["ArrestDate"]
                 this_dict['LEA'] = intake["Arrest_Agency"]
-                this_dict['intake_number'] = intake["ID_Number"].strip()
-                this_dict[
-                    'link'] = f"{root}/inmate/_inmatedetails.php?id={this_dict['intake_number']}"
-                r = requests.get(this_dict['link'], headers=muh_headers)
-                soup = BeautifulSoup(r.text, 'html.parser')
-                for string in soup.stripped_strings:
-                    data.append(string)
-                this_dict['recent_text'] = '\n'.join(data[1:])
                 articles = soup.find_all('article')
                 this_dict['html'] = f"<html>\n<body>\n{articles[0].prettify()}\n{articles[1].prettify()}\n</body>\n</html>"
-                this_dict[
-                    'img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
+                this_dict['img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
 
