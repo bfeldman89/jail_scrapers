@@ -2,7 +2,7 @@
 
 ## summary
 
-Every hour at 15min past the hour, a `scrapers.py` scrapes the online jail dockets for ten separate county jails in Mississippi and programatically enters the raw data into an Airtable base. The functions in `standardization.py` standardize the LEA and race accross jails.
+Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for ten separate county jails and programatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race accross jails.
 
 When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the total admissions and the total jail population per jail for the day.
 
@@ -22,14 +22,21 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Adams County Detention Center         | `acdc`      | May 25, 2019     | present               |
 | Clay County Detention Center          | `ccdc`      | May 24, 2019     | present               |
 | Jasper County Jail                    | `jcj`       | Jun. 3, 2019     | present               |
+| Jackson County Adult Detention Center | `jcadc`     | Dec. 2, 2019     | present               |
+
 
 \* Since Nov. 1, 2019, the Jones County Sheriff's Office website has been down.
 
-As of Nov. 27, the Airtable base includes data for 6,555 mcdc admissions, 1,661 prcdf admissions, 5,119 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 672 tcdc admissions, 563 ccdc admissions, 772 acdc admissions, and 345 jcj admissions.
+As of Nov. 27, the Airtable base included data for 6,555 mcdc admissions, 1,661 prcdf admissions, 5,119 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 672 tcdc admissions, 563 ccdc admissions, 772 acdc admissions, and 345 jcj admissions.
 
 ## access to the data
 
 At this time, only a fraction of the data is provided via the links at [bfeldman89.com/projects/jails](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, email me.**
+
+## what about the other ~70 county jails in the state
+
+Not all sheriffs make the jail dacket publically available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dackets in teh state that can be scraped, and I'm happy to help if someone takes the lead. It isn't yet complete, but a table with more info about each county's docket is available here.
+
 
 The remainder of this README documents and defines the fields in the Airtable base.
 
