@@ -218,8 +218,9 @@ def prcdf_scraper(log_id, print_table=False):
                     else:
                         charge = charge_raw
                     if ', ' in charge:
-                        charge = f"\"{charge}\""
-                    charges.append(charge)
+                        charges.append(f"\"{charge}\"")
+                    else:
+                        charges.append(charge)
                     if ' C' in court_raw:
                         courts.append(court_raw[: court_raw.find(' C')])
                     elif court_raw == 'OTHER AGEN':
