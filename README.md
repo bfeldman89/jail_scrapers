@@ -2,21 +2,21 @@
 
 ## summary
 
-Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for ten separate county jails and programatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race accross jails.
+Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for ten separate county jails and programmatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race across jails.
 
 When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the total admissions and the total jail population per jail for the day.
 
-`scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. Occassionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
+`scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. Occasionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
 
 ## jails scraped
 
-| jail                                  | abreviation | started scraping | discontinued scraping |
+| jail                                  | abbreviation | started scraping | discontinued scraping |
 |---------------------------------------|-------------|------------------|-----------------------|
-| Madison County Detention Center       | `mcdc`      | Sep. 6, 2018     | present               |
-| Pearl River County Detention Facility | `prcdf`     | Sep. 6, 2018     | present               |
-| Lee County Detention Center           | `lcdc`      | Dec. 1, 2018     | present               |
-| Jones County Detention Center         | `jcdc`      | Dec. 14, 2018    | Nov. 1, 2019*         |
-| Hinds County Detention Center         | `hcdc`      | Dec. 28, 2018    | present               |
+| Madison County Detention Center       | `mcdc`    | Sep. 6, 2018     | present               |
+| Pearl River County Detention Facility | `prcdf`   | Sep. 6, 2018     | present               |
+| Lee County Detention Center           | `lcdc`    | Dec. 1, 2018     | present               |
+| Jones County Detention Center         | `jcdc`    | Dec. 14, 2018    | Nov. 1, 2019*         |
+| Hinds County Detention Center         | `hcdc`    | Dec. 28, 2018    | present               |
 | Kemper County Detention Center        | `kcdc`      | Apr. 6, 2019     | present               |
 | Tunica County Detention Center        | `tcdc`      | Apr. 6, 2019     | present               |
 | Adams County Detention Center         | `acdc`      | May 25, 2019     | present               |
@@ -24,19 +24,17 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Jasper County Jail                    | `jcj`       | Jun. 3, 2019     | present               |
 | Jackson County Adult Detention Center | `jcadc`     | Dec. 2, 2019     | present               |
 
-
 \* Since Nov. 1, 2019, the Jones County Sheriff's Office website has been down.
 
-As of Nov. 27, the Airtable base included data for 6,555 mcdc admissions, 1,661 prcdf admissions, 5,119 lcdc admissions, 2,260 jcdc admissions, 3,616 hcdc admissions, 1,128 kcdc admissions, 672 tcdc admissions, 563 ccdc admissions, 772 acdc admissions, and 345 jcj admissions.
+As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,661 `prcdf` admissions, 5,119 `lcdc` admissions, 2,260 `jcdc` admissions, 3,616 `hcdc` admissions, 1,128 `kcdc` admissions, 672 `tcdc` admissions, 563 `ccdc` admissions, 772 `acdc` admissions, and 345 `jcj` admissions.
 
 ## access to the data
 
-At this time, only a fraction of the data is provided via the links at [bfeldman89.com/projects/jails](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, email me.**
+At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, email me.**
 
 ## what about the other ~70 county jails in the state
 
-Not all sheriffs make the jail dacket publically available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dackets in teh state that can be scraped, and I'm happy to help if someone takes the lead. It isn't yet complete, but a table with more info about each county's docket is available here.
-
+Not all sheriffs make the jail docket publicly available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dockets in Mississippi that can be scraped, and I'm happy to help if someone takes the lead. It isn't yet complete, but a table with more info about each county's docket is available [here]('https://airtable.com/shrERFjniyvrCbdlX').
 
 The remainder of this README documents and defines the fields in the Airtable base.
 
@@ -46,12 +44,12 @@ field | field type | description
 ---|---|---
 `UID`| formula<sup>[1](#UID)</sup> | unique ID
 `uid_for_humans`| formula<sup>[2](#uid_for_humans)</sup> | unique id composed of first initial, last name and date of incarceration (e.g., "S. SMITH 2019-11-16")
-`jail` | single select | mcdc, prcdf, lcdc, jcdc, hcdc, kcdc, tcdc, acdc, ccdc, or jcj
-`bk` | single line text | Most jails' intake sheets have an explicit booking number field, but the `bk` for LCDC is extracted from the unique intake url parameter, `iid`. For example, the `bk` for an intake sheet available at `https://tcsi-roster.azurewebsites.net/InmateInfo.aspx?i=26&code=Lee&type=roster&iid=283176` would be `283176`.
-`intake_number` | single line text | There is a longer booking number for each intake at MCDC & PRCDF, which allows for independant bookings of the same individual to be documented clearly.  LCDC intake sheets have a "Booking #" that indicates how many times the individual has been booked into the jail before, and an `intake_number` is constructed by combining `bk` with that number.
-`intake_case_number` | single line text | This only exists for intakes on the mcdc & prcdf dockets. It can be helpful for requesting incident reports via the MS Pub. Records Act.
+`jail` | single select | `mcdc`, `prcdf`, `lcdc`, `jcdc`, `hcdc`, `kcdc`, `tcdc`, `acdc`, `ccdc`, or `jcj`
+`bk` | single line text | Most jails' intake sheets have an explicit booking number field, but the `bk` for `lcdc` is extracted from the unique intake url parameter, `iid`. For example, the `bk` for an intake sheet available at `https://tcsi-roster.azurewebsites.net/InmateInfo.aspx?i=26&code=Lee&type=roster&iid=283176` would be `283176`.
+`intake_number` | single line text | There is a longer booking number for each intake at `mcdc` & `prcdf`, which allows for independent bookings of the same individual to be documented clearly. `lcdc` intake sheets have a "Booking #" that indicates how many times the individual has been booked into the jail before, and an `intake_number` is constructed by combining `bk` with that number.
+`intake_case_number` | single line text | This only exists for intakes on the `mcdc` & `prcdf` dockets. It can be helpful for requesting incident reports via the MS Pub. Records Act.
 `dc_id` | single line text | the unique documentcloud id. The `dc_id` is used to formulate the `PDF` and `dc_canonical_url` fields.
-`link` | url | the most recently provided url to the intake sheet on the county docket's website. The link for most intakes are constant, but be cautious with using the links for mcdc and prcdf. The link should usually point to the accurate intake sheet bc the scraper not only updates incarceration status each hour, but also updates the`link` and `img_src` fields if they've changed.
+`link` | url | the most recently provided url to the intake sheet on the county docket's website. The link for most intakes are constant, but be cautious with using the links for `mcdc` and `prcdf`. The link should usually point to the accurate intake sheet bc the scraper not only updates incarceration status each hour, but also updates the`link` and `img_src` fields if they've changed.
 `html` | long text | the html of the most recent version of intake sheet
 `recent_text` | long text | the plain text of the most recent version of intake sheet
 `PDF`| formula<sup>[3](#PDF)</sup> | the url for a pdf of the initial version of the intake sheet
@@ -62,19 +60,18 @@ field | field type | description
 `dc_full_text` | long text | the full text from the pdf of the initial version of the intake sheet
 `initial_scrape` | datetime | the datetime of the initial scrape
 `DOI` | datetime | date of intake
-`DOO` | datetime | date of offense (only provided by mcdc & prcdf)
-`DOR` | datetime | date of release (only provided by jcdc, kcdc, tcdc, ccdc, and jcj)
-`last_verified` | datetime | the datetime of the most recent instance that the scraper detected tbe intake sheet on the online docket. This field is used to calculate `status`, and -- for intakes that lack an explicit `DOR` -- it is also used to calculate `days_incarcerated` and `hours_incarcerated`.
+`DOO` | datetime | date of offense (only provided by `mcdc` & `prcdf`)
+`DOR` | datetime | date of release (only provided by `jcdc`, `kcdc`, `tcdc`, `ccdc`, and `jcj`)
+`last_verified` | datetime | the datetime of the most recent instance that the scraper detected the intake sheet on the online docket. This field is used to calculate `status`, and -- for intakes that lack an explicit `DOR` -- it is also used to calculate `days_incarcerated` and `hours_incarcerated`.
 `status` | formula<sup>[5](#status)</sup> |  ✔️✔️✔️✔️ (was identified on the docket w/in the last 12 hours), ✔️✔️✔️ (24 hours), ✔️✔️ (7 days), ✔️ (30 days), or ❌ (31+ days)
 `days_incarcerated`| formula<sup>[6](#days_incarcerated)</sup> | the calculated number of days the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
 `hours_incarcerated`| formula<sup>[7](#hours_incarcerated)</sup> | the calculated number of hours the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the time difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
-`scheduled_release_date` | datetime | occassionally provided by lcdc, seemingly indicating the detention is not pretrial
-`first_name` | single line text | first name extracted from the full name via nameparser python package
-`last_name` | single line text | last name extracted from the full name via nameparser python package
-`middle_name` | single line text | middle name extracted from the full name via nameparser python package
-`suffix` | single line text | suffix extracted from the full name via nameparser python package
-`DOB` | datetime | date of birth (only provided by mcdc, prcdf, lcdc, and hcdc)
-`intake_age`| number | every jail except hcdc provides the incarcerated person's age. This field represents the incarcerated person's current age (rather than age at the time of booking)
+`scheduled_release_date` | datetime | occasionally provided by `lcdc`, seemingly indicating the detention is not pretrial
+`first_name` | single line text | first name extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
+`middle_name` | single line text | middle name extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
+`suffix` | single line text | suffix extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
+`DOB` | datetime | date of birth (only provided by `mcdc`, `prcdf`, `lcdc`, and `hcdc`)
+`intake_age`| number | every jail except `hcdc` provides the incarcerated person's age. This field represents the incarcerated person's current age (rather than age at the time of booking)
 `age_at_time_of_arrest`| formula<sup>[8](#age_at_time_of_arrest)</sup> | the age at the time of arrest (only available for intakes that include `DOB`)
 `AGE` | formula<sup>[9](#AGE)</sup> | the age provided by the most recent version of the intake sheet (the current age of the incarcerated individual)
 `sex` | single select | M (male) or F (female)
@@ -84,28 +81,28 @@ field | field type | description
 `intake_compl` | single line text |
 `intake_height` | single line text |
 `intake_weight` | single line text |
-`glasses` | single select | only provided by lcdc
-`intake_address_line_1` | single line text | only provided by hcdc
-`intake_address_line_2` | single line text | only provided by hcdc
-`intake_pin` | single line text | only provided by hcdc
-`intake_cell` | single line text | only provided by hcdc
-`intake_section` | single line text | only provided by hcdc
-`intake_location` | single line text | only provided by hcdc
-`intake_pod` | single line text | only provided by hcdc
-`charge_1` | single line text | The first charge listed isn't necessarily meaningful, but mcdc & prcdf include the code section for the top charge, which is then parsed into `charge_1_statute` and `charge_1_title`
+`glasses` | single select | only provided by `lcdc`
+`intake_address_line_1` | single line text | only provided by `hcdc`
+`intake_address_line_2` | single line text | only provided by `hcdc`
+`intake_pin` | single line text | only provided by `hcdc`
+`intake_cell` | single line text | only provided by `hcdc`
+`intake_section` | single line text | only provided by `hcdc`
+`intake_location` | single line text | only provided by `hcdc`
+`intake_pod` | single line text | only provided by `hcdc`
+`charge_1` | single line text | The first charge listed isn't necessarily meaningful, but `mcdc` & `prcdf` include the code section for the top charge, which is then parsed into `charge_1_statute` and `charge_1_title`
 `charge_1_title` | single line text | the title of the top charge
-`charge_1_statute` | single select | the code section for the top charge for mcdc & prcdf intakes
+`charge_1_statute` | single select | the code section for the top charge for `mcdc` & `prcdf` intakes
 `charges` | long text | all charges listed on the most recent version of intake sheet
-`charge(s)` | multiple select | unfortunately, these are not yet standardized. In the full dataset, there are over 2,000 unique charges, but that includes stylistic differences of substatively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
+`charge(s)` | multiple select | unfortunately, these are not yet standardized. In the full dataset, there are over 2,000 unique charges, but that includes stylistic differences of substantively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
 `total_charges` | count | the count of items in the `charge(s)` field
 `LEA` | single line text | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP'). This has narrowed the number of unique LEAs down to [154](https://airtable.com/shrCgqWuMFH54ePVx).
-`courts` | single line text | the court exercising jurisdiction (only provided by mcdc & prcdf). By standardizing data for this field (accounting for stylistic differences between mcdc & prcdf), the number of unique courts is narrowed to [12](https://airtable.com/shrIHbiAyOTDArn8l).
-`intake_bond_written` | currency | only provided by mcdc & prcdf
-`intake_bond_cash` | currency | only provided by mcdc, prcdf, lcdc, jcdc, tcdc, acdc, and ccdc
-`bond_ammounts` | long text | itemized bond amounts, only provided by mcdc, prcdf, and lcdc
-`intake_fine_ammount` | currency | only provided by lcdc
-`fine_ammounts` | long text | itemized fine amounts, only provided by lcdc
-`img_src` | url | mugshot url (In May 2019, lcdc [stopped posting mugshots](https://www.wcbi.com/lee-county-ends-practice-posting-mugshots) bc of the negative consequences for defendants)
+`courts` | single line text | the court exercising jurisdiction (only provided by `mcdc` & `prcdf`). By standardizing data for this field (accounting for stylistic differences between `mcdc` & `prcdf`), the number of unique courts is narrowed to [12](https://airtable.com/shrIHbiAyOTDArn8l).
+`intake_bond_written` | currency | only provided by `mcdc` & `prcdf`
+`intake_bond_cash` | currency | only provided by `mcdc`, `prcdf`, `lcdc`, `jcdc`, `tcdc`, `acdc`, and `ccdc`
+`bond_ammounts` | long text | itemized bond amounts, only provided by `mcdc`, `prcdf`, and `lcdc`
+`intake_fine_ammount` | currency | only provided by `lcdc`
+`fine_ammounts` | long text | itemized fine amounts, only provided by `lcdc`
+`img_src` | url | mugshot url (In May 2019, `lcdc` [stopped posting mugshots](https://www.wcbi.com/lee-county-ends-practice-posting-mugshots) bc of the negative consequences for defendants)
 `pixelated_url`| formula<sup>[10](#pixelated_url)</sup> | url to be uploaded for `PIXELATED_IMG`
 `PIXELATED_IMG` | attachment | a translucent, pixelated version of the "mugshot"
 `issue(s)` | multiple select |a field for flagging an issue presented by the record.
