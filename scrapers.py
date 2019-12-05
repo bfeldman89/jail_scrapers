@@ -43,7 +43,7 @@ def wrap_it_up(jail, start_time, new_intakes, total_intakes, log_id, print_table
     log_dict = {f"{jail} downloads": new_intakes}
     log_dict[jail] = duration
     airtable_log = Airtable(os.environ['jail_scrapers_db'], 'log', os.environ['AIRTABLE_API_KEY'])
-    airtable_log.update(log_id, log_dict)
+    airtable_log.update(log_id, log_dict, typecast=True)
     table.append([jail, duration, new_intakes, total_intakes])
     if print_table:
         print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
