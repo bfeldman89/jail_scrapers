@@ -740,12 +740,13 @@ def jcj_scraper(log_id, print_table=False):
     wrap_it_up('jcj', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
-def jcadc_scraper():
+def jcadc_scraper(log_id, print_table=False):
+    start_time, new_intakes, total_intakes = time.time(), 0, 0
     root = 'https://services.co.jackson.ms.us/jaildocket'
     r = requests.post(f"{root}/_inmateList.php?Function=count", headers=muh_headers)
-    count = r.json()
-    last_page = int(count / 15)
-    pages =  range(1, last_page + 1)
+    total_intakes = r.json()
+    last_page = int(total_intakes/ 15)
+    pages = range(1, last_page + 1)
     for pg in pages:
         r = requests.post(
             f"{root}/_inmateList.php?Function=list&Page={pg}&Order=BookDesc&Search=0",
@@ -781,6 +782,8 @@ def jcadc_scraper():
                 this_dict['img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
+                new_intakes += 1
+    wrap_it_up('jcadc', start_time, new_intakes, total_intakes, log_id, print_table)
 
 
 def main():
@@ -809,9 +812,6 @@ def main():
         nap_length = int(sys.argv[2])
     else:
         nap_length = 0
-    if 'jcadc' in jails:
-        jails.remove('jcadc')
-        jcadc_scraper()
     for jail in jails[:-1]:
         fndict[jail.strip()](log_id, print_table=False)
         time.sleep(nap_length)
