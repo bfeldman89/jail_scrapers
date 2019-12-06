@@ -34,7 +34,7 @@ At this time, only a fraction of the data is provided at [bfeldman89.com](https:
 
 ## what about the other ~70 county jails in the state
 
-Not all sheriffs make the jail docket publicly available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dockets in Mississippi that can be scraped, and I'm happy to help if someone takes the lead. It isn't yet complete, but a table with more info about each county's docket is available [here]('https://airtable.com/shrERFjniyvrCbdlX').
+Not all sheriffs make the jail docket publicly available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dockets in Mississippi that can be scraped, and I'm happy to help if someone takes the lead. It isn't yet complete, but a table with more info about each county's docket is available [here](https://airtable.com/shrQaYBSCpTvNpqhn).
 
 The remainder of this README documents and defines the fields in the Airtable base.
 
