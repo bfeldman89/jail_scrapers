@@ -452,7 +452,7 @@ def kcdc_scraper(log_id, print_table=False):
                     attachments_array.append(image_url)
                     this_dict['PHOTO'] = attachments_array
                 except KeyError as err:
-                    print('no image url')
+                    print('no image url: ', err)
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
             else:
