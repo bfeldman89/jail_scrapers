@@ -26,7 +26,8 @@ def web_to_pdf(this_record):
     options = {
         'quiet': '',
         'footer-right': time.strftime('%c'),
-        'footer-left': url}
+        'footer-left': url,
+        'javascript-delay': 5000}
     if jail == 'lcdc':
         options['zoom'] = '.75'
         options['viewport-size'] = '1000x1400'
