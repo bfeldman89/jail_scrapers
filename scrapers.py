@@ -37,9 +37,9 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
 
 
 def wrap_it_up(jail, start_time, new_intakes, total_intakes):
-    ifttt_payload = {'value1': jail}
-    ifttt_payload['value2'] = round((time.time() - start_time) / 60, 2)
-    ifttt_payload['value3'] = f"{total_intakes} intakes ({new_intakes} of them new)"
+    ifttt_payload = {'Value1': jail}
+    ifttt_payload['Value2'] = round((time.time() - start_time) / 60, 2)
+    ifttt_payload['Value3'] = f"{total_intakes} intakes ({new_intakes} of them new)"
     ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('jail_scraper')
     requests.post(ifttt_event_url, json=ifttt_payload)
 
