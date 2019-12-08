@@ -1,5 +1,4 @@
-# !/usr/bin/env python3
-"""This module does blah blah."""
+
 import os
 import sys
 import time
@@ -9,13 +8,12 @@ import requests
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 from airtable import Airtable
-from tabulate import tabulate
 import standardize
 
 
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
                   os.environ['AIRTABLE_API_KEY'])
-table = [['function', 'minutes', 'new', 'total']]
+
 muh_headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
@@ -38,15 +36,12 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
     airtab.update(m['id'], this_dict, typecast=True)
 
 
-def wrap_it_up(jail, start_time, new_intakes, total_intakes, log_id, print_table=False):
-    duration = round((time.time() - start_time) / 60, 2)
-    log_dict = {f"{jail} downloads": new_intakes}
-    log_dict[jail] = duration
-    airtable_log = Airtable(os.environ['jail_scrapers_db'], 'log', os.environ['AIRTABLE_API_KEY'])
-    airtable_log.update(log_id, log_dict, typecast=True)
-    table.append([jail, duration, new_intakes, total_intakes])
-    if print_table:
-        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+def wrap_it_up(jail, start_time, new_intakes, total_intakes):
+    ifttt_payload = {'value1': jail}
+    ifttt_payload['value2'] = round((time.time() - start_time) / 60, 2)
+    ifttt_payload['value3'] = f"{total_intakes} intakes ({new_intakes} of them new)"
+    ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('jail_scraper')
+    requests.post(ifttt_event_url, json=ifttt_payload)
 
 
 def damn_it(error_message):
@@ -54,7 +49,7 @@ def damn_it(error_message):
     time.sleep(10)
 
 
-def mcdc_scraper(log_id, print_table=False):
+def mcdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     root_url = 'http://mydcstraining.com/agencyinfo/MS/4360/inmate/'
     main_url = root_url + 'ICURRENT.HTM'
@@ -149,10 +144,10 @@ def mcdc_scraper(log_id, print_table=False):
                     update_record(this_dict, soup, m, lea_parser=standardize.mcdc_lea, raw_lea=raw_lea)
             except ValueError:
                 print('there was a value error for', this_dict['bk'])
-    wrap_it_up('mcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('mcdc', start_time, new_intakes, total_intakes)
 
 
-def prcdf_scraper(log_id, print_table=False):
+def prcdf_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     main_url = 'http://mydcstraining.com/agencyinfo/MS/0055/inmate/ICURRENT.HTM'
     page = requests.get(main_url, headers=muh_headers)
@@ -252,10 +247,10 @@ def prcdf_scraper(log_id, print_table=False):
                 new_intakes += 1
             else:
                 update_record(this_dict, soup, m, standardize.prcdf_lea, raw_lea)
-    wrap_it_up('prcdf', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('prcdf', start_time, new_intakes, total_intakes)
 
 
-def lcdc_scraper(log_id, print_table=False):
+def lcdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     root_url = 'https://tcsi-roster.azurewebsites.net/'
     main_url = (root_url + 'Default.aspx?i=26&code=Lee&type=roster')
@@ -311,10 +306,10 @@ def lcdc_scraper(log_id, print_table=False):
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.lcdc_lea, raw_lea)
-    wrap_it_up('lcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('lcdc', start_time, new_intakes, total_intakes)
 
 
-def tcdc_scraper(log_id, print_table=False):
+def tcdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     url = 'https://www.tunicamssheriff.com/roster.php?grp=10'
     docket_pages = set()
@@ -389,10 +384,10 @@ def tcdc_scraper(log_id, print_table=False):
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.tcdc_lea, raw_lea)
-    wrap_it_up('tcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('tcdc', start_time, new_intakes, total_intakes)
 
 
-def kcdc_scraper(log_id, print_table=False):
+def kcdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     docket_pages = set()
     docket_pages.add('roster.php?grp=10')
@@ -457,10 +452,10 @@ def kcdc_scraper(log_id, print_table=False):
                 new_intakes += 1
             else:
                 update_record(this_dict, soup, m)
-    wrap_it_up('kcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('kcdc', start_time, new_intakes, total_intakes)
 
 
-def hcdc_scraper(log_id, print_table=False):
+def hcdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     main_url = 'http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp'
     try:
@@ -526,10 +521,10 @@ def hcdc_scraper(log_id, print_table=False):
                         new_intakes += 1
                     except ValueError as err:
                         print(err, '\n', this_dict['link'])
-    wrap_it_up('hcdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('hcdc', start_time, new_intakes, total_intakes)
 
 
-def ccdc_scraper(log_id, print_table=False):
+def ccdc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     url = 'http://www.claysheriffms.org/roster.php?grp=10'
     docket_pages = set()
@@ -597,10 +592,10 @@ def ccdc_scraper(log_id, print_table=False):
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.ccdc_lea, raw_lea)
-    wrap_it_up('ccdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('ccdc', start_time, new_intakes, total_intakes)
 
 
-def acdc_scraper(log_id, print_table=False):
+def acdc_scraper():
     start_time = time.time()
     intakes = []
     new_intakes, total_intakes = 0, 0
@@ -669,10 +664,10 @@ def acdc_scraper(log_id, print_table=False):
         else:
             if 'bk' in this_dict:
                 update_record(this_dict, soup, m)
-    wrap_it_up('acdc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('acdc', start_time, new_intakes, total_intakes)
 
 
-def jcj_scraper(log_id, print_table=False):
+def jcj_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     urls = [
         'http://jasperso.com/inmate-roster/',
@@ -722,10 +717,7 @@ def jcj_scraper(log_id, print_table=False):
             m = airtab.match('bk', this_dict['bk'], view='jcj')
             if not m:
                 this_dict['img_src'] = x.find('img').get('src')
-                image_url = {'url': this_dict['img_src']}
-                attachments_array = []
-                attachments_array.append(image_url)
-                this_dict['PHOTO'] = attachments_array
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 this_dict['LEA'] = standardize.jcj_lea(raw_lea)
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
@@ -737,10 +729,10 @@ def jcj_scraper(log_id, print_table=False):
                     pass
                 airtab.update(m['id'], this_dict, typecast=True)
             time.sleep(0.2)
-    wrap_it_up('jcj', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('jcj', start_time, new_intakes, total_intakes)
 
 
-def jcadc_scraper(log_id, print_table=False):
+def jcadc_scraper():
     start_time, new_intakes, total_intakes = time.time(), 0, 0
     root = 'https://services.co.jackson.ms.us/jaildocket'
     r = requests.post(f"{root}/_inmateList.php?Function=count", headers=muh_headers)
@@ -783,13 +775,10 @@ def jcadc_scraper(log_id, print_table=False):
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
-    wrap_it_up('jcadc', start_time, new_intakes, total_intakes, log_id, print_table)
+    wrap_it_up('jcadc', start_time, new_intakes, total_intakes)
 
 
 def main():
-    airtable_log = Airtable('appTKQNP7jG9BVcoo', 'log', os.environ['AIRTABLE_API_KEY'])
-    log_entry = airtable_log.insert({'code': 'jail_scraper.py'})
-    log_id = log_entry['id']
     fndict = {
         'mcdc': mcdc_scraper,
         'prcdf': prcdf_scraper,
@@ -813,9 +802,9 @@ def main():
     else:
         nap_length = 0
     for jail in jails[:-1]:
-        fndict[jail.strip()](log_id, print_table=False)
+        fndict[jail.strip()]()
         time.sleep(nap_length)
-    fndict[jails[-1]](log_id, print_table=True)
+    fndict[jails[-1]]()
 
 if __name__ == '__main__':
     main()
