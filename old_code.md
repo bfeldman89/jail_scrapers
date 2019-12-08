@@ -145,3 +145,25 @@ def jcdc_lea(raw_lea):
         return 'SosoPD'
     return raw_lea
 ```
+
+
+## The pretty printed tables
+
+This feature has become a little impractical. There was no real benefit, and it actually enabled bad habit of not actually storing summary data in a legitimate and accessible format. The used to be the `wrap_it_up` function, before implementing IFTTT webhooks.
+
+
+```python
+
+table = [['function', 'minutes', 'new', 'total']]
+
+
+def wrap_it_up(jail, start_time, new_intakes, total_intakes, log_id, print_table=False):
+    duration = round((time.time() - start_time) / 60, 2)
+    log_dict = {f"{jail} downloads": new_intakes}
+    log_dict[jail] = duration
+    airtable_log = Airtable(os.environ['jail_scrapers_db'], 'log', os.environ['AIRTABLE_API_KEY'])
+    airtable_log.update(log_id, log_dict, typecast=True)
+    table.append([jail, duration, new_intakes, total_intakes])
+    if print_table:
+        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+```
