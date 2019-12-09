@@ -33,7 +33,7 @@ def polish_data(quiet=True):
     fix_charges_to_by_lines()
     get_all_intake_deets()
     if not quiet:
-        duration = round((time.time() - t0) / 60, 2)
+        duration = round(time.time() - t0, 2)
         print(f"polishing: 👌\n (it took {duration} mins.")
 
 
