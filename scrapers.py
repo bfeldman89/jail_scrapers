@@ -14,6 +14,8 @@ import standardize
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
                   os.environ['AIRTABLE_API_KEY'])
 
+airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
+
 muh_headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
@@ -37,11 +39,12 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
 
 
 def wrap_it_up(jail, start_time, new_intakes, total_intakes):
-    ifttt_payload = {'Value1': jail}
-    ifttt_payload['Value2'] = round((time.time() - start_time) / 60, 2)
-    ifttt_payload['Value3'] = f"{total_intakes} intakes ({new_intakes} of them new)"
-    ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('jail_scraper')
-    requests.post(ifttt_event_url, json=ifttt_payload)
+    this_dict = {'script': 'jail_scrapers/scrapers.py'}
+    this_dict['jail'] = jail
+    this_dict['duration'] = round((time.time() - start_time) / 60, 2)
+    this_dict['total'] = total_intakes
+    this_dict['new'] = new_intakes
+    airtab_log.insert(this_dict, typecast=True)
 
 
 def damn_it(error_message):
