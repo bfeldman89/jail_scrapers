@@ -41,7 +41,7 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
 def wrap_it_up(jail, t0, new_intakes, total_intakes):
     this_dict = {'module': 'jail_scrapers/scrapers.py'}
     this_dict['function'] = f"{jail}_scraper"
-    this_dict['duration'] = round((time.time() - t0) / 60, 2)
+    this_dict['duration'] = round(time.time() - t0, 2)
     this_dict['total'] = total_intakes
     this_dict['new'] = new_intakes
     airtab_log.insert(this_dict, typecast=True)
