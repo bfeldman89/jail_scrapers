@@ -21,7 +21,7 @@ cloudinary.config(cloud_name='bfeldman89',
                   api_secret=os.environ['CLOUDINARY_API_SECRET'])
 
 
-def polish_data(quiet=True):
+def polish_data():
     """This function does runs each of the module's functions."""
     t0 = time.time()
     get_pixelated_mug()
@@ -32,9 +32,6 @@ def polish_data(quiet=True):
     parse_charge_1()
     fix_charges_to_by_lines()
     get_all_intake_deets()
-    if not quiet:
-        duration = round(time.time() - t0, 2)
-        print(f"polishing: 👌\n (it took {duration} mins.")
 
 
 def get_pixelated_mug():
