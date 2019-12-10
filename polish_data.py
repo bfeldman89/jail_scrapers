@@ -10,20 +10,24 @@ from bs4 import BeautifulSoup
 from documentcloud import DocumentCloud
 
 
-airtab = Airtable("appTKQNP7jG9BVcoo", 'intakes',
-                  os.environ['AIRTABLE_API_KEY'])
+airtab = Airtable("appTKQNP7jG9BVcoo", 'intakes', os.environ['AIRTABLE_API_KEY'])
+airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
+dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'], os.environ['DOCUMENT_CLOUD_PW'])
 
-dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'],
-                   os.environ['DOCUMENT_CLOUD_PW'])
+cloudinary.config(cloud_name='bfeldman89', api_key=os.environ['CLOUDINARY_API_KEY'], api_secret=os.environ['CLOUDINARY_API_SECRET'])
 
-cloudinary.config(cloud_name='bfeldman89',
-                  api_key=os.environ['CLOUDINARY_API_KEY'],
-                  api_secret=os.environ['CLOUDINARY_API_SECRET'])
+
+def wrap_it_up(t0, new=None, total=None, function=None):
+    this_dict = {'module': 'jail_scrapers/polish_data.py'}
+    this_dict['function'] = function
+    this_dict['duration'] = round(time.time() - t0, 2)
+    this_dict['total'] = total
+    this_dict['new'] = new
+    airtab_log.insert(this_dict, typecast=True)
 
 
 def polish_data():
     """This function does runs each of the module's functions."""
-    t0 = time.time()
     get_pixelated_mug()
     update_summary()
     get_charges_from_recent_text()
@@ -265,7 +269,9 @@ def get_all_intake_deets():
 
 def main():
     """This function does blah blah."""
-    polish_data(quiet=False)
+    t0 = time.time()
+    polish_data()
+    wrap_it_up(t0, function='polish_data')
 
 
 if __name__ == "__main__":
