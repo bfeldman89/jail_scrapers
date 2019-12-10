@@ -766,7 +766,7 @@ def jcadc_scraper():
                 else:
                     this_dict['DOI'] = f"{raw_doi} 11:59pm"
                 this_dict['DOA'] = intake["ArrestDate"]
-                this_dict['LEA'] = intake["Arrest_Agency"]
+                this_dict['LEA'] = standardize.jcadc_lea(intake["Arrest_Agency"])
                 articles = soup.find_all('article')
                 this_dict['html'] = f"<html>\n<body>\n{articles[0].prettify()}\n{articles[1].prettify()}\n</body>\n</html>"
                 this_dict['img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
