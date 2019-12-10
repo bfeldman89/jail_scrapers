@@ -330,7 +330,7 @@ def tcdc_scraper():
                     intakes.append(link)
     total_intakes = len(intakes)
     for x in intakes:
-        this_dict = {'jail': 'tcdc', 'linking': ['rec76sKhalCAfQWTT']}
+        this_dict = {'jail': 'tcdc', 'linking': ['rec9ach7LRF8DcIuM']}
         this_dict['bk'] = x[-10:]
         this_dict['link'] = f"https://www.tunicamssheriff.com/roster_view.php?booking_num={this_dict['bk']}"
         try:
@@ -473,7 +473,7 @@ def hcdc_scraper():
             cells = row.find_all('td')
             if len(cells) == 7:
                 total_intakes += 1
-                this_dict = {'jail': 'hcdc', 'linking': ['recHHRRooPmwkCBtP']}
+                this_dict = {'jail': 'hcdc', 'linking': ['recJLBoeZlp4IYn4I']}
                 this_dict['bk'] = row.a.get('href').replace('inmate_detail.asp?ID=', '')
                 this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
                 m = airtab.match('bk', this_dict['bk'], view='hcdc', fields='recent_text')
@@ -545,7 +545,7 @@ def ccdc_scraper():
                     intakes.append(link)
     total_intakes = len(intakes)
     for x in intakes:
-        this_dict = {'jail': 'ccdc', 'linking': ['rec7UenhjON284LoO']}
+        this_dict = {'jail': 'ccdc', 'linking': ['rec9YYU7UkQAwqxZH']}
         this_dict['bk'] = x.partition('=')[2]
         this_dict['link'] = f"http://www.claysheriffms.org/roster_view.php?booking_num={this_dict['bk']}"
         try:
@@ -613,7 +613,7 @@ def acdc_scraper():
             intakes.append(link)
     total_intakes = len(intakes)
     for intake in intakes:
-        this_dict = {'jail': 'acdc', 'linking': ['rec9n9Df51OsDc67a']}
+        this_dict = {'jail': 'acdc', 'linking': ['recbrTa5GxR01ySI3']}
         data = []
         this_dict['link'] = intake
         this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
@@ -677,7 +677,7 @@ def jcj_scraper():
         intakes = soup.find_all('div', class_='col-sm-4 inmate')
         total_intakes += len(intakes)
         for x in intakes:
-            this_dict = {'jail': 'jcj', 'linking': ['recuvK2CHQWWr39gc']}
+            this_dict = {'jail': 'jcj', 'linking': ['recwzuzsimZuPpVR5']}
             get_name(x.h1.string.strip(), this_dict)
             this_dict['link'] = url
             data = []
@@ -744,7 +744,7 @@ def jcadc_scraper():
         intakes = r.json()
         for intake in intakes:
             data = []
-            this_dict = {'jail': 'jcadc', 'linking': ['recuOxbqCtAERIdBQ']}
+            this_dict = {'jail': 'jcadc', 'linking': ['recwShIgdZDcf4ZcJ']}
             this_dict['bk'] = intake["Book_Number"]
             this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             this_dict['intake_number'] = intake["ID_Number"].strip()
