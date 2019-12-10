@@ -271,7 +271,10 @@ def main():
     """This function does blah blah."""
     t0 = time.time()
     polish_data()
-    wrap_it_up(t0, function='polish_data')
+    funcs = ['get_pixelated_mug', 'update_summary', 'get_charges_from_recent_text',
+             'retry_getting_mugshot', 'remove_weird_character', 'parse_charge_1',
+             'fix_charges_to_by_lines', 'get_all_intake_deets']
+    wrap_it_up(t0, function=funcs)
 
 
 if __name__ == "__main__":
