@@ -172,6 +172,8 @@ def lcdc_lea(raw_lea):
         return 'ItawambaCntySD'
     if raw_lea == 'SHERMAN POLICE DEPARTMENT(139)':
         return 'ShermanPD'
+    if raw_lea == 'SECURITY TRANSPORT SERVICES, INC'
+        return '"Security Transport Services, Inc."'
     return raw_lea
 
 
@@ -233,6 +235,8 @@ def jcj_lea(raw_lea):
         return 'LaurelPD'
     if raw_lea == 'HEIDELBURG POLICE DEPT':
         return 'HeidelburgPD'
+    if raw_lea == 'MISSISSIPPI DEPT OF CORRECTIONS':
+        return 'MDOC'
     return raw_lea
 
 
