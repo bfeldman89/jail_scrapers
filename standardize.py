@@ -172,7 +172,7 @@ def lcdc_lea(raw_lea):
         return 'ItawambaCntySD'
     if raw_lea == 'SHERMAN POLICE DEPARTMENT(139)':
         return 'ShermanPD'
-    if raw_lea == 'SECURITY TRANSPORT SERVICES, INC'
+    if raw_lea == 'SECURITY TRANSPORT SERVICES, INC':
         return '"Security Transport Services, Inc."'
     return raw_lea
 
