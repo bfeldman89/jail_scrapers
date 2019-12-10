@@ -240,6 +240,10 @@ def jcj_lea(raw_lea):
     return raw_lea
 
 
+def jcadc_lea(raw_lea):
+    if raw_lea == 'MSATTGEN':
+        return 'AG'
+
 def mcdc_race(raw_race):
     if raw_race == 'BLACK':
         return 'B'
