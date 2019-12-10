@@ -64,7 +64,7 @@ def mcdc_scraper():
         if len(cells) == 9:
             total_intakes += 1
             time.sleep(0.2)
-            this_dict = {'jail': 'mcdc', 'linking': ['recfCbuUl7Xlyu3PC']}
+            this_dict = {'jail': 'mcdc', 'linking': ['rechGV1KWD0TWQPqv']}
             this_dict['link'] = root_url + dk_row.a.get('href')
             try:
                 r = requests.get(this_dict['link'], headers=muh_headers)
@@ -128,12 +128,7 @@ def mcdc_scraper():
                 this_dict['bond_ammounts'] = '\n'.join(bond_ammounts)
                 this_dict['recent_text'] = '\n'.join(data[data.index('Name:'):])
                 raw_lea = data[1 + data.index('ARRESTING AGENCY:')]
-                m = airtab.match(
-                    'intake_number',
-                    this_dict['intake_number'],
-                    view='mcdc',
-                    fields='recent_text',
-                )
+                m = airtab.match('intake_number', this_dict['intake_number'], view='mcdc', fields='recent_text')
                 if not m:
                     this_dict['LEA'] = standardize.mcdc_lea(raw_lea)
                     this_dict['html'] = soup.prettify()
@@ -161,7 +156,7 @@ def prcdf_scraper():
         cells = dk_row.find_all('td')
         if len(cells) == 9:
             total_intakes += 1
-            this_dict = {'jail': 'prcdf', 'linking': ['recoCsH694PGGUc33']}
+            this_dict = {'jail': 'prcdf', 'linking': ['recqGceWKASe4gYEW']}
             this_dict['link'] = urllib.parse.urljoin(main_url, dk_row.a.get('href'))
             try:
                 r = requests.get(this_dict['link'], headers=muh_headers)
@@ -267,7 +262,7 @@ def lcdc_scraper():
     total_intakes = len(urls)
     for url in urls:
         total_intakes += 1
-        this_dict = {'jail': 'lcdc', 'linking': ['rec20ZcCFysboY8GP']}
+        this_dict = {'jail': 'lcdc', 'linking': ['rec44JJsg4vJMkUhI']}
         this_dict['link'] = root_url + url
         try:
             r = requests.get(this_dict['link'])
@@ -407,7 +402,7 @@ def kcdc_scraper():
         for inmate_block in soup:
             x = inmate_block.find('a').get('href')
             total_intakes += 1
-            this_dict = {'jail': 'kcdc', 'linking': ['rec95Usl74WOwfCEj']}
+            this_dict = {'jail': 'kcdc', 'linking': ['recb9EZbIAZmUBofc']}
             this_dict['link'] = f"https://www.kempercountysheriff.com/{x}"
             try:
                 r = requests.get(this_dict['link'])
