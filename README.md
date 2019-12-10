@@ -30,7 +30,7 @@ As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,66
 
 ## access to the data
 
-At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, email me.**
+At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, let me know via [email](mailto:bfeldman89@pm.me) or [DM](https://twitter.com/messages/compose?recipient_id=2163941252).** It's easy for me to share links to the airtable, but if you are interested in downloading the data, please provide your github username in the email, and I will invite you to a private repository with the csv files. If you don't already have a github account, you can create a free account at https://github.com/join. 
 
 ## what about the other ~70 county jails in the state
 
