@@ -78,8 +78,10 @@ def web_to_pdf():
 def pdf_to_dc():
     t0, i = time.time(), 0
     for jail in jails_lst:
+        print(jail)
         os.chdir(f"{os.getenv('HOME')}/code/jail_scrapers/output/{jail[0]}")
         for fn in glob.glob('*.pdf'):
+            print(fn)
             obj = dc.documents.upload(fn, access="public")
             obj = dc.documents.get(obj.id)
             while obj.access != "public":
@@ -89,15 +91,13 @@ def pdf_to_dc():
             obj.data = this_dict
             obj.put()
             this_dict["dc_id"] = obj.id
+            print(obj.id)
             this_dict["dc_title"] = obj.title
             this_dict["dc_access"] = obj.access
             this_dict["dc_pages"] = obj.pages
             full_text = obj.full_text.decode("utf-8")
-            this_dict["dc_full_text"] = os.linesep.join(
-                [s for s in full_text.splitlines() if s]
-            )
-            record = airtab.match(
-                jail[1], this_dict["dc_title"], view=jail[0])
+            this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
+            record = airtab.match(jail[1], this_dict["dc_title"], view=jail[0])
             airtab.update(record["id"], this_dict)
             send2trash.send2trash(fn)
             i += 1
