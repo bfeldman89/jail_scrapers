@@ -12,13 +12,9 @@ from documentcloud import DocumentCloud
 import send2trash
 
 
-airtab = Airtable(os.environ['jail_scrapers_db'],
-                  'intakes', os.environ['AIRTABLE_API_KEY'])
-
+airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
-
 dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'], os.environ['DOCUMENT_CLOUD_PW'])
-
 jails_lst = [['mcdc', 'intake_number'],
              ['prcdf', 'intake_number'],
              ['lcdc', 'intake_number'],
