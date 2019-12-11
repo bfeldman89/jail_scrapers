@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from documentcloud import DocumentCloud
 
 
-airtab = Airtable("appTKQNP7jG9BVcoo", 'intakes', os.environ['AIRTABLE_API_KEY'])
+airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
 dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'], os.environ['DOCUMENT_CLOUD_PW'])
 
@@ -46,20 +46,20 @@ def get_pixelated_mug():
         fn = record["fields"]["UID"]
         try:
             uploader.upload(url, public_id=fn)
-        except cloudinary.api.Error:
-            print("cloudinary can't accept that shit")
+        except cloudinary.api.Error as err:
+            print("cloudinary can't accept that shit: ", err)
         time.sleep(2)
         this_dict = {}
-        this_dict["PIXELATED_IMG"] = [
-            {"url": record["fields"]["pixelated_url"]}]
+        this_dict["PIXELATED_IMG"] = [{"url": record["fields"]["pixelated_url"]}]
         airtab.update(record["id"], this_dict)
 
 
 def update_summary():
-    """This function updates the record summary.
-    The reason we have this field, rather than just use the 'blurb' field, is bc
-    the gallery view works better with a text field than it does with a formula field."""
-    records = airtab.get_all(view="needs updated summary", fields="blurb")
+    """This function updates the record summary. The reason we have this field,
+    rather than just use the 'blurb' field, is bc the gallery view works better
+    with a text field than it does with a formula field. Because this view will
+    regularly be packed full of records, I'm going to limit it to 100."""
+    records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=100)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
