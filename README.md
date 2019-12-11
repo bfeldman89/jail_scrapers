@@ -30,7 +30,7 @@ As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,66
 
 ## access to the data
 
-At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, let me know via [email](mailto:bfeldman89@pm.me) or [DM](https://twitter.com/messages/compose?recipient_id=2163941252).** It's easy for me to share links to the airtable, but if you are interested in downloading the data, please provide your github username in the email, and I will invite you to a private repository with the csv files. If you don't already have a github account, you can create a free account at https://github.com/join. 
+At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, let me know via [email](mailto:bfeldman89@pm.me) or [DM](https://twitter.com/messages/compose?recipient_id=2163941252).** It's easy for me to share links to the airtable, but if you are interested in downloading the data, please provide your github username in the email, and I will invite you to a private repository with the csv files. If you don't already have a github account, you can create a free account at https://github.com/join.
 
 ## what about the other ~70 county jails in the state
 
@@ -59,14 +59,16 @@ field | field type | description
 `dc_access` | single select | public, private, pending, or error
 `dc_full_text` | long text | the full text from the pdf of the initial version of the intake sheet
 `initial_scrape` | datetime | the datetime of the initial scrape
+`DOA` | datetime | the date of arrest (only provided for `jcadc`)
 `DOI` | datetime | date of intake
-`DOO` | datetime | date of offense (only provided by `mcdc` & `prcdf`)
-`DOR` | datetime | date of release (only provided by `jcdc`, `kcdc`, `tcdc`, `ccdc`, and `jcj`)
+`DOO` | datetime | date of offense (only provided for `mcdc` & `prcdf`)
+`DOR` | datetime | date of release (only provided for `jcdc`, `kcdc`, `tcdc`, `ccdc`, and `jcj`)
+`SDOR` | datetime | scheduled date of release (only provided for `lcdc`)
 `last_verified` | datetime | the datetime of the most recent instance that the scraper detected the intake sheet on the online docket. This field is used to calculate `status`, and -- for intakes that lack an explicit `DOR` -- it is also used to calculate `days_incarcerated` and `hours_incarcerated`.
-`status` | formula<sup>[5](#status)</sup> |  ✔️✔️✔️✔️ (was identified on the docket w/in the last 12 hours), ✔️✔️✔️ (24 hours), ✔️✔️ (7 days), ✔️ (30 days), or ❌ (31+ days)
+`status_verbose` | formula<sup>[5](#status)</sup> |  ✔️✔️✔️✔️ (was identified on the docket w/in the last 12 hours), ✔️✔️✔️ (24 hours), ✔️✔️ (7 days), ✔️ (30 days), or ❌ (31+ days)
 `days_incarcerated`| formula<sup>[6](#days_incarcerated)</sup> | the calculated number of days the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
 `hours_incarcerated`| formula<sup>[7](#hours_incarcerated)</sup> | the calculated number of hours the individual has been incarcerated. If the intake sheet provides a date of release (`DOR`), this is the time difference between the `DOR` and date of intake (`DOI`). Otherwise, it is the difference between the datetime the intake was last identified on the county docket and the `DOI`.
-`scheduled_release_date` | datetime | occasionally provided by `lcdc`, seemingly indicating the detention is not pretrial
+`SDOR` | datetime | occasionally provided by `lcdc`, seemingly indicating the detention is not pretrial
 `first_name` | single line text | first name extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
 `middle_name` | single line text | middle name extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
 `suffix` | single line text | suffix extracted from the full name via [nameparser](https://pypi.org/project/nameparser/)
@@ -94,6 +96,7 @@ field | field type | description
 `charge_1_statute` | single select | the code section for the top charge for `mcdc` & `prcdf` intakes
 `charges` | long text | all charges listed on the most recent version of intake sheet
 `charge(s)` | multiple select | unfortunately, these are not yet standardized. In the full dataset, there are over 2,000 unique charges, but that includes stylistic differences of substantively identical charges. Also, this field does not include multiple counts of the same charge. For instance, someone charged with three counts of 'Conspiracy' would only have 'Conspiracy' listed once in this field.
+`charge_classifications` | long text | the classification (e.g., misdemeanor or felony) for each charge listed. This datapoint is only provided by some jails, and until the charges have been standardized, it is only provided if provided by the jail docket itself.
 `total_charges` | count | the count of items in the `charge(s)` field
 `LEA` | single line text | a standardized version of the arresting agency (e.g., the raw data 'HIGHWAY PATROL', 'MISSISSIPPI HIGHWAY PATROL', 'MHP MS HIGHWAY PATROL(138)', and 'MISS. HWY PATROL' have been standardized as 'MHP'). This has narrowed the number of unique LEAs down to [154](https://airtable.com/shrCgqWuMFH54ePVx).
 `courts` | single line text | the court exercising jurisdiction (only provided by `mcdc` & `prcdf`). By standardizing data for this field (accounting for stylistic differences between `mcdc` & `prcdf`), the number of unique courts is narrowed to [12](https://airtable.com/shrIHbiAyOTDArn8l).
@@ -151,15 +154,15 @@ IF(dc_id = "", "", "https://www.documentcloud.org/documents/" & dc_id & ".html")
 #### status
 
 ```Airtable
-IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 12,
-   '✔️✔️✔️✔️',
+IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') < 12,
+   '1. verified less than 12 hours ago',
    IF(DATETIME_DIFF(NOW(), {last_verified}, 'hours') <= 24,
-      '✔️✔️✔️',
+      '2. last verified 12-24 hours ago',
       IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 7,
-         '✔️✔️',
+         '3. last verified 1-7 days ago',
          IF(DATETIME_DIFF(NOW(), {last_verified}, 'days') <= 30,
-            '✔️',
-            '❌'))))
+            '4. last verified 8-30 days ago',
+            '5. last verified more than 30 days ago'))))
 ```
 
 #### days_incarcerated
