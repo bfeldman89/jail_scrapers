@@ -297,9 +297,9 @@ def lcdc_scraper():
                 this_dict['sex'] = soup.find(id='lblSex').string[:1]
             this_dict['glasses'] = soup.find(id='lblGlasses').string
             this_dict['charge_1'] = soup.find(id='lblOffense').string
-            scheduled_release_date = soup.find(id='lblScheduleReleaseDate').string
-            if scheduled_release_date != 'N/A':
-                this_dict['scheduled_release_date'] = scheduled_release_date
+            SDOR = soup.find(id='lblScheduleReleaseDate').string
+            if SDOR != 'N/A':
+                this_dict['SDOR'] = SDOR
             airtab.insert(this_dict, typecast=True)
             new_intakes += 1
         else:
