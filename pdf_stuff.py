@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 """This module does blah blah."""
-import glob
 import datetime
+import glob
 import os
 import time
 from bs4 import BeautifulSoup
@@ -10,6 +10,15 @@ import requests
 from airtable import Airtable
 from documentcloud import DocumentCloud
 import send2trash
+
+
+# import logging
+# DEBUG: Detailed information, typically of interest only when diagnosing problems.
+# INFO: Confirmation that things are working as expected.
+# WARNING: An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
+# ERROR: Due to a more serious problem, the software has not been able to perform some function.
+# CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
+# logging.basicConfig(filename='jail_docket_pdfs.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
 
 
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
@@ -26,6 +35,11 @@ jails_lst = [['mcdc', 'intake_number'],
              ['hcdc', 'bk']]
 
 muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
+
+
+def damn_it(error_message):
+    print('Another fucking "Connection Error."\n', error_message)
+    time.sleep(10)
 
 
 def wrap_it_up(t0, new, total=None, function=None):
@@ -61,7 +75,11 @@ def web_to_pdf():
         else:
             options['footer-font-size'] = 10
         if jail in {'mcdc', 'prcdf'}:
-            r = requests.get(url, headers=muh_headers)
+            try:
+                r = requests.get(url, headers=muh_headers)
+            except requests.ConnectionError as err:
+                damn_it(err)
+                continue
             data = []
             soup = BeautifulSoup(r.text, 'html.parser')
             for string in soup.stripped_strings:
@@ -110,7 +128,11 @@ def get_dor_if_possible():
     total = len(records)
     for record in records:
         this_dict = {}
-        r = requests.get(record["fields"]["link"])
+        try:
+            r = requests.get(record["fields"]["link"])
+        except requests.ConnectionError as err:
+            damn_it(err)
+            continue
         soup = BeautifulSoup(r.text, "html.parser")
         data = []
         for string in soup.stripped_strings:
