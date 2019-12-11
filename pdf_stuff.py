@@ -83,7 +83,6 @@ def pdf_to_dc():
         for fn in glob.glob('*.pdf'):
             print(fn)
             obj = dc.documents.upload(fn, access="public")
-            obj = dc.documents.get(obj.id)
             while obj.access != "public":
                 time.sleep(7)
                 obj = dc.documents.get(obj.id)
