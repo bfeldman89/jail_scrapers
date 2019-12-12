@@ -244,6 +244,7 @@ def jcadc_lea(raw_lea):
     if raw_lea == 'MSATTGEN':
         return 'AG'
 
+
 def mcdc_race(raw_race):
     if raw_race == 'BLACK':
         return 'B'
@@ -254,7 +255,7 @@ def mcdc_race(raw_race):
     if raw_race == 'ASIAN IS':
         return 'AS'
     if raw_race == 'AMERICAN':
-        return 'AI'
+        return 'NA'
     if raw_race == 'OTHER':
         return 'O'
     return raw_race
@@ -272,7 +273,7 @@ def prcdf_race(raw_race):
     if raw_race == 'ASIAN':
         return 'AS'
     if raw_race == 'INDIAN':
-        return 'AI'
+        return 'NA'
     if raw_race == 'OTHER':
         return 'O'
     if raw_race == 'UNKNOWN':
@@ -288,7 +289,9 @@ def kcdc_race(raw_race):
     if raw_race == 'Hispanic':
         return 'H'
     if raw_race == 'Native American':
-        return 'AI'
+        return 'NA'
+    if raw_race == 'Other':
+        return 'O'
     return raw_race
 
 
@@ -302,7 +305,7 @@ def lcdc_race(raw_race):
     if raw_race == 'Asian':
         return 'AS'
     if raw_race == 'Native American':
-        return 'AI'
+        return 'NA'
     if raw_race == 'Other':
         return 'O'
     return raw_race
@@ -316,5 +319,7 @@ def ccdc_race(raw_race):
     if raw_race == 'Native Haw':
         return 'NHPI'
     if raw_race == 'INDIAN (NA':     # CCSO0000038538
-        return 'AI'
+        return 'NA'
+    if raw_race == 'UNKNOWN':     # CCSO0000038253
+        return 'U'
     return raw_race
