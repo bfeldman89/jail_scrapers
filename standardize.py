@@ -287,6 +287,8 @@ def kcdc_race(raw_race):
         return 'W'
     if raw_race == 'Hispanic':
         return 'H'
+    if raw_race == 'Native American':
+        return 'AI'
     return raw_race
 
 
@@ -313,4 +315,6 @@ def ccdc_race(raw_race):
         return 'W'
     if raw_race == 'Native Haw':
         return 'NHPI'
+    if raw_race == 'INDIAN (NA':     # CCSO0000038538
+        return 'AI'
     return raw_race
