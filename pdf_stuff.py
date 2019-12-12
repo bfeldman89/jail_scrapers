@@ -10,6 +10,7 @@ import requests
 from airtable import Airtable
 from documentcloud import DocumentCloud
 import send2trash
+from common import wrap_from_module
 
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
@@ -33,15 +34,7 @@ def damn_it(error_message):
     print('Another fucking "Connection Error."\n', error_message)
     time.sleep(10)
 
-
-def wrap_it_up(t0, new, total=None, function=None):
-    this_dict = {'module': 'jail_scrapers/pdf_stuff.py'}
-    this_dict['function'] = function
-    this_dict['duration'] = round(time.time() - t0, 2)
-    this_dict['total'] = total
-    this_dict['new'] = new
-    airtab_log.insert(this_dict, typecast=True)
-
+wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 def web_to_pdf():
     t0, i = time.time(), 0
