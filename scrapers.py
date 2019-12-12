@@ -7,17 +7,10 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from nameparser import HumanName
-from airtable import Airtable
 import standardize
-from common import wrap_from_module
+from common import airtab, airtab_log, muh_headers, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/scrapers.py')
-
-airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
-airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
-
-muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
-
 
 def get_name(raw_name, this_dict):
     name = HumanName(raw_name)
