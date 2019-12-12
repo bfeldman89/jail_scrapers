@@ -13,6 +13,9 @@ airtab = Airtable(base_key=os.environ['jail_scrapers_db'],
 airtab_log = Airtable(base_key=os.environ['log_db'],
         table_name='log',
         api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_daily = Airtable(base_key=os.environ['jail_scrapers_db'],
+        table_name='daily stats',
+        api_keyos.environ['AIRTABLE_API_KEY'])
 
 dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
         password=os.environ['DOCUMENT_CLOUD_PW'])
