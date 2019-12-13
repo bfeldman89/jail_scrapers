@@ -48,7 +48,7 @@ def get_pixelated_mug():
             uploader.upload(url, public_id=fn)
         except cloudinary.api.Error as err:
             print("cloudinary can't accept that shit: ", err)
-        time.sleep(2)
+        time.sleep(1.5)
         this_dict = {}
         this_dict["PIXELATED_IMG"] = [{"url": record["fields"]["pixelated_url"]}]
         airtab.update(record["id"], this_dict)
@@ -156,10 +156,8 @@ def retry_getting_mugshot():
     records = airtab.get_all(view="needs pic")
     for record in records:
         this_dict = {}
-        this_dict["PHOTO"] = [
-            {"url": record["fields"]["img_src"]}]
+        this_dict["PHOTO"] = [{"url": record["fields"]["img_src"]}]
         airtab.update(record["id"], this_dict)
-    time.sleep(2)
 
 
 def parse_charge_1():
