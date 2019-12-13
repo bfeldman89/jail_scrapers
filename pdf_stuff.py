@@ -11,19 +11,11 @@ from airtable import Airtable
 from documentcloud import DocumentCloud
 import send2trash
 
-
-# import logging
-# DEBUG: Detailed information, typically of interest only when diagnosing problems.
-# INFO: Confirmation that things are working as expected.
-# WARNING: An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
-# ERROR: Due to a more serious problem, the software has not been able to perform some function.
-# CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
-# logging.basicConfig(filename='jail_docket_pdfs.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
-
-
 airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
+
 dc = DocumentCloud(os.environ['DOCUMENT_CLOUD_USERNAME'], os.environ['DOCUMENT_CLOUD_PW'])
+
 jails_lst = [['mcdc', 'intake_number'],
              ['prcdf', 'intake_number'],
              ['lcdc', 'intake_number'],
@@ -148,8 +140,8 @@ def get_dor_if_possible():
 
 
 def main():
+    pdf_to_dc()  # upload first bc it ensures already downloaded pdfs aren't downloaded again
     web_to_pdf()
-    pdf_to_dc()
     get_dor_if_possible()
 
 
