@@ -4,10 +4,8 @@ import os
 from datetime import timedelta, date
 from airtable import Airtable
 
-airtab_intakes = Airtable(
-    os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
-airtab_daily = Airtable(
-    os.environ['jail_scrapers_db'], 'daily stats', os.environ['AIRTABLE_API_KEY'])
+airtab_intakes = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
+airtab_daily = Airtable(os.environ['jail_scrapers_db'], 'daily stats', os.environ['AIRTABLE_API_KEY'])
 
 county_jails = [('Madison', 'mcdc'),
                 ('Pearl River', 'prcdf'),
