@@ -11,13 +11,10 @@ from airtable import Airtable
 import standardize
 
 
-airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes',
-                  os.environ['AIRTABLE_API_KEY'])
-
+airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
 
-muh_headers = {
-    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
+muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
 
 def get_name(raw_name, this_dict):
@@ -667,10 +664,7 @@ def acdc_scraper():
 
 def jcj_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
-    urls = [
-        'http://jasperso.com/inmate-roster/',
-        'http://jasperso.com/48-hour-release/',
-    ]
+    urls = ['http://jasperso.com/inmate-roster/', 'http://jasperso.com/48-hour-release/']
     for url in urls:
         r = requests.get(url, headers=muh_headers)
         soup = BeautifulSoup(r.text, 'html.parser').find('div', id='primary')
@@ -790,15 +784,22 @@ def main():
         'jcadc': jcadc_scraper
     }
     keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcadc']
-    jails_str = sys.argv[1]
+
+    try:
+        jails_str = sys.argv[1]
+    except IndexError:
+        jails_str = 'all'
+
     if jails_str == 'all':
         jails = keynames
     else:
         jails = jails_str.split(',')
-    if len(sys.argv[1:]) == 2:
+
+    try:
         nap_length = int(sys.argv[2])
-    else:
-        nap_length = 0
+    except IndexError:
+        nap_length = 5
+
     for jail in jails[:-1]:
         fndict[jail.strip()]()
         time.sleep(nap_length)
