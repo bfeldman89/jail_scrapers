@@ -54,17 +54,16 @@ def get_pixelated_mug():
         airtab.update(record["id"], this_dict)
 
 
-def update_summary():
+def update_summary(this_many=100):
     """This function updates the record summary. The reason we have this field,
     rather than just use the 'blurb' field, is bc the gallery view works better
     with a text field than it does with a formula field. Because this view will
-    regularly be packed full of records, I'm going to limit it to 100."""
-    records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=100)
+    regularly be packed full of records, the default max records is 100."""
+    records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=this_many)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
         airtab.update(record["id"], this_dict)
-    time.sleep(2)
 
 
 def get_charges_from_recent_text():
