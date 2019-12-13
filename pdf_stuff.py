@@ -63,11 +63,7 @@ def web_to_pdf():
             fn = f"{record['fields']['intake_number']}.pdf"
         else:
             fn = f"{record['fields']['bk']}.pdf"
-        options = {
-            'quiet': '',
-            'footer-right': time.strftime('%c'),
-            'footer-left': url,
-            'javascript-delay': 5000}
+        options = {'quiet': '', 'footer-right': time.strftime('%c'), 'footer-left': url, 'javascript-delay': 5000}
         if jail == 'lcdc':
             options['zoom'] = '.75'
             options['viewport-size'] = '1000x1400'
@@ -114,7 +110,7 @@ def pdf_to_dc():
             this_dict["dc_pages"] = obj.pages
             full_text = obj.full_text.decode("utf-8")
             this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
-            record = airtab.match(jail[1], this_dict["dc_title"], view=jail[0])
+            record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
             airtab.update(record["id"], this_dict)
             send2trash.send2trash(fn)
             i += 1
@@ -140,12 +136,7 @@ def get_dor_if_possible():
         if "Release Date:" in data:
             os.chdir(
                 f"{os.getenv('HOME')}/code/jail_scrapers/output/{record['fields']['jail']}/updated")
-            options = {
-                "quiet": "",
-                "footer-font-size": 10,
-                "footer-left": record["fields"]["link"],
-                "footer-right": time.strftime('%c'),
-            }
+            options = {"quiet": "", "footer-font-size": 10, "footer-left": record["fields"]["link"], "footer-right": time.strftime('%c')}
             fn = f"{record['fields']['bk']} (final).pdf"
             pdfkit.from_url(record["fields"]["link"], fn, options=options)
             this_dict["DOR"] = datetime.datetime.strptime(
