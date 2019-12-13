@@ -3,6 +3,7 @@
 import datetime
 import glob
 import os
+from pathlib import Path
 import time
 from bs4 import BeautifulSoup
 import pdfkit
@@ -21,6 +22,14 @@ jails_lst = [['mcdc', 'intake_number'],
              ['hcdc', 'bk']]
 
 
+def ensure_dir(dir_path):
+    """Create a directory at the given path, including parents.
+
+    Raises exception if path specifies a file, but not if directory exists.
+    """
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
+
+
 def damn_it(error_message):
     print('Another fucking "Connection Error."\n', error_message)
     time.sleep(10)
@@ -34,12 +43,15 @@ def web_to_pdf():
     for record in records:
         url = record['fields']['link']
         jail = record['fields']['jail']
-        os.chdir(f"{os.getenv('HOME')}/code/jail_scrapers/output/{jail}")
         if jail in {'mcdc', 'prcdf', 'lcdc', 'jcadc'}:
-            fn = f"{record['fields']['intake_number']}.pdf"
+            fn = f"./output/{jail}/{record['fields']['intake_number']}.pdf"
         else:
-            fn = f"{record['fields']['bk']}.pdf"
-        options = {'quiet': '', 'footer-right': time.strftime('%c'), 'footer-left': url, 'javascript-delay': 5000}
+            fn = f"./output/{jail}/{record['fields']['bk']}.pdf"
+        options = {
+            'quiet': '',
+            'footer-right': time.strftime('%c'),
+            'footer-left': url,
+            'javascript-delay': 5000}
         if jail == 'lcdc':
             options['zoom'] = '.75'
             options['viewport-size'] = '1000x1400'
@@ -69,8 +81,13 @@ def pdf_to_dc():
     t0, i = time.time(), 0
     for jail in jails_lst:
         print(jail)
-        os.chdir(f"{os.getenv('HOME')}/code/jail_scrapers/output/{jail[0]}")
-        for fn in glob.glob('*.pdf'):
+        output_path = os.path.join("output", jail[0])
+        try:
+            ensure_dir(output_path)
+        except NotADirectoryError as err:
+            damn_it(f"Skipping {jail[0]}: {err}")
+            continue
+        for fn in glob.glob(os.path.join(output_path, '*.pdf')):
             print(fn)
             obj = dc.documents.upload(fn, access="public")
             while obj.access != "public":
@@ -110,11 +127,21 @@ def get_dor_if_possible():
         for string in soup.stripped_strings:
             data.append(str(string))
         if "Release Date:" in data:
-            os.chdir(
-                f"{os.getenv('HOME')}/code/jail_scrapers/output/{record['fields']['jail']}/updated")
-            options = {"quiet": "", "footer-font-size": 10, "footer-left": record["fields"]["link"], "footer-right": time.strftime('%c')}
-            fn = f"{record['fields']['bk']} (final).pdf"
-            pdfkit.from_url(record["fields"]["link"], fn, options=options)
+            options = {
+                "quiet": "",
+                "footer-font-size": 10,
+                "footer-left": record["fields"]["link"],
+                "footer-right": time.strftime('%c'),
+            }
+            directory = f"./output/{record['fields']['jail']}/updated"
+            try:
+                ensure_dir(directory)
+                file_name = f"{record['fields']['bk']} (final).pdf"
+                fn = os.path.join(directory, file_name)
+                pdfkit.from_url(record["fields"]["link"], fn, options=options)
+            except NotADirectoryError as err:
+                damn_it(f"Can't write PDF: {err}")
+
             this_dict["DOR"] = datetime.datetime.strptime(
                 data[1 + data.index("Release Date:")], "%m-%d-%Y - %I:%M %p"
             ).strftime('%m/%d/%Y %H:%M')
