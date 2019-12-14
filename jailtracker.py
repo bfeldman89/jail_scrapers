@@ -18,7 +18,7 @@ def data_or_error(response):
     try:
         # Data exists
         data = response_wrapper['data']
-        # Don't really care about totalCount key unless pagination becomes an issue
+        # Don't care about totalCount key unless pagination becomes an issue
         # Be sure there's an error
         error = response_wrapper['error']
         # Be sure success is reported
@@ -33,7 +33,8 @@ def data_or_error(response):
         return {}, f'Request successful but error nonempty: {err}'
 
     if len(data) == 0:
-        return {}, f'Request successful but data empty because JailTracker is garbage.'
+        msg = 'Request successful but no data because JailTracker is garbage.'
+        return {}, msg
 
     return data, None
 
@@ -90,7 +91,7 @@ class Jail:
         data, err = data_or_error(response)
         if err is None:
             # Inmate data format is ridiculous.
-            data = {d['Field']:d['Value'] for d in data}
+            data = {d['Field']: d['Value'] for d in data}
         return data, err
 
     def get_cases(self, arrest_no):
@@ -99,7 +100,6 @@ class Jail:
         params = {'arrestNo': arrest_no}
         response = requests.get(url, params=params)
         return data_or_error(response)
-
 
     def get_charges(self, arrest_no):
         # POST JailTracker/GetCharges
@@ -129,7 +129,8 @@ class Jail:
     def process_inmate(self, arrest_no):
         inmate, err = self.get_inmate(arrest_no)
         if err is not None:
-            return {}, f'Skipping {arrest_no}. Could not get inmate data: {err}'
+            msg = f'Skipping {arrest_no}. Could not get inmate data: {err}'
+            return {}, msg
 
         cases, err = self.get_cases(arrest_no)
         if err is not None:
