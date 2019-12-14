@@ -140,8 +140,8 @@ def get_dor_if_possible():
 
 
 def main():
-    pdf_to_dc()  # upload first bc it ensures already downloaded pdfs aren't downloaded again
     web_to_pdf()
+    pdf_to_dc()
     get_dor_if_possible()
 
 
