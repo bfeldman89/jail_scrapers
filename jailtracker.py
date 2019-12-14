@@ -1,29 +1,28 @@
 #!/usr/bin/env python3
 
-import json
 import requests
 
-# jailtracker / JailTracker doesn't seem to be case sensitive, at least for DeSoto
-#base = 'https://omsweb.public-safety-cloud.com/jtclientweb/(S(xlirfhujk02k2yrydiazw2x3))/jailtracker/index/DeSoto_County_Ms'
 
 def data_or_error(response):
-    """Returns a tuple of (data, error). Data empty on error, error None if ok."""
+    """Returns a tuple of (data, error).
+
+    Data empty on error, error None if ok."""
     if response.status_code != requests.codes.ok:
-        return {}, f'Got bad status code in response: {r.status_code}'
+        return {}, f'Got bad status code in response: {response.status_code}'
 
     try:
-        j = response.json()
-    except Exception as err:
+        response_wrapper = response.json()
+    except ValueError as err:
         return {}, f'Could not parse json from response: {err}'
 
     try:
         # Data exists
-        data = j['data']
+        data = response_wrapper['data']
         # Don't really care about totalCount key unless pagination becomes an issue
         # Be sure there's an error
-        error = j['error']
+        error = response_wrapper['error']
         # Be sure success is reported
-        success = j['success']
+        success = response_wrapper['success']
     except KeyError as err:
         return {}, f'Invalid response (missing parameter): {err}'
 
@@ -38,24 +37,27 @@ def data_or_error(response):
 
     return data, None
 
+
 def image_link_or_error(response):
-    """Returns a tuple of (image_link, error). Link empty on error, error None if ok.
+    """Returns a tuple of (image_link, error).
+
+    Link empty on error, error None if ok.
 
     Response format: {"Image": "", "error": ""}
     """
     if response.status_code != requests.codes.ok:
-        return '', f'Got bad status code in response: {r.status_code}'
+        return '', f'Got bad status code in response: {response.status_code}'
 
     try:
-        j = response.json()
-    except Exception as err:
+        response_wrapper = response.json()
+    except ValueError as err:
         return '', f'Could not parse json from response: {err}'
 
     try:
         # Link exists
-        link = j['Image']
+        link = response_wrapper['Image']
         # Be sure there's an error
-        error = j['error']
+        error = response_wrapper['error']
     except KeyError as err:
         return '', f'Invalid response (missing parameter): {err}'
 
@@ -64,63 +66,63 @@ def image_link_or_error(response):
 
     return link, None
 
-class Jail(object):
+
+class Jail:
     def __init__(self, jail_url):
         self.url = jail_url
         if jail_url[-1] != '/':
             self.url += '/'
 
     def get_inmates(self):
-        #https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/GetInmates?&start=0&limit=1000&sort=LastName&dir=ASC
+        # GET JailTracker/GetInmates?&start=0&limit=1000&sort=LastName&dir=ASC
         url = self.url + 'GetInmates'
         params = {'start': 0, 'limit': 1000, 'sort': 'LastName', 'dir': 'ASC'}
-        r = requests.get(url, params=params)
-        return data_or_error(r)
-
+        response = requests.get(url, params=params)
+        return data_or_error(response)
 
     def get_inmate(self, arrest_no):
-        # GET https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/GetInmate?_dc=1576355374388&arrestNo=XXXXXXXXXX
+        # GET JailTracker/GetInmate?_dc=1576355374388&arrestNo=XXXXXXXXXX
         # I don't think the _dc arg matters
         url = self.url + 'GetInmate'
         params = {'arrestNo': arrest_no}
-        r = requests.get(url, params=params)
+        response = requests.get(url, params=params)
 
-        data, err = data_or_error(r)
+        data, err = data_or_error(response)
         if err is None:
             # Inmate data format is ridiculous.
             data = {d['Field']:d['Value'] for d in data}
         return data, err
 
     def get_cases(self, arrest_no):
-        # GET https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/GetCases?arrestNo=XXXXXXXXXX
+        # GET JailTracker/GetCases?arrestNo=XXXXXXXXXX
         url = self.url + 'GetCases'
         params = {'arrestNo': arrest_no}
-        r = requests.get(url, params=params)
-        return data_or_error(r)
+        response = requests.get(url, params=params)
+        return data_or_error(response)
+
 
     def get_charges(self, arrest_no):
-        # POST https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/GetCharges
+        # POST JailTracker/GetCharges
         # Form data:  "arrestNo=XXXXXXXXXX"
         url = self.url + 'GetCharges'
         form_data = {'arrestNo': arrest_no}
-        r = requests.post(url, data=form_data)
-        return data_or_error(r)
+        response = requests.post(url, data=form_data)
+        return data_or_error(response)
 
     def get_image_link(self, arrest_no):
-        # POST https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/GetImage/
+        # POST JailTracker/GetImage/
         # Form data:  "arrestNo=XXXXXXXXXX"
         # {"Image": "", "error": ""}
         url = self.url + 'GetImage/'
         form_data = {'arrestNo': arrest_no}
-        r = requests.post(url, data=form_data)
-        link, err = image_link_or_error(r)
+        response = requests.post(url, data=form_data)
+        link, err = image_link_or_error(response)
         if err is None:
             # "link" is just a filename
             link = f'{self.url}StreamInmateImage/{link}'
         return link, err
 
     def get_image(self, image):
-        # GET https://omsweb.public-safety-cloud.com/jtclientweb//(S(xlirfhujk02k2yrydiazw2x3))/JailTracker/StreamInmateImage/InmateImgXXXXXX.jpg
         # Might as well just use the exact link given
         pass
 
@@ -141,7 +143,10 @@ class Jail(object):
         if err is not None:
             print(f'Could not get image link for {arrest_no}: {err}')
 
-        #TODO get actual image
+        # TODO get actual image
 
-        data = {'inmate': inmate, 'cases': cases, 'charges': charges, 'image_link': image_link}
+        data = {'inmate': inmate,
+                'cases': cases,
+                'charges': charges,
+                'image_link': image_link}
         return data, None
