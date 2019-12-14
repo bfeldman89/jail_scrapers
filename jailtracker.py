@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+import time
 import requests
+
+NAP_LENGTH = 0.2
 
 
 def data_or_error(response):
@@ -74,10 +77,10 @@ class Jail:
         if jail_url[-1] != '/':
             self.url += '/'
 
-    def get_inmates(self):
+    def get_inmates(self, limit=1000):
         # GET JailTracker/GetInmates?&start=0&limit=1000&sort=LastName&dir=ASC
         url = self.url + 'GetInmates'
-        params = {'start': 0, 'limit': 1000, 'sort': 'LastName', 'dir': 'ASC'}
+        params = {'start': 0, 'limit': limit, 'sort': 'LastName', 'dir': 'ASC'}
         response = requests.get(url, params=params)
         return data_or_error(response)
 
@@ -151,3 +154,20 @@ class Jail:
                 'charges': charges,
                 'image_link': image_link}
         return data, None
+
+    def process_inmates(self, limit=1000):
+        inmates, err = self.get_inmates(limit)
+        if err is not None:
+            return {}, f'Could not get inmates: {err}'
+
+        complete = []
+        for summary in inmates:
+            inmate, err = self.process_inmate(summary['ArrestNo'])
+            if err is not None:
+                print(err)
+                continue
+            inmate['Summary'] = summary
+            complete.append(inmate)
+            time.sleep(NAP_LENGTH)
+
+        return complete, None
