@@ -1,5 +1,4 @@
 # !/usr/bin/env python3
-import os
 import sys
 import time
 from datetime import datetime, date, timezone
@@ -8,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from nameparser import HumanName
 import standardize
-from common import airtab, airtab_log, muh_headers, wrap_from_module
+from common import airtab, muh_headers, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/scrapers.py')
 
@@ -125,7 +124,7 @@ def mcdc_scraper():
                     update_record(this_dict, soup, m, lea_parser=standardize.mcdc_lea, raw_lea=raw_lea)
             except ValueError:
                 print('there was a value error for', this_dict['bk'])
-    wrap_it_up('mcdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='mcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def prcdf_scraper():
@@ -228,7 +227,7 @@ def prcdf_scraper():
                 new_intakes += 1
             else:
                 update_record(this_dict, soup, m, standardize.prcdf_lea, raw_lea)
-    wrap_it_up('prcdf', t0, new_intakes, total_intakes)
+    wrap_it_up(function='prcdf_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def lcdc_scraper():
@@ -287,7 +286,7 @@ def lcdc_scraper():
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.lcdc_lea, raw_lea)
-    wrap_it_up('lcdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='lcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def tcdc_scraper():
@@ -365,7 +364,7 @@ def tcdc_scraper():
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.tcdc_lea, raw_lea)
-    wrap_it_up('tcdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='tcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def kcdc_scraper():
@@ -433,7 +432,7 @@ def kcdc_scraper():
                 new_intakes += 1
             else:
                 update_record(this_dict, soup, m)
-    wrap_it_up('kcdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='kcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def hcdc_scraper():
@@ -502,7 +501,7 @@ def hcdc_scraper():
                         new_intakes += 1
                     except ValueError as err:
                         print(err, '\n', this_dict['link'])
-    wrap_it_up('hcdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='hcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def ccdc_scraper():
@@ -573,7 +572,7 @@ def ccdc_scraper():
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.ccdc_lea, raw_lea)
-    wrap_it_up('ccdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='ccdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def acdc_scraper():
@@ -645,7 +644,7 @@ def acdc_scraper():
         else:
             if 'bk' in this_dict:
                 update_record(this_dict, soup, m)
-    wrap_it_up('acdc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='acdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def jcj_scraper():
@@ -707,7 +706,7 @@ def jcj_scraper():
                     pass
                 airtab.update(m['id'], this_dict, typecast=True)
             time.sleep(0.2)
-    wrap_it_up('jcj', t0, new_intakes, total_intakes)
+    wrap_it_up(function='jcj_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def jcadc_scraper():
@@ -753,7 +752,7 @@ def jcadc_scraper():
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
                 new_intakes += 1
-    wrap_it_up('jcadc', t0, new_intakes, total_intakes)
+    wrap_it_up(function='jcadc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def main():
