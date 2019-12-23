@@ -22,8 +22,6 @@ jails_lst = [['mcdc', 'intake_number'],
              ['hcdc', 'bk']]
 
 
-
-
 def ensure_dir(dir_path):
     """Create a directory at the given path, including parents.
 
@@ -110,7 +108,7 @@ def pdf_to_dc():
             full_text = obj.full_text.decode("utf-8")
             this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
             # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
-            record = airtab.match('intake_number', '201005828', sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
+            record = airtab.match(jail[1], this_dict["dc_title"], sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
             airtab.update(record["id"], this_dict)
             send2trash.send2trash(fn)
             i += 1
