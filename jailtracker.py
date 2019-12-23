@@ -147,7 +147,7 @@ class Jail:
         if err is not None:
             print(f'Could not get image link for {arrest_no}: {err}')
 
-        # TODO get actual image
+        # TO-DO get actual image
 
         data = {'inmate': inmate,
                 'cases': cases,
