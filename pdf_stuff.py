@@ -22,6 +22,8 @@ jails_lst = [['mcdc', 'intake_number'],
              ['hcdc', 'bk']]
 
 
+
+
 def ensure_dir(dir_path):
     """Create a directory at the given path, including parents.
 
@@ -40,7 +42,9 @@ wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 def web_to_pdf():
     t0, i = time.time(), 0
-    records = airtab.get_all(view='needs pdf')
+    # records = airtab.get_all(view='needs pdf')
+    pdf_formula = "AND(dc_id = '', hours_since_verification < 60, jail != 'jcj')"
+    records = airtab.get_all(formula=pdf_formula)
     i = len(records)
     for record in records:
         url = record['fields']['link']
@@ -105,7 +109,8 @@ def pdf_to_dc():
             this_dict["dc_pages"] = obj.pages
             full_text = obj.full_text.decode("utf-8")
             this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
-            record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
+            # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
+            record = airtab.match('intake_number', '201005828', sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
             airtab.update(record["id"], this_dict)
             send2trash.send2trash(fn)
             i += 1
@@ -115,7 +120,9 @@ def pdf_to_dc():
 
 def get_dor_if_possible():
     t0, i = time.time(), 0
-    records = airtab.get_all(view="needs DOR")
+    # records = airtab.get_all(view="check for DOR")
+    dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc'), DOR = '', hours_since_verification > 3, hours_since_verification < 48)"
+    records = airtab.get_all(formula=dor_formula)
     total = len(records)
     for record in records:
         this_dict = {}
