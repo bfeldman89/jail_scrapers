@@ -23,7 +23,9 @@ def polish_data():
 
 def get_pixelated_mug():
     """This function uploads the raw image to cloudinary and then uploads the pixelated version to the airtable record."""
-    records = airtab.get_all(view="needs pixelated mug")
+    # records = airtab.get_all(view="needs pixelated mug")
+    needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24)"
+    records = airtab.get_all(formula=needs_pix_img_formula)
     for record in records:
         url = record["fields"]["PHOTO"][0]["url"]
         fn = record["fields"]["UID"]
@@ -42,7 +44,9 @@ def update_summary(this_many=100):
     rather than just use the 'blurb' field, is bc the gallery view works better
     with a text field than it does with a formula field. Because this view will
     regularly be packed full of records, the default max records is 100."""
-    records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=this_many)
+    # records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=this_many)
+    outdated_summary_formula = "AND(blurb != '#ERROR', blurb != summary)"
+    records = airtab.get_all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
@@ -51,7 +55,9 @@ def update_summary(this_many=100):
 
 def get_charges_from_recent_text():
     """This function parces the recent text field and extracts the listed charges."""
-    records = airtab.get_all(view="needs charges")
+    # records = airtab.get_all(view="needs charges")
+    needs_charges_formula = "AND(charges_updated = '', html != '', recent_text != '', hours_since_verification < 72, DONT_DELETE != 'no charges')"
+    records = airtab.get_all(formula=needs_charges_formula)
     for record in records:
         this_dict = {}
         if record["fields"]["jail"] == "lcdc":
@@ -136,7 +142,9 @@ def get_charges_from_recent_text():
 
 def retry_getting_mugshot():
     """This function does blah blah."""
-    records = airtab.get_all(view="needs pic")
+    # records = airtab.get_all(view="needs pic")
+    needs_pic_formula = "AND(img_src != '', PHOTO = '', hours_since_verification < 6, jail != 'lcdc')"
+    records = airtab.get_all(formula=needs_pic_formula)
     for record in records:
         this_dict = {}
         this_dict["PHOTO"] = [{"url": record["fields"]["img_src"]}]
@@ -145,7 +153,9 @@ def retry_getting_mugshot():
 
 def parse_charge_1():
     """This function does blah blah."""
-    records = airtab.get_all(view="needs charge_1 parsed")
+    # records = airtab.get_all(view="needs charge_1 parsed")
+    needs_charge_1_parsed_formula = "AND(OR(jail = 'mcdc', jail = 'prcdf'), charge_1_statute = '', hours_since_initial_scrape < 48, charge_1 != '', charge_1 != 'HOLDHOLD', charge_1 != 'DRUGDRUG COURT', charge_1 != 'HLD Other AgencyHold for other Agency')"
+    records = airtab.get_all(formula=needs_charge_1_parsed_formula)
     for record in records:
         this_dict = {}
         x = None
@@ -181,8 +191,7 @@ def fix_charges_to_by_lines():
 
 def remove_weird_character():
     """This function does blah blah."""
-    records = airtab.get_all(
-        view='needs weird character removed', fields='recent_text')
+    records = airtab.get_all(view='needs weird character removed', fields='recent_text')
     for record in records:
         this_dict = {}
         x = record['fields']['recent_text'].find('ã')
@@ -194,8 +203,8 @@ def remove_weird_character():
 
 def get_full_text():
     """This function does blah blah."""
-    records = airtab.get_all(
-        view='needs full text', fields=['dc_id'])
+    # records = airtab.get_all(view='needs full text', fields=['dc_id'])
+    records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'])
     for record in records:
         this_dict = {}
         obj = dc.documents.get(record['fields']['dc_id'])
