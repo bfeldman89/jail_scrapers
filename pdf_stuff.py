@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import pdfkit
 import requests
 import send2trash
-from common import airtab, airtab_log, dc, muh_headers, wrap_from_module
+from jail_scrapers.common import airtab, dc, muh_headers, wrap_from_module
 
 jails_lst = [['mcdc', 'intake_number'],
              ['prcdf', 'intake_number'],
@@ -34,7 +34,9 @@ def damn_it(error_message):
     print('Another fucking "Connection Error."\n', error_message)
     time.sleep(10)
 
+
 wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
+
 
 def web_to_pdf():
     t0, i = time.time(), 0
