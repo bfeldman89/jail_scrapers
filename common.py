@@ -37,5 +37,7 @@ def wrap_from_module(module):
             'new': new
         }
         airtab_log.insert(this_dict, typecast=True)
+        with open(f"{module}.csv", "a") as alt_log:
+            print(function, t0, total, new, sep=",", end="\n", file=alt_log)
 
     return wrap_it_up
