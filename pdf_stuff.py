@@ -76,7 +76,7 @@ def web_to_pdf():
                 print('the intake number does not match!')
         else:
             pdfkit.from_url(url, fn, options)
-    wrap_it_up(t0, i, function='web_to_pdf')
+    wrap_it_up(t0, new=i, total=i, function='web_to_pdf')
 
 
 def pdf_to_dc():
@@ -110,7 +110,7 @@ def pdf_to_dc():
             send2trash.send2trash(fn)
             i += 1
             time.sleep(3)
-    wrap_it_up(t0, i, function='pdf_to_dc')
+    wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
 def get_dor_if_possible():
