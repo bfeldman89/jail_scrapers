@@ -3,7 +3,8 @@
 import re
 import time
 from bs4 import BeautifulSoup
-from jail_scrapers.common import airtab, cloudinary, dc, wrap_from_module
+from cloudinary import uploader
+from common import airtab, cloudinary, dc, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/polish_data.py')
 
@@ -27,7 +28,7 @@ def get_pixelated_mug():
         url = record["fields"]["PHOTO"][0]["url"]
         fn = record["fields"]["UID"]
         try:
-            cloudinary.uploader.upload(url, public_id=fn)
+            uploader.upload(url, public_id=fn)
         except cloudinary.api.Error as err:
             print("cloudinary can't accept that shit: ", err)
         time.sleep(1.5)
