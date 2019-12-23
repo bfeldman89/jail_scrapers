@@ -2,10 +2,7 @@
 """This module does blah blah."""
 import os
 from datetime import timedelta, date
-from airtable import Airtable
-
-airtab_intakes = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
-airtab_daily = Airtable(os.environ['jail_scrapers_db'], 'daily stats', os.environ['AIRTABLE_API_KEY'])
+from common import airtab as airtab_intakes, airtab_daily
 
 county_jails = [('Madison', 'mcdc'),
                 ('Pearl River', 'prcdf'),

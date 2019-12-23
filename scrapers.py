@@ -7,15 +7,10 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from nameparser import HumanName
-from airtable import Airtable
 import standardize
+from common import airtab, airtab_log, muh_headers, wrap_from_module
 
-
-airtab = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
-airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
-
-muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
-
+wrap_it_up = wrap_from_module('jail_scrapers/scrapers.py')
 
 def get_name(raw_name, this_dict):
     name = HumanName(raw_name)
@@ -33,15 +28,6 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
         if lea_parser:
             lea_parser(raw_lea)
     airtab.update(m['id'], this_dict, typecast=True)
-
-
-def wrap_it_up(jail, t0, new_intakes, total_intakes):
-    this_dict = {'module': 'jail_scrapers/scrapers.py'}
-    this_dict['function'] = f"{jail}_scraper"
-    this_dict['duration'] = round(time.time() - t0, 2)
-    this_dict['total'] = total_intakes
-    this_dict['new'] = new_intakes
-    airtab_log.insert(this_dict, typecast=True)
 
 
 def damn_it(error_message):
