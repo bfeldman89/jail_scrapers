@@ -1,13 +1,12 @@
 # !/usr/bin/env python3
 """This module accesses several airtable 'views' that contain records that need some additional processing."""
-import os
 import re
 import time
-from airtable import Airtable
 from bs4 import BeautifulSoup
-from common import airtab, airtab_log, cloudinary, dc, wrap_from_module
+from jail_scrapers.common import airtab, cloudinary, dc, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/polish_data.py')
+
 
 def polish_data():
     """This function does runs each of the module's functions."""
