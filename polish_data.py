@@ -23,7 +23,7 @@ def polish_data():
 
 def get_pixelated_mug():
     """This function uploads the raw image to cloudinary and then uploads the pixelated version to the airtable record."""
-    # records = airtab.get_all(view="needs pixelated mug")
+    t0, i = time.time(), 0
     needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24)"
     records = airtab.get_all(formula=needs_pix_img_formula)
     for record in records:
@@ -31,12 +31,14 @@ def get_pixelated_mug():
         fn = record["fields"]["UID"]
         try:
             uploader.upload(url, public_id=fn)
+            i += 1
         except cloudinary.api.Error as err:
             print("cloudinary can't accept that shit: ", err)
         time.sleep(1.5)
         this_dict = {}
         this_dict["PIXELATED_IMG"] = [{"url": record["fields"]["pixelated_url"]}]
         airtab.update(record["id"], this_dict)
+    wrap_it_up(t0, new=i, total=len(records), function='get_pixelated_mug')
 
 
 def update_summary(this_many=100):
@@ -44,18 +46,19 @@ def update_summary(this_many=100):
     rather than just use the 'blurb' field, is bc the gallery view works better
     with a text field than it does with a formula field. Because this view will
     regularly be packed full of records, the default max records is 100."""
-    # records = airtab.get_all(view="needs updated summary", fields="blurb", max_records=this_many)
+    t0, i = time.time(), 0
     outdated_summary_formula = "AND(blurb != '#ERROR', blurb != summary)"
     records = airtab.get_all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
         airtab.update(record["id"], this_dict)
+    wrap_it_up(t0, new=i, total=len(records), function='update_summary')
 
 
 def get_charges_from_recent_text():
     """This function parces the recent text field and extracts the listed charges."""
-    # records = airtab.get_all(view="needs charges")
+    t0, i = time.time(), 0
     needs_charges_formula = "AND(charges_updated = '', html != '', recent_text != '', hours_since_verification < 72, DONT_DELETE != 'no charges')"
     records = airtab.get_all(formula=needs_charges_formula)
     for record in records:
@@ -68,12 +71,8 @@ def get_charges_from_recent_text():
             rows = soup.find_all("tr")
             if soup.tfoot:
                 goods = rows[: len(rows) - 1]
-                this_dict["intake_bond_cash"] = soup.tfoot.find_all("td")[
-                    2
-                ].b.string.strip()
-                this_dict["intake_fine_ammount"] = soup.tfoot.find_all("td")[
-                    3
-                ].b.string.strip()
+                this_dict["intake_bond_cash"] = soup.tfoot.find_all("td")[2].b.string.strip()
+                this_dict["intake_fine_ammount"] = soup.tfoot.find_all("td")[3].b.string.strip()
             else:
                 goods = rows
             for row in goods:
@@ -96,11 +95,11 @@ def get_charges_from_recent_text():
             if fine_ammounts:
                 this_dict["fine_ammounts"] = "\n".join(fine_ammounts)
             airtab.update(record["id"], this_dict, typecast=True)
+            i += 1
         elif record["fields"]["jail"] == "kcdc":
             charges = []
             text = record["fields"]["recent_text"]
-            goods = text[text.find("Charges:"): text.find(
-                "Note:")].splitlines()
+            goods = text[text.find("Charges:"): text.find("Note:")].splitlines()
             if len(goods) > 1:
                 for good in goods:
                     if "," in good:
@@ -109,6 +108,7 @@ def get_charges_from_recent_text():
                         charges.append(good)
                 this_dict["charges"] = ", ".join(goods[1:])
                 airtab.update(record["id"], this_dict)
+                i += 1
         elif record["fields"]["jail"] in {"ccdc", "tcdc"}:
             charges = []
             text = record["fields"]["recent_text"]
@@ -122,6 +122,7 @@ def get_charges_from_recent_text():
                     charges.append(line)
             this_dict["charges"] = ", ".join(charges)
             airtab.update(record["id"], this_dict)
+            i += 1
         elif record["fields"]["jail"] == "hcdc":
             messy = []
             goods = []
@@ -138,22 +139,24 @@ def get_charges_from_recent_text():
                         goods.append(x)
             this_dict["charges"] = ", ".join(goods)
             airtab.update(record["id"], this_dict)
+            i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='get_charges_from_recent_text')
 
 
 def retry_getting_mugshot():
-    """This function does blah blah."""
-    # records = airtab.get_all(view="needs pic")
+    t0, i = time.time(), 0
     needs_pic_formula = "AND(img_src != '', PHOTO = '', hours_since_verification < 6, jail != 'lcdc')"
     records = airtab.get_all(formula=needs_pic_formula)
     for record in records:
         this_dict = {}
         this_dict["PHOTO"] = [{"url": record["fields"]["img_src"]}]
         airtab.update(record["id"], this_dict)
+        i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='retry_getting_mugshot')
 
 
 def parse_charge_1():
-    """This function does blah blah."""
-    # records = airtab.get_all(view="needs charge_1 parsed")
+    t0, i = time.time(), 0
     needs_charge_1_parsed_formula = "AND(OR(jail = 'mcdc', jail = 'prcdf'), charge_1_statute = '', hours_since_initial_scrape < 48, charge_1 != '', charge_1 != 'HOLDHOLD', charge_1 != 'DRUGDRUG COURT', charge_1 != 'HLD Other AgencyHold for other Agency')"
     records = airtab.get_all(formula=needs_charge_1_parsed_formula)
     for record in records:
@@ -164,22 +167,20 @@ def parse_charge_1():
         elif re.search("[0-9][A-Z]", record["fields"]["charge_1"]):
             x = re.search("[0-9][A-Z]", record["fields"]["charge_1"])
         if x:
-            this_dict["charge_1_statute"] = record["fields"]["charge_1"][
-                : x.start() + 1
-            ]
+            this_dict["charge_1_statute"] = record["fields"]["charge_1"][: x.start() + 1]
             this_dict["charge_1_title"] = record["fields"]["charge_1"][x.end() - 1:]
             airtab.update(record["id"], this_dict)
+            i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='parse_charge_1')
 
 
 def fix_charges_to_by_lines():
-    """This function does blah blah."""
-    # records = airtab.get_all(view='test', fields='charges')
+    t0, i = time.time(), 0
     records = airtab.get_all(formula="AND(TEST_FORMULA != '', TEST_RESULT = '')", fields='charges')
     for record in records:
         this_dict = {}
         cleaner = []
-        mess = record['fields']['charges'].replace(
-            '", ', '"\n').replace(', "', '\n"').splitlines()
+        mess = record['fields']['charges'].replace('", ', '"\n').replace(', "', '\n"').splitlines()
         for c in mess:
             if c.startswith('"'):
                 cleaner.append(c.replace('"', ''))
@@ -188,11 +189,12 @@ def fix_charges_to_by_lines():
                     cleaner.append(d)
         this_dict['TEST RESULT'] = '\n'.join(cleaner)
         airtab.update(record['id'], this_dict)
+        i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='fix_charges_to_by_lines')
 
 
 def remove_weird_character():
-    """This function does blah blah."""
-    # records = airtab.get_all(view='needs weird character removed', fields='recent_text')
+    t0, i = time.time(), 0
     remove_wierd_character_formula = "AND(hours_since_verification > 12, FIND('ã', recent_text) > 1)"
     records = airtab.get_all(formula=remove_wierd_character_formula, fields='recent_text')
     for record in records:
@@ -202,11 +204,12 @@ def remove_weird_character():
         this_dict['recent_text'] = record['fields']['recent_text'].replace(
             record['fields']['recent_text'][x:y], '')
         airtab.update(record['id'], this_dict)
+        i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='remove_weird_character')
 
 
 def get_full_text():
-    """This function does blah blah."""
-    # records = airtab.get_all(view='needs full text', fields=['dc_id'])
+    t0, i = time.time(), 0
     records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'])
     for record in records:
         this_dict = {}
@@ -216,10 +219,12 @@ def get_full_text():
         this_dict["dc_pages"] = obj.pages
         this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
         airtab.update(record["id"], this_dict)
+        i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='get_full_text')
 
 
 def get_all_intake_deets():
-    # records = airtab.get_all(view='needs_jcadc_deets', fields='recent_text')
+    t0, i = time.time(), 0
     jcadc_deets_formula = "AND(jail = 'jcadc', charges = '', recent_text != '')"
     records = airtab.get_all(formula=jcadc_deets_formula, fields='recent_text')
     for record in records:
@@ -263,16 +268,12 @@ def get_all_intake_deets():
         this_dict['bond_ammounts'] = '\n'.join(bond_ammts)
         this_dict['charge_classifications'] = ', '.join(classifications)
         airtab.update(record['id'], this_dict, typecast=True)
+        i += 1
+    wrap_it_up(t0, new=i, total=len(records), function='get_all_intake_deets')
 
 
 def main():
-    """This function does blah blah."""
-    t0 = time.time()
     polish_data()
-    funcs = ['get_pixelated_mug', 'update_summary', 'get_charges_from_recent_text',
-             'retry_getting_mugshot', 'remove_weird_character', 'parse_charge_1',
-             'fix_charges_to_by_lines', 'get_all_intake_deets']
-    wrap_it_up(t0, function=funcs)
 
 
 if __name__ == "__main__":
