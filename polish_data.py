@@ -173,7 +173,8 @@ def parse_charge_1():
 
 def fix_charges_to_by_lines():
     """This function does blah blah."""
-    records = airtab.get_all(view='test', fields='charges')
+    # records = airtab.get_all(view='test', fields='charges')
+    records = airtab.get_all(formula="AND(TEST_FORMULA != '', TEST_RESULT = '')", fields='charges')
     for record in records:
         this_dict = {}
         cleaner = []
@@ -191,7 +192,9 @@ def fix_charges_to_by_lines():
 
 def remove_weird_character():
     """This function does blah blah."""
-    records = airtab.get_all(view='needs weird character removed', fields='recent_text')
+    # records = airtab.get_all(view='needs weird character removed', fields='recent_text')
+    remove_wierd_character_formula = "AND(hours_since_verification > 12, FIND('ã', recent_text) > 1)"
+    records = airtab.get_all(formula=remove_wierd_character_formula, fields='recent_text')
     for record in records:
         this_dict = {}
         x = record['fields']['recent_text'].find('ã')
@@ -216,7 +219,9 @@ def get_full_text():
 
 
 def get_all_intake_deets():
-    records = airtab.get_all(view='needs_jcadc_deets', fields='recent_text')
+    # records = airtab.get_all(view='needs_jcadc_deets', fields='recent_text')
+    jcadc_deets_formula = "AND(jail = 'jcadc', charges = '', recent_text != '')"
+    records = airtab.get_all(formula=jcadc_deets_formula, fields='recent_text')
     for record in records:
         charges = []
         bond_ammts = []
