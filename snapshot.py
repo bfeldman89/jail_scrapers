@@ -1,6 +1,5 @@
 # !/usr/bin/env python3
 """This module does blah blah."""
-import os
 from datetime import timedelta, date
 from common import airtab as airtab_intakes, airtab_daily
 
