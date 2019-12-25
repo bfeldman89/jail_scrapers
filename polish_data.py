@@ -18,6 +18,7 @@ def polish_data():
     remove_weird_character()
     parse_charge_1()
     fix_charges_to_by_lines()
+    get_full_text()
     get_all_intake_deets()
 
 
