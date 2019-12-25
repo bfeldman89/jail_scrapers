@@ -4,7 +4,7 @@ import re
 import time
 from bs4 import BeautifulSoup
 from cloudinary import uploader
-from jail_scrapers.common import airtab, cloudinary, dc, wrap_from_module
+from common import airtab_intakes as airtab, cloudinary, dc, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/polish_data.py')
 
