@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 """This module does blah blah."""
 from datetime import timedelta, date
-from common import airtab as airtab_intakes, airtab_daily
+from common import airtab_intakes, airtab_daily
 
 county_jails = [('Madison', 'mcdc'),
                 ('Pearl River', 'prcdf'),
