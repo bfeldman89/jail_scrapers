@@ -31,6 +31,11 @@ airtab_sos = Airtable(base_key=os.environ['other_scrapers_db'],
                       table_name='exec_orders',
                       api_key=os.environ['AIRTABLE_API_KEY'])
 
+airtab_tweets = Airtable(base_key=os.environ['botfeldman89_db'],
+                         table_name='scheduled_tweets',
+                         api_key=os.environ['AIRTABLE_API_KEY'])
+
+
 dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
                    password=os.environ['DOCUMENT_CLOUD_PW'])
 
