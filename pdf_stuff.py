@@ -30,18 +30,14 @@ def ensure_dir(dir_path):
     Path(dir_path).mkdir(parents=True, exist_ok=True)
 
 
-def damn_it(error_message):
-    print('Another fucking "Connection Error."\n', error_message)
-    time.sleep(10)
-
-
 wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 
 def web_to_pdf():
+    # filters for recently verified intakes w/out dc_id.
+    # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
-    # records = airtab.get_all(view='needs pdf')
-    pdf_formula = "AND(dc_id = '', hours_since_verification < 60, jail != 'jcj')"
+    pdf_formula = "AND(dc_id = '', hours_since_verification < 3, jail != 'jcj')"
     records = airtab.get_all(formula=pdf_formula)
     i = len(records)
     for record in records:
@@ -66,7 +62,8 @@ def web_to_pdf():
             try:
                 r = requests.get(url, headers=muh_headers)
             except requests.ConnectionError as err:
-                damn_it(err)
+                print(f"Skipping {url}: {err}")
+                time.spleep(5)
                 continue
             data = []
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -82,6 +79,8 @@ def web_to_pdf():
 
 
 def pdf_to_dc():
+    # filters for recently verified intakes w/out dc_id.
+    # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
     for jail in jails_lst:
         print(jail)
@@ -89,7 +88,7 @@ def pdf_to_dc():
         try:
             ensure_dir(output_path)
         except NotADirectoryError as err:
-            damn_it(f"Skipping {jail[0]}: {err}")
+            print(f"Skipping {jail[0]}: {err}")
             continue
         for fn in glob.glob(os.path.join(output_path, '*.pdf')):
             print(fn)
@@ -127,7 +126,8 @@ def get_dor_if_possible(this_many=50):
         try:
             r = requests.get(record["fields"]["link"])
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {record['fields']['link']}: {err}")
+            time.spleep(5)
             continue
         soup = BeautifulSoup(r.text, "html.parser")
         data = []
@@ -147,7 +147,7 @@ def get_dor_if_possible(this_many=50):
                 fn = os.path.join(directory, file_name)
                 pdfkit.from_url(record["fields"]["link"], fn, options=options)
             except NotADirectoryError as err:
-                damn_it(f"Can't write PDF: {err}")
+                print(f"Can't write PDF: {err}")
 
             this_dict["DOR"] = datetime.datetime.strptime(
                 data[1 + data.index("Release Date:")], "%m-%d-%Y - %I:%M %p"
