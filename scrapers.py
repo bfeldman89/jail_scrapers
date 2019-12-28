@@ -438,11 +438,11 @@ def kcdc_scraper():
 def hcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     main_url = 'http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp'
-    try:
-        r = requests.get(main_url)
-    except requests.ConnectionError as err:
-        damn_it(err)
+    r = requests.get(main_url)
+    if r.status_code == 500:
+        print(r.text)
         return
+
     soup = BeautifulSoup(r.text, 'html.parser')
     total_pages = int(soup.h3.string.split()[3])
     pages = list(range(1, total_pages + 1))
@@ -768,7 +768,7 @@ def main():
         'hcdc': hcdc_scraper,
         'jcadc': jcadc_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcadc']
+    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'jcadc', 'hcdc']
 
     try:
         jails_str = sys.argv[1]
