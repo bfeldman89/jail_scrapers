@@ -19,29 +19,18 @@ airtab_daily = Airtable(base_key=os.environ['jail_scrapers_db'],
                         table_name='daily stats',
                         api_key=os.environ['AIRTABLE_API_KEY'])
 
-airtab_courts = Airtable(base_key=os.environ['other_scrapers_db'],
-                         table_name='courts',
-                         api_key=os.environ['AIRTABLE_API_KEY'])
-
-airtab_mdoc = Airtable(base_key=os.environ['other_scrapers_db'],
-                       table_name='mdoc',
-                       api_key=os.environ['AIRTABLE_API_KEY'])
-
-airtab_sos = Airtable(base_key=os.environ['other_scrapers_db'],
-                      table_name='exec_orders',
-                      api_key=os.environ['AIRTABLE_API_KEY'])
-
 airtab_tweets = Airtable(base_key=os.environ['botfeldman89_db'],
                          table_name='scheduled_tweets',
                          api_key=os.environ['AIRTABLE_API_KEY'])
 
 
-dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
-                   password=os.environ['DOCUMENT_CLOUD_PW'])
-
 cloudinary.config(cloud_name='bfeldman89',
                   api_key=os.environ['CLOUDINARY_API_KEY'],
                   api_secret=os.environ['CLOUDINARY_API_SECRET'])
+
+dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
+                   password=os.environ['DOCUMENT_CLOUD_PW'])
+
 
 muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
