@@ -188,7 +188,7 @@ def fix_charges_to_by_lines():
             else:
                 for d in c.split(', '):
                     cleaner.append(d)
-        this_dict['TEST RESULT'] = '\n'.join(cleaner)
+        this_dict['TEST_RESULT'] = '\n'.join(cleaner)
         airtab.update(record['id'], this_dict)
         i += 1
     wrap_it_up(t0, new=i, total=len(records), function='fix_charges_to_by_lines')
