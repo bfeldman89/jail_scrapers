@@ -438,7 +438,12 @@ def kcdc_scraper():
 def hcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     main_url = 'http://www.co.hinds.ms.us/pgs/apps/inmate/inmate_list.asp'
-    r = requests.get(main_url)
+    try:
+        r = requests.get(main_url)
+    except requests.ConnectionError as err:
+        damn_it(err)
+        return
+
     if r.status_code == 500:
         print(r.text)
         return
