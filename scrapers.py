@@ -29,11 +29,6 @@ def update_record(this_dict, soup, m, lea_parser=None, raw_lea=''):
     airtab.update(m['id'], this_dict, typecast=True)
 
 
-def damn_it(error_message):
-    print('Another fucking "Connection Error."\n', error_message)
-    time.sleep(10)
-
-
 def mcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     root_url = 'http://mydcstraining.com/agencyinfo/MS/4360/inmate/'
@@ -51,7 +46,8 @@ def mcdc_scraper():
             try:
                 r = requests.get(this_dict['link'], headers=muh_headers)
             except requests.ConnectionError as err:
-                damn_it(err)
+                print(f"Skipping {this_dict['link']}: {err}")
+                time.spleep(5)
                 continue
             this_dict['charge_1'] = cells[8].string.replace('\xa0', '')
             if this_dict['charge_1'] == '18USC132518USC1325 ILLEGAL ENTRY-ALIEN':
@@ -143,7 +139,8 @@ def prcdf_scraper():
             try:
                 r = requests.get(this_dict['link'], headers=muh_headers)
             except requests.ConnectionError as err:
-                damn_it(err)
+                print(f"Skipping {this_dict['link']}: {err}")
+                time.spleep(5)
                 continue
             charge_1 = cells[8].string.replace('\xa0', '')
             if 'ã' in charge_1:
@@ -249,7 +246,8 @@ def lcdc_scraper():
         try:
             r = requests.get(this_dict['link'])
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.spleep(5)
             continue
         this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         this_dict['bk'] = url[-6:]
@@ -318,7 +316,8 @@ def tcdc_scraper():
         try:
             r = requests.get(this_dict['link'])
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.spleep(5)
             continue
         this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -389,14 +388,19 @@ def kcdc_scraper():
             try:
                 r = requests.get(this_dict['link'])
             except requests.ConnectionError as err:
-                damn_it(err)
+                print(f"Skipping {this_dict['link']}: {err}")
+                time.spleep(5)
                 continue
             this_dict['bk'] = x.replace('roster_view.php?booking_num=', '')
             this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
             soup = BeautifulSoup(r.text, 'html.parser').find(id='intContentContainer')
             data = []
-            for string in soup.stripped_strings:
-                data.append(str(string))
+            try:
+                for string in soup.stripped_strings:
+                    data.append(str(string))
+            except AttributeError as err:
+                print(this_dict['link'], ': ', err)
+                continue
             messy_text_rn = '\n'.join(data)
             this_dict['recent_text'] = messy_text_rn[0: messy_text_rn.find('Note: ')].strip()
             m = airtab.match('bk', this_dict['bk'], view='kcdc', fields='recent_text')
@@ -441,7 +445,8 @@ def hcdc_scraper():
     try:
         r = requests.get(main_url)
     except requests.ConnectionError as err:
-        damn_it(err)
+        print(f"Skipping {main_url}: {err}")
+        time.spleep(5)
         return
 
     if r.status_code == 500:
@@ -471,7 +476,8 @@ def hcdc_scraper():
                     try:
                         r = requests.get(this_dict['link'])
                     except requests.ConnectionError as err:
-                        damn_it(err)
+                        print(f"Skipping {this_dict['link']}: {err}")
+                        time.spleep(5)
                         continue
                     this_dict['img_src'] = f"http://www.co.hinds.ms.us/pgs/inmatephotos/{this_dict['bk']}.jpg"
                     this_dict['PHOTO'] = []
@@ -538,7 +544,8 @@ def ccdc_scraper():
         try:
             r = requests.get(this_dict['link'])
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.sleep(5)
             continue
         this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
         soup = BeautifulSoup(r.text, 'html.parser').find_all('table')[6]
@@ -607,7 +614,8 @@ def acdc_scraper():
         try:
             r = requests.get(intake)
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.sleep(5)
             continue
         soup = BeautifulSoup(r.text, 'html.parser').find('div', class_='blog-content-container')
         for string in soup.stripped_strings:
