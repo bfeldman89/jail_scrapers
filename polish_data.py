@@ -2,6 +2,7 @@
 """This module accesses several airtable 'views' that contain records that need some additional processing."""
 import re
 import time
+from requests import exceptions
 from bs4 import BeautifulSoup
 from cloudinary import uploader
 from common import airtab_intakes as airtab, cloudinary, dc, wrap_from_module
@@ -170,8 +171,12 @@ def parse_charge_1():
         if x:
             this_dict["charge_1_statute"] = record["fields"]["charge_1"][: x.start() + 1]
             this_dict["charge_1_title"] = record["fields"]["charge_1"][x.end() - 1:]
-            airtab.update(record["id"], this_dict)
-            i += 1
+            try:
+                airtab.update(record["id"], this_dict)
+                i += 1
+            except exceptions.HTTPError as err:
+                print(err)
+                continue
     wrap_it_up(t0, new=i, total=len(records), function='parse_charge_1')
 
 
