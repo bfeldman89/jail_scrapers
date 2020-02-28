@@ -118,8 +118,8 @@ def mcdc_scraper():
                     new_intakes += 1
                 else:
                     update_record(this_dict, soup, m, lea_parser=standardize.mcdc_lea, raw_lea=raw_lea)
-            except ValueError:
-                print('there was a value error for', this_dict['bk'])
+            except ValueError as err:
+                print('there was a value error for', this_dict['bk'], '\n', err)
     wrap_it_up(function='mcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
