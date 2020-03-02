@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+# !/usr/local/bin/python3.6
 """This module does blah blah."""
 import datetime
 import glob
