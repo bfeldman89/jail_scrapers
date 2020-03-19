@@ -797,7 +797,7 @@ def jcdc_scraper():
                     intakes.append(link)
     total_intakes = len(intakes)
     for x in intakes:
-        this_dict = {'jail': 'jcdc', 'linking': ['recwPhZYfaDN5yKQ6']}
+        this_dict = {'jail': 'jcdc', '_jail': ['recwPhZYfaDN5yKQ6']}
         this_dict['link'] = f"https://www.jonesso.com/{x}"
         try:
             r = requests.get(this_dict['link'])
