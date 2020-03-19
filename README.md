@@ -15,7 +15,7 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Madison County Detention Center       | `mcdc`    | Sep. 6, 2018     | present               |
 | Pearl River County Detention Facility | `prcdf`   | Sep. 6, 2018     | present               |
 | Lee County Detention Center           | `lcdc`    | Dec. 1, 2018     | present               |
-| Jones County Detention Center         | `jcdc`    | Dec. 14, 2018    | Nov. 1, 2019*         |
+| Jones County Detention Center         | `jcdc`    | Dec. 14, 2018    | Nov. 1, 2019 - Mar. 18, 2020*         |
 | Hinds County Detention Center         | `hcdc`    | Dec. 28, 2018    | present               |
 | Kemper County Detention Center        | `kcdc`      | Apr. 6, 2019     | present               |
 | Tunica County Detention Center        | `tcdc`      | Apr. 6, 2019     | present               |
@@ -24,7 +24,7 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Jasper County Jail                    | `jcj`       | Jun. 3, 2019     | present               |
 | Jackson County Adult Detention Center | `jcadc`     | Dec. 2, 2019     | present               |
 
-\* Since Nov. 1, 2019, the Jones County Sheriff's Office website has been down.
+\* On Nov. 1, 2019, the Jones County Sheriff's Office website went down. It's unclear when it went back up, but I resumed scraping the site on Mar. 19, 2020.
 
 As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,661 `prcdf` admissions, 5,119 `lcdc` admissions, 2,260 `jcdc` admissions, 3,616 `hcdc` admissions, 1,128 `kcdc` admissions, 672 `tcdc` admissions, 563 `ccdc` admissions, 772 `acdc` admissions, and 345 `jcj` admissions.
 
