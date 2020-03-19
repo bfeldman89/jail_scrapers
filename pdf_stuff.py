@@ -19,7 +19,8 @@ jails_lst = [['mcdc', 'intake_number'],
              ['kcdc', 'bk'],
              ['ccdc', 'bk'],
              ['acdc', 'bk'],
-             ['hcdc', 'bk']]
+             ['hcdc', 'bk'],
+             ['jcdc', 'bk']]
 
 
 def ensure_dir(dir_path):
