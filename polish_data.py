@@ -43,7 +43,7 @@ def get_pixelated_mug():
     wrap_it_up(t0, new=i, total=len(records), function='get_pixelated_mug')
 
 
-def update_summary(this_many=100):
+def update_summary(this_many=150):
     """This function updates the record summary. The reason we have this field,
     rather than just use the 'blurb' field, is bc the gallery view works better
     with a text field than it does with a formula field. Because this view will
