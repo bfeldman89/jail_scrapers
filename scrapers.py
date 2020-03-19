@@ -853,7 +853,7 @@ def jcdc_scraper():
             new_intakes += 1
         else:
             update_record(this_dict, soup, m, standardize.jcdc_lea, raw_lea)
-    wrap_it_up(function='jcdc', t0=t0, new=new_intakes, total=total_intakes)
+    wrap_it_up(function='jcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def main():
