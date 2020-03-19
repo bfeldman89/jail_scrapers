@@ -119,7 +119,7 @@ def pdf_to_dc():
 def get_dor_if_possible(this_many=50):
     t0, i = time.time(), 0
     # records = airtab.get_all(view="check for DOR")
-    dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 48)"
+    dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc', jail = 'jcdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 48)"
     records = airtab.get_all(formula=dor_formula, max_records=this_many)
     total = len(records)
     for record in records:
