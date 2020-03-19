@@ -768,7 +768,6 @@ def jcadc_scraper():
     wrap_it_up(function='jcadc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
-
 def jcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     url = 'https://www.jonesso.com/roster.php'
@@ -787,7 +786,8 @@ def jcdc_scraper():
         try:
             r = requests.get(page)
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.sleep(5)
             continue
         soup = BeautifulSoup(r.text, 'html.parser')
         for x in soup.find_all('a'):
@@ -802,7 +802,8 @@ def jcdc_scraper():
         try:
             r = requests.get(this_dict['link'])
         except requests.ConnectionError as err:
-            damn_it(err)
+            print(f"Skipping {this_dict['link']}: {err}")
+            time.sleep(5)
             continue
         this_dict['bk'] = x[-5:]
         this_dict['last_verified'] = (
