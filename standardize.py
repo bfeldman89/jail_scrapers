@@ -245,6 +245,57 @@ def jcadc_lea(raw_lea):
         return 'AG'
 
 
+def jcdc_lea(raw_lea):
+    if raw_lea == "JONES COUNTY SHERIFF'S OFFICE":
+        return 'JonesCntySD'
+    if raw_lea in {'LAUREL POLICE DEPARTMENT', 'LA police'}:
+        return 'LaurelPD'
+    if raw_lea == 'ELLISVILLE POLICE DEPARTMENT':
+        return 'EllisvillePD'
+    if raw_lea in {'MDOC(200)', 'MISS. DEPT OF CORRECTIONS', 'DEPT OF CORR (MDOC)'}:
+        return 'MDOC'
+    if raw_lea in {
+            'HIGHWAY PATROL',
+            'MISSISSIPPI HIGHWAY PATROL',
+            'MHP MS HIGHWAY PATROL(138)',
+            'MISS. HWY PATROL',
+    }:
+        return 'MHP'
+    if raw_lea == 'JONES COUNTY DRUG COURT':
+        return 'JonesCntyDrugCt'
+    if raw_lea == 'SANDERSVILLE POLICE DEPARTMENT':
+        return 'SandersvillePD'
+    if raw_lea in {'DEPT OF TRANS (MDOT)', 'MISS DEPT OF TRANSPORTATION'}:
+        return 'MDOT'
+    if raw_lea == 'LAMAR COUNTY':
+        return 'LamarCntySD'
+    if raw_lea == 'JONES COUNTY SCHOOLS':
+        return 'JonesCntySchools'
+    if raw_lea == 'JEFFERSON DAVIS SHERIFFS DEPT':
+        return 'JeffDavisCntySD'
+    if raw_lea in {'JCJC', 'JONES JR. COLLEGE'}:
+        return 'JonesCntyJC'
+    if raw_lea == 'FORREST COUNTY':
+        return 'ForrestCntySD'
+    if raw_lea == 'Bonding Company':
+        return 'BondingCo'
+    if raw_lea == 'LAUDERDALE COUNTY':
+        return 'LauderdaleCntySD'
+    if raw_lea.startswith('US MARSHAL') or raw_lea.startswith('USMARSHAL'):
+        return 'USMarshals'
+    if raw_lea == 'JUSTICE CT.':
+        return 'JonesCntyJusticeCt'
+    if raw_lea == 'MARION COUNTY':
+        return 'MarionCntySD'
+    if raw_lea in {'JASPER COUNTY', "JASPER COUNTY SHERIFF'S DEPT"}:
+        return 'JasperCntySD'
+    if raw_lea == 'HARRISON COUNTY':
+        return 'HarrisonCntySD'
+    if raw_lea == 'SOSO POLICE DEPARTMENT':
+        return 'SosoPD'
+    return raw_lea
+
+
 def mcdc_race(raw_race):
     if raw_race == 'BLACK':
         return 'B'
