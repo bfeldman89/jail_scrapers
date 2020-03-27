@@ -2,11 +2,11 @@
 
 ## summary
 
-Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for ten separate county jails and programmatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race across jails.
+Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for 11 separate county jails and programmatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race across jails.
 
 When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the total admissions and the total jail population per jail for the day.
 
-`scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the ten jails, for which exact datetimes of release (`DOR`) are provided. Occasionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
+`scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the 11 jails, for which exact datetimes of release (`DOR`) are provided. Occasionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
 
 ## jails scraped
 
