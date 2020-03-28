@@ -1,6 +1,6 @@
-# !/usr/bin/env python3
+# !/usr/local/bin/python3.6
 """This module does blah blah."""
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from common import airtab_intakes, airtab_daily
 
 county_jails = [('Madison', 'mcdc'),
@@ -12,14 +12,17 @@ county_jails = [('Madison', 'mcdc'),
                 ('Clay', 'ccdc'),
                 ('Adams', 'acdc'),
                 ('Jasper', 'jcj'),
-                ('Jackson', 'jcadc')]
+                ('Jackson', 'jcadc'),
+                ('Jones', 'jcdc')]
 
 
 def pop_otd(day, county, jail, quiet=True):
     record = airtab_daily.match('date_str', day)
-    day_before = date.fromisoformat(day) - timedelta(1)
-    day_after = date.fromisoformat(day) + timedelta(1)
-    pop_formula = f"AND(IS_BEFORE(DOI, '{day_after}'), IS_AFTER(last_verified, '{day_before}'), jail='{jail}')"
+    # day_before = date.fromisoformat(day) - timedelta(1)
+    # day_after = date.fromisoformat(day) + timedelta(1)
+    day_before = datetime.strptime(day, '%Y-%m-%d') - timedelta(1)
+    day_after = datetime.strptime(day, '%Y-%m-%d') + timedelta(1)
+    pop_formula = f"AND(IS_BEFORE(DOI, '{day_after.date()}'), IS_AFTER(last_verified, '{day_before.date()}'), jail='{jail}')"
     records = airtab_intakes.get_all(fields='jail', formula=pop_formula)
     this_dict = {f"{county} pop": len(records)}
     airtab_daily.update(record['id'], this_dict)
