@@ -19,6 +19,10 @@ airtab_daily = Airtable(base_key=os.environ['jail_scrapers_db'],
                         table_name='daily stats',
                         api_key=os.environ['AIRTABLE_API_KEY'])
 
+airtab_archive_intakes = Airtable(base_key=os.environ['jails_archive_db'],
+                                  table_name='intakes',
+                                  api_key=os.environ['AIRTABLE_API_KEY'])
+
 airtab_tweets = Airtable(base_key=os.environ['botfeldman89_db'],
                          table_name='scheduled_tweets',
                          api_key=os.environ['AIRTABLE_API_KEY'])
