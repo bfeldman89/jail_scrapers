@@ -1,4 +1,4 @@
-# !/usr/local/bin/python3.6
+#!/usr/bin/env python
 """This module does blah blah."""
 import datetime
 import glob
@@ -79,12 +79,13 @@ def web_to_pdf():
     wrap_it_up(t0, new=i, total=i, function='web_to_pdf')
 
 
-def pdf_to_dc():
+def pdf_to_dc(quiet=True):
     # filters for recently verified intakes w/out dc_id.
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
     for jail in jails_lst:
-        print(jail)
+        if not quiet:
+            print(f"checking {jail}. . .")
         output_path = os.path.join("output", jail[0])
         try:
             ensure_dir(output_path)
@@ -92,7 +93,6 @@ def pdf_to_dc():
             print(f"Skipping {jail[0]}: {err}")
             continue
         for fn in glob.glob(os.path.join(output_path, '*.pdf')):
-            print(fn)
             obj = dc.documents.upload(fn, access="public")
             while obj.access != "public":
                 time.sleep(7)
@@ -101,7 +101,7 @@ def pdf_to_dc():
             obj.data = this_dict
             obj.put()
             this_dict["dc_id"] = obj.id
-            print(obj.id)
+            print(f"successfully uploaded {obj.id}. . .")
             this_dict["dc_title"] = obj.title
             this_dict["dc_access"] = obj.access
             this_dict["dc_pages"] = obj.pages
