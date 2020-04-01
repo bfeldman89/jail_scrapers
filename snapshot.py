@@ -1,4 +1,4 @@
-# !/usr/local/bin/python3.6
+#!/usr/bin/env python
 """This module does blah blah."""
 from datetime import timedelta, date, datetime
 from common import airtab_intakes, airtab_daily

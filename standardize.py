@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python
 """These functions take the raw race or raw lea and standardizes them"""
 
 

@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python
 """This module accesses several airtable 'views' that contain records that need some additional processing."""
 import re
 import time
