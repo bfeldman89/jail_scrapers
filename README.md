@@ -4,25 +4,25 @@
 
 Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for 11 separate county jails and programmatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race across jails.
 
-When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the total admissions and the total jail population per jail for the day.
+When an intake sheet is detected for the first time, not only is the data entered into the Airtable base, but also `web_to_pdf.py` creates a pdf of the intake sheet, and `pdf_to_dc.py` uploads that pdf to documentcloud.org. Every four hours, `polish_data.py` performs several functions to automate a lot of data cleaning. Once per day, `snapshot.py` runs to record the  number of people booked (admissions) and the total number of people incarcerated (population) per jail for the day.
 
 `scrapers.py` also keeps track of how long people are listed on the jail dockets to calculate approximate lengths of incarceration. A more precise figure for length of incarceration is available for five of the 11 jails, for which exact datetimes of release (`DOR`) are provided. Occasionally, the initial booking data is updated, and although `scrapers.py` will update the Airtable base accordingly, a new pdf is not generated for every version of the intake sheet. For example, if someone is booked for a DUI, and the next morning, the charges are updated to include a reckless driving charge, the Airtable base will reflect the updated charges, but the pdf will be a timestamped snapshot of the initial intake sheet.
 
 ## jails scraped
 
-| jail                                  | abbreviation | started scraping | discontinued scraping |
-|---------------------------------------|-------------|------------------|-----------------------|
-| Madison County Detention Center       | `mcdc`    | Sep. 6, 2018     | present               |
-| Pearl River County Detention Facility | `prcdf`   | Sep. 6, 2018     | present               |
-| Lee County Detention Center           | `lcdc`    | Dec. 1, 2018     | present               |
-| Jones County Detention Center         | `jcdc`    | Dec. 14, 2018    | Nov. 1, 2019 - Mar. 18, 2020*         |
-| Hinds County Detention Center         | `hcdc`    | Dec. 28, 2018    | present               |
-| Kemper County Detention Center        | `kcdc`      | Apr. 6, 2019     | present               |
-| Tunica County Detention Center        | `tcdc`      | Apr. 6, 2019     | present               |
-| Adams County Detention Center         | `acdc`      | May 25, 2019     | present               |
-| Clay County Detention Center          | `ccdc`      | May 24, 2019     | present               |
-| Jasper County Jail                    | `jcj`       | Jun. 3, 2019     | present               |
-| Jackson County Adult Detention Center | `jcadc`     | Dec. 2, 2019     | present               |
+| jail                                  | abbreviation | started scraping | discontinued scraping         |
+|---------------------------------------|--------------|------------------|-------------------------------|
+| Madison County Detention Center       | `mcdc`       | Sep. 6, 2018     | n/a                           |
+| Pearl River County Detention Facility | `prcdf`      | Sep. 6, 2018     | n/a                           |
+| Lee County Detention Center           | `lcdc`       | Dec. 1, 2018     | n/a                           |
+| Jones County Detention Center         | `jcdc`       | Dec. 14, 2018    | Nov. 1, 2019 - Mar. 18, 2020* |
+| Hinds County Detention Center         | `hcdc`       | Dec. 28, 2018    | n/a                           |
+| Kemper County Detention Center        | `kcdc`       | Apr. 6, 2019     | n/a                           |
+| Tunica County Detention Center        | `tcdc`       | Apr. 6, 2019     | n/a                           |
+| Adams County Detention Center         | `acdc`       | May 25, 2019     | n/a                           |
+| Clay County Detention Center          | `ccdc`       | May 24, 2019     | n/a                           |
+| Jasper County Jail                    | `jcj`        | Jun. 3, 2019     | n/a                           |
+| Jackson County Adult Detention Center | `jcadc`      | Dec. 2, 2019     | n/a                           |
 
 \* On Nov. 1, 2019, the Jones County Sheriff's Office website went down. It's unclear when it went back up, but I resumed scraping the site on Mar. 19, 2020.
 
@@ -31,6 +31,14 @@ As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,66
 ## access to the data
 
 At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, let me know via [email](mailto:bfeldman89@pm.me) or [DM](https://twitter.com/messages/compose?recipient_id=2163941252).** It's easy for me to share links to the airtable, but if you are interested in downloading the data, please provide your github username in the email, and I will invite you to a private repository with the csv files. If you don't already have a github account, you can create a free account at https://github.com/join.
+
+This repo does, however, include summary data in the form of 3 `csv` files.
+
+| file name            | description                                                                                    | frequency | link                                                                                          |
+|----------------------|------------------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------|
+| avg_daily_admits.csv | total number of people booked into each jail Sunday-Saturday divided by 7                      | weekly    | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/avg_daily_admits.csv) |
+| daily_admits.csv     | total number of people booked into each jail                                                   | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_admits.csv)     |
+| daily_pop.csv        | total number of people who were incarcerated at each jail at any point during a 24-hour window | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_pop.csv)        |
 
 ## what about the other ~70 county jails in the state
 
