@@ -32,13 +32,16 @@ As of Nov. 27, the Airtable base included data for 6,555 `mcdc` admissions, 1,66
 
 At this time, only a fraction of the data is provided at [bfeldman89.com](https://bfeldman89.com/projects/jails). Once I get all the data cleaned and the incarcerated arrestees anonymized to a degree I'm comfortable with, I'll post a lot more of the data (e.g., charge(s), bond, arresting agency). **If you are a journalist, activist, or civil rights attorney interested in the data, let me know via [email](mailto:bfeldman89@pm.me) or [DM](https://twitter.com/messages/compose?recipient_id=2163941252).** It's easy for me to share links to the airtable, but if you are interested in downloading the data, please provide your github username in the email, and I will invite you to a private repository with the csv files. If you don't already have a github account, you can create a free account at https://github.com/join.
 
-This repo does, however, include summary data in the form of 3 `csv` files.
+### summary data
 
-| file name            | description                                                                                    | frequency | link                                                                                          |
-|----------------------|------------------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------|
-| avg_daily_admits.csv | total number of people booked into each jail Sunday-Saturday divided by 7                      | weekly    | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/avg_daily_admits.csv) |
-| daily_admits.csv     | total number of people booked into each jail                                                   | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_admits.csv)     |
-| daily_pop.csv        | total number of people who were incarcerated at each jail at any point during a 24-hour window | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_pop.csv)        |
+This repo include summary data in the form of 3 `csv` files. The summary data is also available via public Airtable links. The numbers are calculated and recorded by the `snapshot.py` module.
+
+| file name              | description                                                                                    | frequency | github link                                                                                   | airtable link                                    |
+|------------------------|------------------------------------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------|--------------------------------------------------|
+| `avg_daily_admits` | total number of people booked into each jail Sunday-Saturday divided by 7                      | weekly    | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/avg_daily_admits.csv) | [:link:](https://airtable.com/shrIZLMM5O4Y8ufT9) |
+| `daily_admits`         | total number of people booked into each jail                                                   | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_admits.csv)     | [:link:](https://airtable.com/shrE6uTfjVfgZDait) |
+| `daily_pop`            | total number of people who were incarcerated at each jail at any point during a 24-hour window | daily     | [:link:](https://github.com/bfeldman89/jail_scrapers/blob/master/output/daily_pop.csv)        | [:link:](https://airtable.com/shruUvsecZ0tifoip) |
+
 
 ## what about the other ~70 county jails in the state
 
@@ -46,7 +49,7 @@ Not all sheriffs make the jail docket publicly available via the county website.
 
 The remainder of this README documents and defines the fields in the Airtable base.
 
-### fields
+## fields
 
 field | field type | description
 ---|---|---
