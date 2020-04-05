@@ -34,8 +34,10 @@ def get_pixelated_mug():
         try:
             uploader.upload(url, public_id=fn)
             i += 1
-        except cloudinary.api.Error as err:
-            print("cloudinary can't accept that shit: ", err)
+        except cloudinary.exceptions as err1:
+            print("cloudinary can't accept that shit: ", err1)
+        except AttributeError as err2:
+            print('Attribute Error for cloudinary upload: ', err2)
         time.sleep(1.5)
         this_dict = {}
         this_dict["PIXELATED_IMG"] = [{"url": record["fields"]["pixelated_url"]}]
