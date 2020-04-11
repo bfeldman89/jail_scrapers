@@ -7,7 +7,7 @@ airtab_active = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['
 airtab_archive = Airtable(os.environ['jails_archive_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 
 def archive_intakes():
-    records = airtab_active.get_all(view='to be archived', fields=['summary', 'PHOTO', 'PIXELATED_IMG', 'html', 'recent_text', 'dc_full_text'])
+    records = airtab_active.get_all(view='to be archived')
     len(records)
     for record in records:
         this_dict = {}
@@ -94,3 +94,11 @@ def archive_intakes():
         else:
             airtab_archive.insert(this_dict)
         time.sleep(.5)
+
+
+def main():
+    archive_intakes()
+
+
+if __name__ == "__main__":
+    main()
