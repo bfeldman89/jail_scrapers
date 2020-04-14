@@ -34,7 +34,7 @@ def get_pixelated_mug():
         try:
             uploader.upload(url, public_id=fn)
             i += 1
-        except cloudinary.exceptions as err1:
+        except cloudinary.exceptions.Error as err1:
             print("cloudinary can't accept that shit: ", err1)
         except AttributeError as err2:
             print('Attribute Error for cloudinary upload: ', err2)
