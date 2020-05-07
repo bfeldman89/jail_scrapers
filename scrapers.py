@@ -371,15 +371,15 @@ def kcdc_scraper():
     docket_pages = set()
     docket_pages.add('roster.php?grp=10')
     r = requests.get('https://www.kempercountysheriff.com/roster.php?grp=10')
-    soup = BeautifulSoup(r.text, 'html.parser').find(id='intContentContainer')
+    soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
     for x in soup.find_all('a'):
         y = x.get('href')
-        if y.startswith('roster.php?grp='):
+        if y.startswith('roster.php?&grp='):
             docket_pages.add(y)
     for page in docket_pages:
         page_url = f"https://www.kempercountysheriff.com/{page}"
         r = requests.get(page_url)
-        soup = BeautifulSoup(r.text, 'html.parser').find_all(class_='inmateTable')
+        soup = BeautifulSoup(r.text, 'html.parser').find_all(class_='column medium-6 inmate_div')
         for inmate_block in soup:
             x = inmate_block.find('a').get('href')
             total_intakes += 1
@@ -393,7 +393,7 @@ def kcdc_scraper():
                 continue
             this_dict['bk'] = x.replace('roster_view.php?booking_num=', '')
             this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
-            soup = BeautifulSoup(r.text, 'html.parser').find(id='intContentContainer')
+            soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
             data = []
             try:
                 for string in soup.stripped_strings:
