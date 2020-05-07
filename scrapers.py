@@ -369,15 +369,17 @@ def tcdc_scraper():
 def kcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     docket_pages = set()
-    docket_pages.add('roster.php?grp=10')
+    docket_pages.add(10)
     r = requests.get('https://www.kempercountysheriff.com/roster.php?grp=10')
-    soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
+    soup = BeautifulSoup(r.text, 'html.parser').find(class_='paging_div')
     for x in soup.find_all('a'):
         y = x.get('href')
         if y.startswith('roster.php?&grp='):
-            docket_pages.add(y)
-    for page in docket_pages:
-        page_url = f"https://www.kempercountysheriff.com/{page}"
+            grp_int = int(y.replace('roster.php?&grp=', ''))
+            docket_pages.add(grp_int)
+    last_page = max(docket_pages)
+    for page in range(10, last_page+1, 10):
+        page_url = f"https://www.kempercountysheriff.com/roster.php?&grp={page}"
         r = requests.get(page_url)
         soup = BeautifulSoup(r.text, 'html.parser').find_all(class_='column medium-6 inmate_div')
         for inmate_block in soup:
