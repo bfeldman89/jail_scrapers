@@ -60,3 +60,6 @@ def main():
     for this_week in WOIs:
         weekly(this_week)
         time.sleep(.3)
+
+if __name__ == "__main__":
+    main()
