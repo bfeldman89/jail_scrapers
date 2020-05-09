@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import random
 import sys
 import time
 from datetime import datetime, date, timezone
@@ -731,11 +732,17 @@ def jcadc_scraper():
     total_intakes = r.json()
     last_page = int(total_intakes/ 15)
     pages = range(1, last_page + 1)
+    pages = list(pages)
+    random.shuffle(pages) # for some reason page 1 cannot be the first page visited sometimes
     for pg in pages:
         r = requests.post(
             f"{root}/_inmateList.php?Function=list&Page={pg}&Order=BookDesc&Search=0",
             headers=muh_headers)
-        intakes = r.json()
+        try:
+            intakes = r.json()
+        except ValueError as err:
+            print(err)
+            continue
         for intake in intakes:
             data = []
             this_dict = {'jail': 'jcadc', '_jail': ['recwShIgdZDcf4ZcJ']}
@@ -788,7 +795,7 @@ def jcdc_scraper():
         try:
             r = requests.get(page)
         except requests.ConnectionError as err:
-            print(f"Skipping {this_dict['link']}: {err}")
+            print(f"Skipping {page}: {err}")
             time.sleep(5)
             continue
         soup = BeautifulSoup(r.text, 'html.parser')
