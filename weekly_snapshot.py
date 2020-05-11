@@ -37,27 +37,27 @@ def get_weeks():
     return this_list
 
 
-def admits_otw(week, county, jail, quiet=True):
+def admits_otw(week, county, jail):
     record = airtab_weekly.match('WOI', week)
     admits_formula = f"AND(WOI='{week}', jail='{jail}')"
     records = airtab_intakes.get_all(fields='jail', formula=admits_formula)
     other_records = airtab_archive_intakes.get_all(fields='jail', formula=admits_formula)
     this_dict = {f"{county} total admits": len(records) + len(other_records)}
     airtab_weekly.update(record['id'], this_dict)
-    if not quiet:
-        # print(this_dict, f"active, {len(records)}; archive, {len(other_records)}")
-        print(week, ' --> ', this_dict, f"active, {len(records)}; archive, {len(other_records)}")
+    # print(this_dict, f"active, {len(records)}; archive, {len(other_records)}")
+    print(week, ' --> ', this_dict, f"active, {len(records)}; archive, {len(other_records)}")
 
 
 def weekly(this_week):
     for tup in county_jails:
         county, jail = tup
-        admits_otw(this_week, county, jail, quiet=False)
+        admits_otw(this_week, county, jail,)
 
 
 def main():
     WOIs = get_weeks()
     for this_week in WOIs:
+        print(f'getting avg. admits for {this_week} ... ')
         weekly(this_week)
         time.sleep(.3)
 
