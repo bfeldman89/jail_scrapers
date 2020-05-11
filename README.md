@@ -45,9 +45,7 @@ This repo include summary data in the form of 3 `csv` files. The summary data is
 
 ## what about the other ~70 county jails in the state
 
-Not all counties make the jail docket publicly available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dockets in Mississippi that can be scraped, and I'm happy to help if someone takes the lead. Speaking of which, shout out to [@eenblam](https://github.com/eenblam) for creating [JTT](https://github.com/eenblam/jtt) to scrape jail data from online dockets that are created using the JailTracker software suite! 8 counties in MS use JailTracker.
-
-<iframe class="airtable-embed" src="https://airtable.com/embed/shrW0684Ey0VEmi9v?backgroundColor=purpleLight" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid #ccc;"></iframe>
+Not all counties make the jail docket publicly available via the county website. Of the dockets that are online, a lot of them are designed in a way that hinders scraping. That said, there are absolutely more jail dockets in Mississippi that can be scraped, and I'm happy to help if someone takes the lead. Speaking of which, shout out to [@eenblam](https://github.com/eenblam) for creating [JTT](https://github.com/eenblam/jtt) to scrape jail data from online dockets that are created using the JailTracker software suite! [8 counties](https://airtable.com/shrW0684Ey0VEmi9v) in MS use JailTracker.
 
 
 ## fields
