@@ -2,10 +2,13 @@
 """This module accesses several airtable 'views' that contain records that need some additional processing."""
 import re
 import time
-from requests import exceptions
+
 from bs4 import BeautifulSoup
 from cloudinary import uploader
-from common import airtab_intakes as airtab, cloudinary, dc, wrap_from_module
+from requests import exceptions
+
+from common import airtab_intakes as airtab
+from common import cloudinary, dc, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/polish_data.py')
 

@@ -3,13 +3,16 @@
 import datetime
 import glob
 import os
-from pathlib import Path
 import time
-from bs4 import BeautifulSoup
+from pathlib import Path
+
 import pdfkit
 import requests
 import send2trash
-from common import airtab_intakes as airtab, dc, muh_headers, wrap_from_module
+from bs4 import BeautifulSoup
+
+from common import airtab_intakes as airtab
+from common import dc, muh_headers, wrap_from_module
 
 jails_lst = [['mcdc', 'intake_number'],
              ['prcdf', 'intake_number'],

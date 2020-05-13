@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import os
 import time
+
 from airtable import Airtable
 
 airtab_active = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
 airtab_archive = Airtable(os.environ['jails_archive_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
+
 
 def archive_intakes():
     records = airtab_active.get_all(view='to be archived')

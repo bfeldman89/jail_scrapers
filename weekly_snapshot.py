@@ -2,6 +2,7 @@
 """This module does blah blah."""
 import os
 import time
+
 from airtable import Airtable
 
 airtab_intakes = Airtable(base_key=os.environ['jail_scrapers_db'],
@@ -60,6 +61,7 @@ def main():
         print(f'getting avg. admits for {this_week} ... ')
         weekly(this_week)
         time.sleep(.3)
+
 
 if __name__ == "__main__":
     main()

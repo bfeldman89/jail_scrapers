@@ -2,8 +2,9 @@
 """This module provides a function for shipping logs to Airtable."""
 import os
 import time
-from airtable import Airtable
+
 import cloudinary
+from airtable import Airtable
 from documentcloud import DocumentCloud
 
 airtab_intakes = Airtable(base_key=os.environ['jail_scrapers_db'],
@@ -35,7 +36,8 @@ dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
                    password=os.environ['DOCUMENT_CLOUD_PW'])
 
 
-muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
+muh_headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
 
 my_funcs = {'acdc_scraper': 'recZdPJHytCXB3v7C',
