@@ -41,8 +41,8 @@ def web_to_pdf():
     # filters for recently verified intakes w/out dc_id.
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
-    pdf_formula = "AND(dc_id = '', hours_since_verification < 3, jail != 'jcj')"
-    records = airtab.get_all(formula=pdf_formula)
+    # pdf_formula = "AND(dc_id = '', hours_since_verification < 6, jail != 'jcj')"
+    records = airtab.get_all(view='needs pdf')
     i = len(records)
     for record in records:
         url = record['fields']['link']
