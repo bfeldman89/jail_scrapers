@@ -2,19 +2,7 @@
 """This module does blah blah."""
 from datetime import date, datetime, timedelta
 
-from common import airtab_daily, airtab_intakes
-
-county_jails = [('Madison', 'mcdc'),
-                ('Pearl River', 'prcdf'),
-                ('Lee', 'lcdc'),
-                ('Hinds', 'hcdc'),
-                ('Kemper', 'kcdc'),
-                ('Tunica', 'tcdc'),
-                ('Clay', 'ccdc'),
-                ('Adams', 'acdc'),
-                ('Jasper', 'jcj'),
-                ('Jackson', 'jcadc'),
-                ('Jones', 'jcdc')]
+from common import airtab_daily, airtab_intakes, county_jails
 
 
 def pop_otd(day, county, jail, quiet=True):

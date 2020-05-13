@@ -5,29 +5,12 @@ import time
 
 from airtable import Airtable
 
-airtab_intakes = Airtable(base_key=os.environ['jail_scrapers_db'],
-                          table_name='intakes',
-                          api_key=os.environ['AIRTABLE_API_KEY'])
+from common import airtab_intakes, airtab_archive_intakes, county_jails
+
 
 airtab_weekly = Airtable(base_key=os.environ['jail_scrapers_db'],
                          table_name='weekly_stats',
                          api_key=os.environ['AIRTABLE_API_KEY'])
-
-airtab_archive_intakes = Airtable(base_key=os.environ['jails_archive_db'],
-                                  table_name='intakes',
-                                  api_key=os.environ['AIRTABLE_API_KEY'])
-
-county_jails = [('Madison', 'mcdc'),
-                ('Pearl River', 'prcdf'),
-                ('Lee', 'lcdc'),
-                ('Hinds', 'hcdc'),
-                ('Kemper', 'kcdc'),
-                ('Tunica', 'tcdc'),
-                ('Clay', 'ccdc'),
-                ('Adams', 'acdc'),
-                ('Jasper', 'jcj'),
-                ('Jackson', 'jcadc'),
-                ('Jones', 'jcdc')]
 
 
 def get_weeks():

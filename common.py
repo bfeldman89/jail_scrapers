@@ -39,6 +39,18 @@ dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
 muh_headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
+county_jails = [('Madison', 'mcdc'),
+                ('Pearl River', 'prcdf'),
+                ('Lee', 'lcdc'),
+                ('Hinds', 'hcdc'),
+                ('Kemper', 'kcdc'),
+                ('Tunica', 'tcdc'),
+                ('Clay', 'ccdc'),
+                ('Adams', 'acdc'),
+                ('Jasper', 'jcj'),
+                ('Jackson', 'jcadc'),
+                ('Jones', 'jcdc'),
+                ('Calhoun', 'ccj')]
 
 my_funcs = {'acdc_scraper': 'recZdPJHytCXB3v7C',
             'ccdc_scraper': 'recDAFRGM4gkPhHEO',
