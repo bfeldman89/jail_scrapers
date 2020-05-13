@@ -877,12 +877,21 @@ def ccj_scraper():
     for intake in intakes:
         this_dict = {'jail': 'ccj'}
         data = []
+        link = intake.find('a')
+        if link:
+            this_dict['link'] = link.get('href')
+            this_dict['bk'] = this_dict['link'].replace(
+                'http://www.vinelink.com/vinelink/servlet/SubjectSearch?siteID=25000&agency=18&offenderID=', '')
         for string in intake.stripped_strings:
             if string.startswith('.') and string.endswith('.'):
                 pass
             else:
                 data.append(str(string))
-        get_name(data[0], this_dict)
+        try:
+            get_name(data[0], this_dict)
+        except IndexError:
+            print('skipping empty td')
+            continue
         raw_doi = data[1]
         if raw_doi == date.today().strftime('%m/%d/%Y'):
             this_dict['DOI'] = datetime.now().strftime('%m/%d/%Y %I:%M%p')
