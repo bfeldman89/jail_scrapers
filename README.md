@@ -1,5 +1,8 @@
 # jail scrapers
 
+[![codefactor](https://www.codefactor.io/repository/github/bfeldman89/jail_scrapers/badge?style=plastic)](https://www.codefactor.io/repository/github/bfeldman89/jail_scrapers)
+![GitHub](https://img.shields.io/github/license/bfeldman89/jail_scrapers?style=plastic)
+
 ## summary
 
 Every hour at 15min past the hour, `scrapers.py` scrapes the online jail dockets for 12 separate county jails and programmatically enters the raw data into an Airtable base. `scrapers.py` imports functions from the `standardization.py` module that are designed to standardize the LEA and race across jails.
