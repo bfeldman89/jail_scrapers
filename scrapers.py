@@ -2,15 +2,19 @@
 import random
 import sys
 import time
-from datetime import datetime, date, timezone
 import urllib.parse
+from datetime import date, datetime, timezone
+
 import requests
 from bs4 import BeautifulSoup
 from nameparser import HumanName
+
 import standardize
-from common import airtab_intakes as airtab, muh_headers, wrap_from_module
+from common import airtab_intakes as airtab
+from common import muh_headers, wrap_from_module
 
 wrap_it_up = wrap_from_module('jail_scrapers/scrapers.py')
+
 
 def get_name(raw_name, this_dict):
     name = HumanName(raw_name)
@@ -730,10 +734,10 @@ def jcadc_scraper():
     root = 'https://services.co.jackson.ms.us/jaildocket'
     r = requests.post(f"{root}/_inmateList.php?Function=count", headers=muh_headers)
     total_intakes = r.json()
-    last_page = int(total_intakes/ 15)
+    last_page = int(total_intakes / 15)
     pages = range(1, last_page + 1)
     pages = list(pages)
-    random.shuffle(pages) # for some reason page 1 cannot be the first page visited sometimes
+    random.shuffle(pages)  # for some reason page 1 cannot be the first page visited sometimes
     for pg in pages:
         r = requests.post(
             f"{root}/_inmateList.php?Function=list&Page={pg}&Order=BookDesc&Search=0",
@@ -865,6 +869,48 @@ def jcdc_scraper():
     wrap_it_up(function='jcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
+def ccj_scraper():
+    main_url = 'http://www.calhounso.org/page.php?id=7'
+    r = requests.get(main_url, headers=muh_headers)
+    soup = BeautifulSoup(r.text, 'html.parser').find(id='cms_body_content')
+    intakes = soup.table.tbody.find_all('td')
+    for intake in intakes:
+        this_dict = {'jail': 'ccj'}
+        data = []
+        for string in intake.stripped_strings:
+            if string.startswith('.') and string.endswith('.'):
+                pass
+            else:
+                data.append(str(string))
+        get_name(data[0], this_dict)
+        raw_doi = data[1]
+        if raw_doi == date.today().strftime('%m/%d/%Y'):
+            this_dict['DOI'] = datetime.now().strftime('%m/%d/%Y %I:%M%p')
+        else:
+            this_dict['DOI'] = f"{raw_doi} 11:59pm"
+        remaining_data = ' '.join(data[2:])
+        DOR_index = remaining_data.find('Released')
+        if DOR_index != -1:
+            this_dict['charges'] = remaining_data[:DOR_index].strip()
+            raw_dor = remaining_data[DOR_index + 8:].strip()
+            if raw_dor == date.today().strftime('%m/%d/%Y'):
+                this_dict['DOR'] = datetime.now().strftime('%m/%d/%Y %I:%M%p')
+            else:
+                this_dict['DOR'] = f"{raw_dor} 12:01am"
+        else:
+            this_dict['charges'] = remaining_data
+        this_dict['recent_text'] = '\n'.join(data)
+        this_dict['html'] = intake.prettify()
+        this_dict['last_verified'] = (datetime.utcnow().replace(tzinfo=timezone.utc).strftime('%m/%d/%Y %H:%M'))
+        m = airtab.match('recent_text', this_dict['recent_text'], view='ccj')
+        if not m:
+            airtab.insert(this_dict, typecast=True)
+        else:
+            this_dict['updated'] = True
+            airtab.update(m['id'], this_dict, typecast=True)
+        time.sleep(0.2)
+
+
 def main():
     fndict = {
         'mcdc': mcdc_scraper,
@@ -877,9 +923,10 @@ def main():
         'jcj': jcj_scraper,
         'hcdc': hcdc_scraper,
         'jcadc': jcadc_scraper,
-        'jcdc': jcdc_scraper
+        'jcdc': jcdc_scraper,
+        'ccj': ccj_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'jcadc', 'hcdc', 'jcdc']
+    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'jcadc', 'hcdc', 'jcdc', 'ccj']
 
     try:
         jails_str = sys.argv[1]
@@ -900,6 +947,7 @@ def main():
         fndict[jail.strip()]()
         time.sleep(nap_length)
     fndict[jails[-1]]()
+
 
 if __name__ == '__main__':
     main()
