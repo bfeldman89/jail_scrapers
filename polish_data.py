@@ -246,12 +246,15 @@ def get_all_intake_deets():
         txt_str = record['fields']['recent_text']
         chunks = txt_str.split('\nRequest Victim Notification\n')
         match_1 = re.search(r"(\w+)\s+(Male|Female)", chunks[0])
-        raw_race = match_1.group(1)
-        if raw_race == 'AVAILABLE':
-            this_dict['race'] = 'U'
-        else:
-            this_dict['race'] = raw_race[0]
-        this_dict['sex'] = match_1.group(2)[0]
+        try:
+            raw_race = match_1.group(1)
+            if raw_race == 'AVAILABLE':
+                this_dict['race'] = 'U'
+            else:
+                this_dict['race'] = raw_race[0]
+            this_dict['sex'] = match_1.group(2)[0]
+        except AttributeError:
+            print('there isnt race/sex info')
         try:
             this_dict['intake_weight'] = re.search(r"(\d+) Pounds", chunks[0]).group(1)
         except AttributeError:
