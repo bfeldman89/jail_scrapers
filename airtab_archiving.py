@@ -9,6 +9,11 @@ airtab_archive = Airtable(os.environ['jails_archive_db'], 'intakes', os.environ[
 
 
 def archive_intakes():
+    # the airtable view, 'to be archived', i filters intakes to only include those
+    # where the `days_since_verification` field > 60. I have no idea why I'm too
+    # paranoid to add a function to delete the record from the active base once the
+    # record has been successfully added to the archive base, but I am. So I do that
+    # manually after manually verifying that the archived record is actual and complete.
     records = airtab_active.get_all(view='to be archived')
     len(records)
     for record in records:
@@ -92,6 +97,7 @@ def archive_intakes():
             print('no updated pdf')
         match = airtab_archive.match('old_record_id', record['id'])
         if match:
+            print(f"this record, {record['id']}, was already archived... hmmmm...")
             airtab_archive.update(match['id'], this_dict)
         else:
             airtab_archive.insert(this_dict)
