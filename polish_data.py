@@ -29,7 +29,7 @@ def polish_data():
 def get_pixelated_mug():
     """This function uploads the raw image to cloudinary and then uploads the pixelated version to the airtable record."""
     t0, i = time.time(), 0
-    needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24)"
+    needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24, jail != 'jcdc')"
     records = airtab.get_all(formula=needs_pix_img_formula)
     for record in records:
         url = record["fields"]["PHOTO"][0]["url"]
