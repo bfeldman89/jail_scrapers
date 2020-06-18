@@ -67,7 +67,7 @@ def web_to_pdf():
                 r = requests.get(url, headers=muh_headers)
             except requests.ConnectionError as err:
                 print(f"Skipping {url}: {err}")
-                time.spleep(5)
+                time.sleep(5)
                 continue
             data = []
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -131,7 +131,7 @@ def get_dor_if_possible(this_many=50):
             r = requests.get(record["fields"]["link"])
         except requests.ConnectionError as err:
             print(f"Skipping {record['fields']['link']}: {err}")
-            time.spleep(5)
+            time.sleep(5)
             continue
         soup = BeautifulSoup(r.text, "html.parser")
         data = []
