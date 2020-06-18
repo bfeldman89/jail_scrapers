@@ -375,7 +375,7 @@ def kcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     docket_pages = set()
     docket_pages.add(10)
-    r = requests.get('https://www.kempercountysheriff.com/roster.php?&grp=10')
+    r = requests.get('https://www.kempercountysheriff.com/roster.php')
     soup = BeautifulSoup(r.text, 'html.parser').find(class_='paging_div')
     for x in soup.find_all('a'):
         y = x.get('href')
@@ -384,7 +384,10 @@ def kcdc_scraper():
             docket_pages.add(grp_int)
     last_page = max(docket_pages)
     for page in range(10, last_page+1, 10):
-        page_url = f"https://www.kempercountysheriff.com/roster.php?&grp={page}"
+        if page == 10:
+            page_url = 'https://www.kempercountysheriff.com/roster.php'
+        else:
+            page_url = f"https://www.kempercountysheriff.com/roster.php?&grp={page}"
         r = requests.get(page_url)
         soup = BeautifulSoup(r.text, 'html.parser').find_all(class_='column medium-6 inmate_div')
         for inmate_block in soup:
@@ -950,7 +953,7 @@ def main():
     try:
         nap_length = int(sys.argv[2])
     except IndexError:
-        nap_length = 5
+        nap_length = 10
 
     for jail in jails[:-1]:
         fndict[jail.strip()]()
