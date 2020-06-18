@@ -375,7 +375,7 @@ def kcdc_scraper():
     t0, new_intakes, total_intakes = time.time(), 0, 0
     docket_pages = set()
     docket_pages.add(10)
-    r = requests.get('https://www.kempercountysheriff.com/roster.php?grp=10')
+    r = requests.get('https://www.kempercountysheriff.com/roster.php?&grp=10')
     soup = BeautifulSoup(r.text, 'html.parser').find(class_='paging_div')
     for x in soup.find_all('a'):
         y = x.get('href')
