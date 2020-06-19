@@ -876,7 +876,11 @@ def ccj_scraper():
     main_url = 'http://www.calhounso.org/page.php?id=7'
     r = requests.get(main_url, headers=muh_headers)
     soup = BeautifulSoup(r.text, 'html.parser').find(id='cms_body_content')
-    intakes = soup.table.tbody.find_all('td')
+    try:
+        intakes = soup.table.tbody.find_all('td')
+    except AttributeError as err:
+        print(err)
+        return
     for intake in intakes:
         this_dict = {'jail': 'ccj'}
         data = []
