@@ -878,8 +878,7 @@ def ccj_scraper():
     soup = BeautifulSoup(r.text, 'html.parser').find(id='cms_body_content')
     try:
         intakes = soup.table.tbody.find_all('td')
-    except AttributeError as err:
-        print(err)
+    except AttributeError:
         return
     for intake in intakes:
         this_dict = {'jail': 'ccj'}
