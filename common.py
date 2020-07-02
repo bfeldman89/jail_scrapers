@@ -32,9 +32,11 @@ cloudinary.config(cloud_name='bfeldman89',
                   api_key=os.environ['CLOUDINARY_API_KEY'],
                   api_secret=os.environ['CLOUDINARY_API_SECRET'])
 
-dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
-                   password=os.environ['DOCUMENT_CLOUD_PW'])
+# dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
+#                    password=os.environ['DOCUMENT_CLOUD_PW'])
 
+dc = DocumentCloud(username=os.environ['MUCKROCK_USERNAME'],
+                   password=os.environ['MUCKROCK_PW'])
 
 muh_headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
