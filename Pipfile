@@ -26,6 +26,7 @@ Send2Trash = "*"
 six = "*"
 soupsieve = "*"
 urllib3 = "*"
+documentcloud = "*"
 
 [requires]
 python_version = "3.8"
