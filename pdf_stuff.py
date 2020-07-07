@@ -10,6 +10,7 @@ import pdfkit
 import requests
 import send2trash
 from bs4 import BeautifulSoup
+from documentcloud import exceptions
 
 from common import airtab_intakes as airtab
 from common import dc, muh_headers, wrap_from_module
@@ -96,23 +97,34 @@ def pdf_to_dc(quiet=True):
             print(f"Skipping {jail[0]}: {err}")
             continue
         for fn in glob.glob(os.path.join(output_path, '*.pdf')):
-            obj = dc.documents.upload(fn, access="public")
-            while obj.access != "public":
-                time.sleep(7)
+            if not quiet:
+                print(f"uploading {fn} . . .")
+            obj = dc.documents.upload(fn)
+            while obj.access not in {"public", "success"}:
+                print(obj.access)
+                try:
+                    obj.access = "public"
+                    obj.put()
+                except exceptions.APIError as err:
+                    print(err)
+                time.sleep(5)
                 obj = dc.documents.get(obj.id)
             this_dict = {"jail": jail[0]}
             obj.data = this_dict
             obj.put()
-            this_dict["dc_id"] = obj.id
+            this_dict["dc_id"] = str(obj.id)
             print(f"successfully uploaded {obj.id}. . .")
             this_dict["dc_title"] = obj.title
             this_dict["dc_access"] = obj.access
             this_dict["dc_pages"] = obj.pages
-            full_text = obj.full_text.decode("utf-8")
+            try:
+                full_text = obj.full_text.decode("utf-8")
+            except AttributeError as err:
+                full_text = obj.full_text
             this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
             # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
             record = airtab.match(jail[1], this_dict["dc_title"], sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
-            airtab.update(record["id"], this_dict)
+            airtab.update(record["id"], this_dict, typecast=True)
             send2trash.send2trash(fn)
             i += 1
             time.sleep(2)
