@@ -99,9 +99,13 @@ def pdf_to_dc(quiet=True):
         for fn in glob.glob(os.path.join(output_path, '*.pdf')):
             if not quiet:
                 print(f"uploading {fn} . . .")
-            obj = dc.documents.upload(fn)
+            try:
+                obj = dc.documents.upload(fn)
+            except requests.exceptions.ReadTimeout:
+                time.sleep(5)
+                continue
             while obj.access not in {"public", "success"}:
-                print(obj.access)
+                # print(obj.access)
                 try:
                     obj.access = "public"
                     obj.put()
