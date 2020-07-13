@@ -104,15 +104,19 @@ def pdf_to_dc(quiet=True):
             except requests.exceptions.ReadTimeout:
                 time.sleep(5)
                 continue
-            while obj.access not in {"public", "success"}:
-                # print(obj.access)
-                try:
-                    obj.access = "public"
-                    obj.put()
-                except exceptions.APIError as err:
-                    print(err)
+            obj = dc.documents.get(obj.id)
+            # while obj.access not in {"public", "success"}:
+            #    try:
+            #        obj.access = "public"
+            #        obj.put()
+            #    except exceptions.APIError as err:
+            #        print(err)
+            #    time.sleep(5)
+            #    obj = dc.documents.get(obj.id)
+            while obj.status != 'success':
                 time.sleep(5)
                 obj = dc.documents.get(obj.id)
+            obj.access = "public"
             this_dict = {"jail": jail[0]}
             obj.data = this_dict
             obj.put()
