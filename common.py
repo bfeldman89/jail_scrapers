@@ -32,8 +32,6 @@ cloudinary.config(cloud_name='bfeldman89',
                   api_key=os.environ['CLOUDINARY_API_KEY'],
                   api_secret=os.environ['CLOUDINARY_API_SECRET'])
 
-# dc = DocumentCloud(username=os.environ['DOCUMENT_CLOUD_USERNAME'],
-#                    password=os.environ['DOCUMENT_CLOUD_PW'])
 
 dc = DocumentCloud(username=os.environ['MUCKROCK_USERNAME'],
                    password=os.environ['MUCKROCK_PW'])
