@@ -2,6 +2,7 @@
 
 [![codefactor](https://www.codefactor.io/repository/github/bfeldman89/jail_scrapers/badge?style=plastic)](https://www.codefactor.io/repository/github/bfeldman89/jail_scrapers)
 ![GitHub](https://img.shields.io/github/license/bfeldman89/jail_scrapers?style=plastic)
+![](https://img.shields.io/badge/fucks%20given-zero-blue)
 
 ## summary
 
