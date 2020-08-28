@@ -960,8 +960,10 @@ def main():
 
     for jail in jails[:-1]:
         fndict[jail.strip()]()
+        print('done scraping ', jail)
         time.sleep(nap_length)
     fndict[jails[-1]]()
+    print('done scraping ', jails[-1])
 
 
 if __name__ == '__main__':
