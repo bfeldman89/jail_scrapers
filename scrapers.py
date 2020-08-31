@@ -245,7 +245,6 @@ def lcdc_scraper():
             urls.add(url)
     total_intakes = len(urls)
     for url in urls:
-        total_intakes += 1
         this_dict = {'jail': 'lcdc', '_jail': ['rec44JJsg4vJMkUhI']}
         this_dict['link'] = root_url + url
         try:
@@ -358,8 +357,10 @@ def tcdc_scraper():
                 this_dict['charge_1'] = c
             if 'Bond:' in data:
                 this_dict['intake_bond_cash'] = data[1 + data.index('Bond:')]
-            this_dict[
-                'img_src'] = f"https://www.tunicamssheriff.com/templates/tunicamssheriff.com/images/inmates/{this_dict['bk']}.jpg"
+            this_dict['img_src'] = (
+                "https://www.tunicamssheriff.com/templates/tunicamssheriff.com/"
+                f"images/inmates/{this_dict['bk']}.jpg"
+            )
             image_url = {'url': this_dict['img_src']}
             attachments_array = []
             attachments_array.append(image_url)
@@ -584,8 +585,10 @@ def ccdc_scraper():
         m = airtab.match('bk', this_dict['bk'], view='ccdc', fields='recent_text')
         if not m:
             this_dict['LEA'] = standardize.ccdc_lea(raw_lea)
-            this_dict[
-                'img_src'] = f"http://www.claysheriffms.org/templates/claysheriffms.org/images/inmates/{this_dict['bk']}.jpg"
+            this_dict['img_src'] = (
+                "http://www.claysheriffms.org/templates/claysheriffms.org/"
+                f"images/inmates/{this_dict['bk']}.jpg"
+            )
             image_url = {'url': this_dict['img_src']}
             attachments_array = []
             attachments_array.append(image_url)
@@ -766,7 +769,10 @@ def jcadc_scraper():
             if m:
                 airtab.update(m['id'], this_dict, typecast=True)
             else:
-                raw_name = f"{intake['Name_First_MI']} {intake['Name_Middle']} {intake['Name_Last']} {intake['Name_Suffix']}"
+                raw_name = (
+                    f"{intake['Name_First_MI']} {intake['Name_Middle']} "
+                    f"{intake['Name_Last']} {intake['Name_Suffix']}"
+                )
                 get_name(raw_name, this_dict)
                 raw_doi = intake["BookDate"]
                 if raw_doi == date.today().strftime('%m/%d/%Y'):
@@ -776,7 +782,11 @@ def jcadc_scraper():
                 this_dict['DOA'] = intake["ArrestDate"]
                 this_dict['LEA'] = standardize.jcadc_lea(intake["Arrest_Agency"])
                 articles = soup.find_all('article')
-                this_dict['html'] = f"<html>\n<body>\n{articles[0].prettify()}\n{articles[1].prettify()}\n</body>\n</html>"
+                this_dict['html'] = (
+                    "<html>\n<body>\n"
+                    f"{articles[0].prettify()}\n{articles[1].prettify()}\n"
+                    "</body>\n</html>"
+                )
                 this_dict['img_src'] = f"{root}/inmate/{this_dict['intake_number']}.jpg"
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
                 airtab.insert(this_dict, typecast=True)
@@ -873,6 +883,7 @@ def jcdc_scraper():
 
 
 def ccj_scraper():
+    t0, new_intakes, total_intakes = time.time(), 0, 0
     main_url = 'http://www.calhounso.org/page.php?id=7'
     r = requests.get(main_url, headers=muh_headers)
     soup = BeautifulSoup(r.text, 'html.parser').find(id='cms_body_content')
@@ -881,6 +892,7 @@ def ccj_scraper():
     except AttributeError:
         return
     for intake in intakes:
+        total_intakes += 1
         this_dict = {'jail': 'ccj'}
         data = []
         link = intake.find('a')
@@ -920,10 +932,12 @@ def ccj_scraper():
         m = airtab.match('recent_text', this_dict['recent_text'], view='ccj')
         if not m:
             airtab.insert(this_dict, typecast=True)
+            new_intakes += 1
         else:
             this_dict['updated'] = True
             airtab.update(m['id'], this_dict, typecast=True)
         time.sleep(0.2)
+    wrap_it_up(function='ccj_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
 def main():
