@@ -100,6 +100,7 @@ def archive_intakes():
             print(f"this record, {record['id']}, was already archived... hmmmm...")
             airtab_archive.update(match['id'], this_dict)
         else:
+            print('just archived record ', record['id'])
             airtab_archive.insert(this_dict)
         time.sleep(.5)
 
