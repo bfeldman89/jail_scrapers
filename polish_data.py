@@ -54,8 +54,9 @@ def update_summary(this_many=150):
     with a text field than it does with a formula field. Because this view will
     regularly be packed full of records, the default max records is 100."""
     t0, i = time.time(), 0
-    outdated_summary_formula = "AND(blurb != '#ERROR', blurb != summary)"
-    records = airtab.get_all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
+    # outdated_summary_formula = "AND(blurb != '#ERROR!', blurb != summary)"
+    # records = airtab.get_all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
+    records = airtab.get_all(view='needs updated summary', fields="blurb", max_records=this_many)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
