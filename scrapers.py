@@ -514,6 +514,8 @@ def hcdc_scraper():
                         raw_doi = data[1 + data.index('Arrest Date')]
                         if raw_doi == date.today().strftime('%m/%d/%Y'):
                             this_dict['DOI'] = datetime.now().strftime('%m/%d/%Y %I:%M%p')
+                        elif raw_doi == '//':
+                            pass
                         else:
                             this_dict['DOI'] = f"{raw_doi} 11:59pm"
                         raw_lea = data[1 + data.index('Arresting Agency')]
