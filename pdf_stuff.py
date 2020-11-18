@@ -10,7 +10,6 @@ import pdfkit
 import requests
 import send2trash
 from bs4 import BeautifulSoup
-from documentcloud import exceptions
 
 from common import airtab_intakes as airtab
 from common import dc, muh_headers, wrap_from_module
@@ -89,7 +88,7 @@ def pdf_to_dc(quiet=True):
     t0, i = time.time(), 0
     for jail in jails_lst:
         if not quiet:
-            print(f"checking {jail}. . .")
+            print(f"checking {jail[0]}. . .")
         output_path = os.path.join("output", jail[0])
         try:
             ensure_dir(output_path)
@@ -105,14 +104,6 @@ def pdf_to_dc(quiet=True):
                 time.sleep(5)
                 continue
             obj = dc.documents.get(obj.id)
-            # while obj.access not in {"public", "success"}:
-            #    try:
-            #        obj.access = "public"
-            #        obj.put()
-            #    except exceptions.APIError as err:
-            #        print(err)
-            #    time.sleep(5)
-            #    obj = dc.documents.get(obj.id)
             while obj.status != 'success':
                 time.sleep(5)
                 obj = dc.documents.get(obj.id)
@@ -133,7 +124,10 @@ def pdf_to_dc(quiet=True):
             # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
             record = airtab.match(jail[1], this_dict["dc_title"], sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
             airtab.update(record["id"], this_dict, typecast=True)
-            send2trash.send2trash(fn)
+            if jail[0] == 'lcdc':
+                os.rename(fn, f'/Users/blakefeldman/code/daily-journal-jail-data/pdfs/lee/{this_dict["dc_title"]}.pdf')
+            else:
+                send2trash.send2trash(fn)
             i += 1
             time.sleep(2)
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
