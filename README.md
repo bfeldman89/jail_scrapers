@@ -27,7 +27,7 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Clay County Detention Center          | `ccdc`       | May 24, 2019     | n/a                           |
 | Jasper County Jail                    | `jcj`        | Jun. 3, 2019     | n/a                           |
 | Jackson County Adult Detention Center | `jcadc`      | Dec. 2, 2019     | n/a                           |
-| Calhoun County Jail                   | `ccj`        | May 13, 2019     | n/a                           |
+| Calhoun County Jail                   | `ccj`        | May 13, 2020     | June 11, 2020                 |
 
 \* On Nov. 1, 2019, the Jones County Sheriff's Office website went down. It's unclear when it went back up, but I resumed scraping the site on Mar. 19, 2020.
 
