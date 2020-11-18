@@ -24,10 +24,10 @@ When an intake sheet is detected for the first time, not only is the data entere
 | Kemper County Detention Center        | `kcdc`       | Apr. 6, 2019     | n/a                           |
 | Tunica County Detention Center        | `tcdc`       | Apr. 6, 2019     | n/a                           |
 | Adams County Detention Center         | `acdc`       | May 25, 2019     | n/a                           |
-| Clay County Detention Center          | `ccdc`       | May 24, 2019     | Oct. 7, 2020                  |
+| Clay County Detention Center          | `ccdc`       | May 24, 2019     | Oct. 26, 2020                 |
 | Jasper County Jail                    | `jcj`        | Jun. 3, 2019     | n/a                           |
 | Jackson County Adult Detention Center | `jcadc`      | Dec. 2, 2019     | n/a                           |
-| Calhoun County Jail                   | `ccj`        | May 13, 2020     | June 11, 2020                 |
+| Calhoun County Jail                   | `ccj`        | May 13, 2020     | June 18, 2020                 |
 
 \* On Nov. 1, 2019, the Jones County Sheriff's Office website went down. It's unclear when it went back up, but I resumed scraping the site on Mar. 19, 2020.
 
