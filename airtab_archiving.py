@@ -102,7 +102,7 @@ def archive_intakes():
         else:
             print('just archived record ', record['id'])
             airtab_archive.insert(this_dict)
-        time.sleep(.5)
+        time.sleep(.3)
 
 
 def main():
