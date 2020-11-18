@@ -1,1 +1,0 @@
-because the downloaded pdf files are not included in the github repo (`*.pdf` is included in `.gitignore`), in order for the output subdirectories to be will be included, I've included this plain text file. That's it. That's literally all this is for.
