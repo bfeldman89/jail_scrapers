@@ -24,10 +24,12 @@ def polish_data():
     fix_charges_to_by_lines()
     get_full_text()
     get_all_intake_deets()
+    update_dc_fields()
 
 
 def get_pixelated_mug():
-    """This function uploads the raw image to cloudinary and then uploads the pixelated version to the airtable record."""
+    """This function uploads the raw image to cloudinary and
+    then uploads the pixelated version to the airtable record."""
     t0, i = time.time(), 0
     needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24, jail != 'jcdc')"
     records = airtab.get_all(formula=needs_pix_img_formula)
@@ -285,6 +287,20 @@ def get_all_intake_deets():
         airtab.update(record['id'], this_dict, typecast=True)
         i += 1
     wrap_it_up(t0, new=i, total=len(records), function='get_all_intake_deets')
+
+
+def update_dc_fields():
+    records = airtab.get_all(view='need dc urls updated', fields='dc_id', max_records=200)
+    print(len(records), ' records need updated documentcloud URLs.')
+    for record in records:
+        this_dict = {}
+        dc_id = record['fields'].get('dc_id')
+        obj = dc.documents.get(dc_id)
+        this_dict["PDF"] = obj.pdf_url
+        this_dict["dc_canonical_url"] = obj.canonical_url
+        this_dict["dc_resources_page_image"] = obj.normal_image_url
+        airtab.update(record['id'], this_dict)
+        time.sleep(.3)
 
 
 def main():
