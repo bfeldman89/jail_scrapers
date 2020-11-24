@@ -290,7 +290,7 @@ def get_all_intake_deets():
 
 
 def update_dc_fields():
-    records = airtab.get_all(view='need dc urls updated', fields='dc_id', max_records=200)
+    records = airtab.get_all(view='need dc urls updated', fields='dc_id', max_records=100)
     print(len(records), ' records need updated documentcloud URLs.')
     for record in records:
         this_dict = {}
