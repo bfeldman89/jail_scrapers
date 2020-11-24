@@ -116,6 +116,9 @@ def pdf_to_dc(quiet=True):
             this_dict["dc_title"] = obj.title
             this_dict["dc_access"] = obj.access
             this_dict["dc_pages"] = obj.pages
+            this_dict["PDF"] = obj.pdf_url
+            this_dict["dc_canonical_url"] = obj.canonical_url
+            this_dict["dc_resources_page_image"] = obj.normal_image_url
             try:
                 full_text = obj.full_text.decode("utf-8")
             except AttributeError as err:
