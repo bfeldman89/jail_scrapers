@@ -491,6 +491,11 @@ def hcdc_scraper():
                         time.sleep(5)
                         continue
                     this_dict['img_src'] = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
+                    # a simpler solution might be to just do this
+                    # if 'No photo available at this time.' in data:
+                    #    print('no pic')
+                    # else:
+                    #    this_dict['img_src'] = f"http://www.co.hinds.ms.us/pgs/inmatephotos/{this_dict['bk']}.jpg"
                     this_dict['PHOTO'] = []
                     image_url = {'url': this_dict['img_src']}
                     this_dict['PHOTO'].append(image_url)
