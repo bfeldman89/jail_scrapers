@@ -490,7 +490,7 @@ def hcdc_scraper():
                         print(f"Skipping {this_dict['link']}: {err}")
                         time.sleep(5)
                         continue
-                    this_dict['img_src'] = f"http://www.co.hinds.ms.us/pgs/inmatephotos/{this_dict['bk']}.jpg"
+                    this_dict['img_src'] = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
                     this_dict['PHOTO'] = []
                     image_url = {'url': this_dict['img_src']}
                     this_dict['PHOTO'].append(image_url)
