@@ -3,9 +3,10 @@
 import re
 import time
 
+import requests
+
 from bs4 import BeautifulSoup
 from cloudinary import uploader
-from requests import exceptions
 
 from common import airtab_intakes as airtab
 from common import cloudinary, dc, wrap_from_module
@@ -34,19 +35,24 @@ def get_pixelated_mug():
     needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24, jail != 'jcdc')"
     records = airtab.get_all(formula=needs_pix_img_formula)
     for record in records:
-        url = record["fields"]["PHOTO"][0]["url"]
-        fn = record["fields"]["UID"]
-        try:
-            uploader.upload(url, public_id=fn)
-            i += 1
-        except cloudinary.exceptions.Error as err1:
-            print("cloudinary can't accept that shit: ", err1)
-        except AttributeError as err2:
-            print('Attribute Error for cloudinary upload: ', err2)
-        time.sleep(1.5)
         this_dict = {}
-        this_dict["PIXELATED_IMG"] = [{"url": record["fields"]["pixelated_url"]}]
-        airtab.update(record["id"], this_dict)
+        url = record["fields"]["PHOTO"][0]["url"]
+        r = requests.get(url)
+        content_type = r.headers['Content-Type']
+        print(content_type)
+        if content_type == 'image/jpeg':
+            try:
+                upload_response = uploader.upload(url, opacity=40, effect="blur:400")
+                # to-do: individualize opacity and blur effect for each facility
+                time.sleep(1)
+                this_dict["PIXELATED_IMG"] = [{"url": upload_response['secure_url']}]
+                airtab.update(record['id'], this_dict)
+            except cloudinary.exceptions.Error as err1:
+                print("cloudinary can't accept that shit: ", err1)
+            except AttributeError as err2:
+                print('Attribute Error for cloudinary upload: ', err2)
+        else:
+            print('this shit was some really weird content type:', content_type)
     wrap_it_up(t0, new=i, total=len(records), function='get_pixelated_mug')
 
 
@@ -182,7 +188,7 @@ def parse_charge_1():
             try:
                 airtab.update(record["id"], this_dict)
                 i += 1
-            except exceptions.HTTPError as err:
+            except requests.exceptions.HTTPError as err:
                 print(err)
                 continue
     wrap_it_up(t0, new=i, total=len(records), function='parse_charge_1')
