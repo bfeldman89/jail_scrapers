@@ -459,19 +459,17 @@ def hcdc_scraper():
         print(f"Skipping {main_url}: {err}")
         time.sleep(5)
         return
-
     if r.status_code == 500:
         print(r.text)
         return
-
-    soup = BeautifulSoup(r.text, 'html.parser')
-    total_pages = int(soup.h3.string.split()[3])
+    soup1 = BeautifulSoup(r.text, 'html.parser')
+    total_pages = int(soup1.h3.string.split()[3])
     pages = list(range(1, total_pages + 1))
     for page in pages:
         param_str = f"name_sch=Date&SS1=1&ScrollAction=Page+{page}"
         r = requests.get(f"{main_url}?{param_str}")
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.find_all('tr')
+        soup2 = BeautifulSoup(r.text, 'html.parser')
+        rows = soup2.find_all('tr')
         for row in rows:
             cells = row.find_all('td')
             if len(cells) == 7:
@@ -490,27 +488,10 @@ def hcdc_scraper():
                         print(f"Skipping {this_dict['link']}: {err}")
                         time.sleep(5)
                         continue
-                    try:
-                        img_src = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
-                        img_src_r = requests.get(img_src)
-                        if img_src_r.headers['Content-Type'] == 'image/jpeg':
-                            this_dict['img_src'] = img_src
-                        else:
-                            print('image source isn\'t actually an image')
-                    except TypeError:
-                        print('no pic at this time')
-                    # a simpler solution might be to just do this
-                    # if 'No photo available at this time.' in data:
-                    #    print('no pic')
-                    # else:
-                    #    this_dict['img_src'] = f"http://www.co.hinds.ms.us/pgs/inmatephotos/{this_dict['bk']}.jpg"
-                    this_dict['PHOTO'] = []
-                    image_url = {'url': this_dict['img_src']}
-                    this_dict['PHOTO'].append(image_url)
+                    intake_soup = BeautifulSoup(r.text, 'html.parser')
                     data = []
-                    soup = BeautifulSoup(r.text, 'html.parser')
-                    this_dict['html'] = soup.find_all('table')[1].prettify()
-                    for string in soup.stripped_strings:
+                    this_dict['html'] = intake_soup.find_all('table')[1].prettify()
+                    for string in intake_soup.stripped_strings:
                         data.append(string)
                     try:
                         this_dict['recent_text'] = '\n'.join(data[data.index('Name'): data.index('Disclaimer:')])
@@ -534,10 +515,19 @@ def hcdc_scraper():
                         raw_lea = data[1 + data.index('Arresting Agency')]
                         this_dict['LEA'] = standardize.hcdc_lea(raw_lea)
                         this_dict['charge_1'] = data[1 + data.index('Charge 1')]
-                        airtab.insert(this_dict, typecast=True)
-                        new_intakes += 1
                     except ValueError as err:
-                        print(err, '\n', this_dict['link'])
+                        print(err, f"({this_dict['link']})")
+                    try:
+                        img_src = urllib.parse.urljoin(main_url, intake_soup.find('img', {'align': 'middle'})['src'])
+                        if requests.get(img_src).headers['Content-Type'] == 'image/jpeg':
+                            this_dict['img_src'] = img_src
+                            this_dict['PHOTO'] = [{'url': img_src}]
+                        else:
+                            print('image source isn\'t actually an image')
+                    except TypeError:
+                        print('no pic at this time')
+                    airtab.insert(this_dict, typecast=True)
+                    new_intakes += 1
     wrap_it_up(function='hcdc_scraper', t0=t0, new=new_intakes, total=total_intakes)
 
 
@@ -674,10 +664,7 @@ def acdc_scraper():
         if not m:
             if soup.img:
                 this_dict['img_src'] = soup.img.get('src')
-                image_url = {'url': this_dict['img_src']}
-                attachments_array = []
-                attachments_array.append(image_url)
-                this_dict['PHOTO'] = attachments_array
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
             else:
                 print('problem w/ mugshot')
             airtab.insert(this_dict, typecast=True)
@@ -883,13 +870,12 @@ def jcdc_scraper():
                 this_dict['charge_1'] = c
             if 'Bond:' in data:
                 this_dict['intake_bond_cash'] = data[1 + data.index('Bond:')]
-            this_dict['img_src'] = f"https://www.jonesso.com/templates/jonesso.com/images/inmates/{this_dict['bk']}.jpg"
-            image_url = {'url': this_dict['img_src']}
-            attachments_array = []
-            attachments_array.append(image_url)
-            this_dict['PHOTO'] = attachments_array
-            if this_dict['img_src'] == 'https://www.jonesso.com/common/images/pna.gif':
-                this_dict['PIXELATED_IMG'] = attachments_array
+            img_tag = soup.find('div', class_='inmate_profile_image').img
+            if img_tag['alt'] != 'Image Not Availble':
+                this_dict['img_src'] = f"https://www.jonesso.com/{img_tag['src']}"
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
+            else:
+                print('image not currently available')
             airtab.insert(this_dict, typecast=True)
             new_intakes += 1
         else:
