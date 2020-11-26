@@ -161,13 +161,50 @@ def get_charges_from_recent_text():
 
 def retry_getting_mugshot():
     t0, i = time.time(), 0
-    needs_pic_formula = "AND(img_src != '', PHOTO = '', hours_since_verification < 6, jail != 'lcdc')"
+    needs_pic_formula = "AND(PHOTO = '', hours_since_verification < 12, jail != 'lcdc')"
     records = airtab.get_all(formula=needs_pic_formula)
+    print("we're gonna retry getting mugs for", len(records), "records...")
     for record in records:
         this_dict = {}
-        this_dict["PHOTO"] = [{"url": record["fields"]["img_src"]}]
-        airtab.update(record["id"], this_dict)
-        i += 1
+        r = requests.get(record['fields']['link'])
+        if record['fields']['jail'] == 'jcdc':
+            soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
+            img_tag = soup.find('div', class_='inmate_profile_image').img
+            if img_tag['alt'] != 'Image Not Availble':
+                this_dict['img_src'] = f"https://www.jonesso.com/{img_tag['src']}"
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
+            else:
+                print('image not currently available')
+        elif record['fields']['jail'] == 'hcdc':
+            soup = BeautifulSoup(r.text, 'html.parser')
+            img_src = 'http://www.co.hinds.ms.us' + soup.find('img', {'align': 'middle'})['src']
+            if requests.get(img_src).headers['Content-Type'] == 'image/jpeg':
+                this_dict['img_src'] = img_src
+                this_dict['PHOTO'] = [{'url': img_src}]
+            else:
+                print('image source isn\'t actually an image')
+        elif record['fields']['jail'] == 'kcdc':
+            soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
+            if soup.img:
+                img_src_raw = soup.img['src']
+                if img_src_raw.startswith('templates/kempercountysheriff.com/images/inmates'):
+                    this_dict['img_src'] = f"https://www.kempercountysheriff.com/{img_src_raw}"
+                    this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
+        elif record['fields']['jail'] == 'acdc':
+            soup = BeautifulSoup(r.text, 'html.parser').find('div', class_='blog-content-container')
+            try:
+                img_tag = soup.find('img')
+            except AttributeError:
+                print('this intake is no longer available via online docket')
+                continue
+            if img_tag:
+                this_dict['img_src'] = img_tag.get('src')
+                this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
+            else:
+                print('image not currently available')
+        else:
+            print(f"awww hell... this one is from the {record['fields']['jail']} docket/scraper...")
+        airtab.update(record['id'], this_dict)
     wrap_it_up(t0, new=i, total=len(records), function='retry_getting_mugshot')
 
 
