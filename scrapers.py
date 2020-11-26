@@ -490,7 +490,10 @@ def hcdc_scraper():
                         print(f"Skipping {this_dict['link']}: {err}")
                         time.sleep(5)
                         continue
-                    this_dict['img_src'] = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
+                    try:
+                        this_dict['img_src'] = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
+                    except TypeError:
+                        print('no pic at this time')
                     # a simpler solution might be to just do this
                     # if 'No photo available at this time.' in data:
                     #    print('no pic')
