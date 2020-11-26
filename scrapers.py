@@ -491,7 +491,12 @@ def hcdc_scraper():
                         time.sleep(5)
                         continue
                     try:
-                        this_dict['img_src'] = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
+                        img_src = urllib.parse.urljoin(main_url, soup.find('img', {'align': 'middle'})['src'])
+                        img_src_r = requests.get(img_src)
+                        if img_src_r.headers['Content-Type'] == 'image/jpeg':
+                            this_dict['img_src'] = img_src
+                        else:
+                            print('image source isn\'t actually an image')
                     except TypeError:
                         print('no pic at this time')
                     # a simpler solution might be to just do this
