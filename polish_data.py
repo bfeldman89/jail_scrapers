@@ -43,7 +43,6 @@ def get_pixelated_mug():
         if content_type == 'image/jpeg':
             try:
                 upload_response = uploader.upload(url, opacity=40, effect="blur:400")
-                # to-do: individualize opacity and blur effect for each facility
                 time.sleep(1)
                 this_dict["PIXELATED_IMG"] = [{"url": upload_response['secure_url']}]
                 airtab.update(record['id'], this_dict)
@@ -177,14 +176,22 @@ def retry_getting_mugshot():
                 print('image not currently available')
         elif record['fields']['jail'] == 'hcdc':
             soup = BeautifulSoup(r.text, 'html.parser')
-            img_src = 'http://www.co.hinds.ms.us' + soup.find('img', {'align': 'middle'})['src']
-            if requests.get(img_src).headers['Content-Type'] == 'image/jpeg':
-                this_dict['img_src'] = img_src
-                this_dict['PHOTO'] = [{'url': img_src}]
-            else:
-                print('image source isn\'t actually an image')
+            try:
+                img_src = 'http://www.co.hinds.ms.us' + soup.find('img', {'align': 'middle'})['src']
+                if requests.get(img_src).headers['Content-Type'] == 'image/jpeg':
+                    this_dict['img_src'] = img_src
+                    this_dict['PHOTO'] = [{'url': img_src}]
+                else:
+                    print('image source isn\'t actually an image')
+            except TypeError:
+                print('no img tag in intake html')
         elif record['fields']['jail'] == 'kcdc':
             soup = BeautifulSoup(r.text, 'html.parser').find(id='cms-content')
+            try:
+                img_tag = soup.find('img')
+            except AttributeError:
+                print('no img tag in intake html')
+                continue
             if soup.img:
                 img_src_raw = soup.img['src']
                 if img_src_raw.startswith('templates/kempercountysheriff.com/images/inmates'):
@@ -194,14 +201,11 @@ def retry_getting_mugshot():
             soup = BeautifulSoup(r.text, 'html.parser').find('div', class_='blog-content-container')
             try:
                 img_tag = soup.find('img')
-            except AttributeError:
-                print('this intake is no longer available via online docket')
-                continue
-            if img_tag:
                 this_dict['img_src'] = img_tag.get('src')
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
-            else:
-                print('image not currently available')
+            except AttributeError:
+                print('no img tag in intake html')
+                continue
         else:
             print(f"awww hell... this one is from the {record['fields']['jail']} docket/scraper...")
         airtab.update(record['id'], this_dict)
