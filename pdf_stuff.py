@@ -101,11 +101,11 @@ def pdf_to_dc(quiet=True):
             try:
                 obj = dc.documents.upload(fn)
             except requests.exceptions.ReadTimeout:
-                time.sleep(5)
+                time.sleep(7)
                 continue
             obj = dc.documents.get(obj.id)
             while obj.status != 'success':
-                time.sleep(5)
+                time.sleep(7)
                 obj = dc.documents.get(obj.id)
             obj.access = "public"
             this_dict = {"jail": jail[0]}
@@ -132,7 +132,7 @@ def pdf_to_dc(quiet=True):
             else:
                 send2trash.send2trash(fn)
             i += 1
-            time.sleep(5)
+            time.sleep(7)
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
@@ -169,7 +169,6 @@ def get_dor_if_possible(this_many=50):
                 pdfkit.from_url(record["fields"]["link"], fn, options=options)
             except NotADirectoryError as err:
                 print(f"Can't write PDF: {err}")
-
             this_dict["DOR"] = datetime.datetime.strptime(
                 data[1 + data.index("Release Date:")], "%m-%d-%Y - %I:%M %p"
             ).strftime('%m/%d/%Y %H:%M')
@@ -179,6 +178,7 @@ def get_dor_if_possible(this_many=50):
 
 
 def main():
+    pdf_to_dc()
     web_to_pdf()
     pdf_to_dc()
     get_dor_if_possible()
