@@ -39,7 +39,7 @@ def get_pixelated_mug():
         url = record["fields"]["PHOTO"][0]["url"]
         r = requests.get(url)
         content_type = r.headers['Content-Type']
-        print(content_type)
+        # print(content_type)
         if content_type == 'image/jpeg':
             try:
                 upload_response = uploader.upload(url, opacity=40, effect="blur:400")
@@ -172,8 +172,8 @@ def retry_getting_mugshot():
             if img_tag['alt'] != 'Image Not Availble':
                 this_dict['img_src'] = f"https://www.jonesso.com/{img_tag['src']}"
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
-            else:
-                print('image not currently available')
+            # else:
+            #     print('image not currently available')
         elif record['fields']['jail'] == 'hcdc':
             soup = BeautifulSoup(r.text, 'html.parser')
             try:
@@ -190,7 +190,7 @@ def retry_getting_mugshot():
             try:
                 img_tag = soup.find('img')
             except AttributeError:
-                print('no img tag in intake html')
+                # print('no img tag in intake html')
                 continue
             if soup.img:
                 img_src_raw = soup.img['src']
@@ -204,7 +204,7 @@ def retry_getting_mugshot():
                 this_dict['img_src'] = img_tag.get('src')
                 this_dict['PHOTO'] = [{'url': this_dict['img_src']}]
             except AttributeError:
-                print('no img tag in intake html')
+                # print('no img tag in intake html')
                 continue
         else:
             print(f"awww hell... this one is from the {record['fields']['jail']} docket/scraper...")
