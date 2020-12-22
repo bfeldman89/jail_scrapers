@@ -275,7 +275,10 @@ def lcdc_scraper():
             this_dict['LEA'] = standardize.lcdc_lea(raw_lea)
             this_dict['race'] = standardize.lcdc_race(raw_race=soup.find(id='lblRace').string)
             get_name(soup.find(id='lblInmateName').string, this_dict)
-            this_dict['DOB'] = soup.find(id='lblBirthdate').string
+            try:
+                this_dict['DOB'] = soup.find(id='lblBirthdate').string
+            except AttributeError:
+                print('no DOB for this one')
             this_dict['intake_age'] = int(soup.find(id='lblAge').string)
             if soup.find(id='lblSex').string:
                 this_dict['sex'] = soup.find(id='lblSex').string[:1]
