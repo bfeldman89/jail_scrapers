@@ -303,9 +303,12 @@ def tcdc_scraper():
     soup = BeautifulSoup(r.text, 'html.parser')
     for x in soup.find_all('a'):
         y = x.get('href')
-        if y.startswith('roster.php?grp='):
-            page = urllib.parse.urljoin(url, y)
-            docket_pages.add(page)
+        try:
+            if y.startswith('roster.php?grp='):
+                page = urllib.parse.urljoin(url, y)
+                docket_pages.add(page)
+        except AttributeError:
+            pass
     intakes = []
     for page in docket_pages:
         r = requests.get(page)
