@@ -27,7 +27,10 @@ def admits_otd(day, county, jail, quiet=True):
     # other_records = airtab_archive_intakes.get_all(fields='jail', formula=admits_formula)
     # this_dict = {f"{county} admits": len(records) + len(other_records)}
     this_dict = {f"{county} admits": len(records)}
-    airtab_daily.update(record['id'], this_dict)
+    try:
+        airtab_daily.update(record['id'], this_dict)
+    except KeyError:
+        print('no record')
     if not quiet:
         # print(this_dict, f"active, {len(records)}; archive, {len(other_records)}")
         print(this_dict)
