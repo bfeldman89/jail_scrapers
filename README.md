@@ -17,7 +17,7 @@ When an intake sheet is detected for the first time, not only is the data entere
 | jail                                  | abbreviation | started scraping | discontinued scraping         |
 | ------------------------------------- | ------------ | ---------------- | ----------------------------- |
 | Madison County Detention Center       | `mcdc`       | Sep. 6, 2018     | n/a                           |
-| Pearl River County Detention Facility | `prcdf`      | Sep. 6, 2018     | n/a                           |
+| Pearl River County Detention Facility | `prcdf`      | Sep. 6, 2018     | Dec. 22, 2020                 |
 | Lee County Detention Center           | `lcdc`       | Dec. 1, 2018     | n/a                           |
 | Jones County Detention Center         | `jcdc`       | Dec. 14, 2018    | Nov. 1, 2019 - Mar. 18, 2020* |
 | Hinds County Detention Center         | `hcdc`       | Dec. 28, 2018    | n/a                           |
