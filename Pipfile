@@ -26,6 +26,7 @@ six = "*"
 soupsieve = "*"
 urllib3 = "*"
 documentcloud = "*"
+python-documentcloud = "*"
 
 [requires]
 python_version = "3.8"
