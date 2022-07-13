@@ -278,7 +278,10 @@ def get_full_text():
         this_dict["dc_title"] = obj.title
         this_dict["dc_access"] = obj.access
         this_dict["dc_pages"] = obj.pages
-        this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
+        try:
+            this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
+        except:
+            pass
         airtab.update(record["id"], this_dict)
         i += 1
     wrap_it_up(t0, new=i, total=len(records), function='get_full_text')
