@@ -507,7 +507,9 @@ def hcdc_scraper():
                         get_name(data[1 + data.index('Name')], this_dict)
                         this_dict['intake_address_line_1'] = data[1 + data.index('Address')]
                         this_dict['intake_address_line_2'] = data[2 + data.index('Address')]
-                        this_dict['DOB'] = data[1 + data.index('Date of Birth')]
+                        tempDOB = data[1 + data.index('Date of Birth')]
+                        if tempDOB != '//':
+                            this_dict['DOB'] = tempDOB
                         this_dict['sex'] = data[1 + data.index('Sex')]
                         if data[1 + data.index('Race')] != 'Height':
                             this_dict['race'] = data[1 + data.index('Race')]
