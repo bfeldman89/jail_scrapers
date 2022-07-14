@@ -320,7 +320,10 @@ def get_all_intake_deets():
             this_dict['intake_eye'] = re.search(r"(\w+)\s+Eyes", chunks[0]).group(1)
         except AttributeError:
             print('eye color is a mystery')
-        this_dict['intake_age'] = re.search(r"(\d\d) Years Old", chunks[0]).group(1)
+        try:
+            this_dict['intake_age'] = re.search(r"(\d\d) Years Old", chunks[0]).group(1)
+        except AttributeError:
+            print('intake age is a mystery')
         crim_details = chunks[1].splitlines()
         for ln in crim_details:
             results = re.search(r"([MF]\w+) - Bond: (\$.*)", ln)
