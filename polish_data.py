@@ -324,19 +324,22 @@ def get_all_intake_deets():
             this_dict['intake_age'] = re.search(r"(\d\d) Years Old", chunks[0]).group(1)
         except AttributeError:
             print('intake age is a mystery')
-        crim_details = chunks[1].splitlines()
-        for ln in crim_details:
-            results = re.search(r"([MF]\w+) - Bond: (\$.*)", ln)
-            if results:
-                bond_ammts.append(results.group(2))
-                classifications.append(results.group(1))
-            elif ', ' in ln:
-                charges.append(f"\"{ln}\"")
-            else:
-                charges.append(ln)
-        this_dict['charges'] = ', '.join(charges)
-        this_dict['bond_ammounts'] = '\n'.join(bond_ammts)
-        this_dict['charge_classifications'] = ', '.join(classifications)
+        try:
+            crim_details = chunks[1].splitlines()
+            for ln in crim_details:
+                results = re.search(r"([MF]\w+) - Bond: (\$.*)", ln)
+                if results:
+                    bond_ammts.append(results.group(2))
+                    classifications.append(results.group(1))
+                elif ', ' in ln:
+                    charges.append(f"\"{ln}\"")
+                else:
+                    charges.append(ln)
+            this_dict['charges'] = ', '.join(charges)
+            this_dict['bond_ammounts'] = '\n'.join(bond_ammts)
+            this_dict['charge_classifications'] = ', '.join(classifications)
+        except IndexError:
+            print('no crim details')
         airtab.update(record['id'], this_dict, typecast=True)
         i += 1
     wrap_it_up(t0, new=i, total=len(records), function='get_all_intake_deets')
