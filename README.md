@@ -293,4 +293,4 @@ ___
 
 ## license
 
-The content/data of this project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/), and the code used to scrape, format and display the data is licensed under the [MIT license](LICENSE.md).
+The content/data of this project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/), and the code used to scrape, format and display the data is licensed under the MIT license.
