@@ -8,7 +8,7 @@ from airtable import Airtable
 from common import airtab_intakes, airtab_archive_intakes, county_jails
 
 
-airtab_weekly = Airtable(base_key=os.environ['jail_scrapers_db'],
+airtab_weekly = Airtable(os.environ['jail_scrapers_db'],
                          table_name='weekly_stats',
                          api_key=os.environ['AIRTABLE_API_KEY'])
 
