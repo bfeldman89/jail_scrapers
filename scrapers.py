@@ -964,7 +964,7 @@ def main():
         'jcdc': jcdc_scraper,
         'ccj': ccj_scraper
     }
-    keynames = ['mcdc', 'prcdf', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcdc', 'ccj']
+    keynames = ['mcdc', 'lcdc', 'kcdc', 'tcdc', 'acdc', 'ccdc', 'jcj', 'hcdc', 'jcdc', 'ccj']
 
     try:
         jails_str = sys.argv[1]
