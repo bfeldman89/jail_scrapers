@@ -74,6 +74,7 @@ def update_summary(this_many=150):
 def get_charges_from_recent_text():
     """This function parces the recent text field and extracts the listed charges."""
     t0, i = time.time(), 0
+    # this formula is the same as one used for `needs charges` view
     needs_charges_formula = "AND(charges_updated = '', html != '', recent_text != '', hours_since_verification < 72, DONT_DELETE != 'no charges')"
     records = airtab.get_all(formula=needs_charges_formula)
     for record in records:
@@ -269,19 +270,17 @@ def remove_weird_character():
     wrap_it_up(t0, new=i, total=len(records), function='remove_weird_character')
 
 
-def get_full_text():
+def get_full_text(this_many=150):
     t0, i = time.time(), 0
-    records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'])
+    records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'], max_records=this_many)
     for record in records:
         this_dict = {}
         obj = dc.documents.get(record['fields']['dc_id'])
         this_dict["dc_title"] = obj.title
         this_dict["dc_access"] = obj.access
         this_dict["dc_pages"] = obj.pages
-        try:
-            this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
-        except:
-            pass
+        # this_dict["dc_full_text"] = obj.full_text.decode("utf-8")
+        this_dict["dc_full_text"] = obj.full_text
         airtab.update(record["id"], this_dict)
         i += 1
     wrap_it_up(t0, new=i, total=len(records), function='get_full_text')
