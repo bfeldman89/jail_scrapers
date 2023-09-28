@@ -272,7 +272,8 @@ def remove_weird_character():
 
 def get_full_text(this_many=150):
     t0, i = time.time(), 0
-    records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'], max_records=this_many)
+    # records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'], max_records=this_many)
+    records = airtab.get_all(view="needs full text", fields=['dc_id'], max_records=this_many)
     for record in records:
         this_dict = {}
         obj = dc.documents.get(record['fields']['dc_id'])
