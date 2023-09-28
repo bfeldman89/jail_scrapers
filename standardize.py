@@ -248,6 +248,8 @@ def jcadc_lea(raw_lea):
 def jcdc_lea(raw_lea):
     if raw_lea == "JONES COUNTY SHERIFF'S OFFICE":
         return 'JonesCntySD'
+    if raw_lea == "COPIAH COUNTY SHERIFF'S DEPT":
+        return 'CopiahCntySD'
     if raw_lea in {'LAUREL POLICE DEPARTMENT', 'LA police'}:
         return 'LaurelPD'
     if raw_lea == 'ELLISVILLE POLICE DEPARTMENT':
