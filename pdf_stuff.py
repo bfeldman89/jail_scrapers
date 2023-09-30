@@ -37,12 +37,12 @@ def ensure_dir(dir_path):
 wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 
-def web_to_pdf():
+def web_to_pdf(this_many=100):
     # filters for recently verified intakes w/out dc_id.
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
     # pdf_formula = "AND(dc_id = '', hours_since_verification < 6, jail != 'jcj')"
-    records = airtab.get_all(view='needs pdf')
+    records = airtab.get_all(view='needs pdf', max_records=this_many)
     i = len(records)
     for record in records:
         url = record['fields']['link']
@@ -78,13 +78,17 @@ def web_to_pdf():
             else:
                 print('the intake number does not match!')
         else:
-            pdfkit.from_url(url, fn, options)
+            try:
+                pdfkit.from_url(url, fn, options)
+            except IOError as err:
+                print(err)
+        time.sleep(2)
     wrap_it_up(t0, new=i, total=i, function='web_to_pdf')
 
 
 def pdf_to_dc(quiet=True):
-    # filters for recently verified intakes w/out dc_id.
-    # for records meeting that criteria, create pdf & store locally
+    # uploads local PDF to DocumentCloud and updates the
+    # relevant Airtable record with the DocumentCloud data 
     t0, i = time.time(), 0
     for jail in jails_lst:
         if not quiet:
@@ -121,7 +125,7 @@ def pdf_to_dc(quiet=True):
             this_dict["dc_resources_page_image"] = obj.normal_image_url
             try:
                 full_text = obj.full_text.decode("utf-8")
-            except AttributeError as err:
+            except AttributeError:
                 full_text = obj.full_text
             this_dict["dc_full_text"] = os.linesep.join([s for s in full_text.splitlines() if s])
             # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
@@ -132,7 +136,7 @@ def pdf_to_dc(quiet=True):
             else:
                 send2trash.send2trash(fn)
             i += 1
-            time.sleep(7)
+            time.sleep(3)
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
