@@ -37,13 +37,14 @@ def ensure_dir(dir_path):
 wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 
-def web_to_pdf(this_many=100):
+def web_to_pdf(this_many=50):
     # filters for recently verified intakes w/out dc_id.
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
     # pdf_formula = "AND(dc_id = '', hours_since_verification < 6, jail != 'jcj')"
     records = airtab.get_all(view='needs pdf', max_records=this_many)
     i = len(records)
+    print(i, ' total records in "needs pdf" view')
     for record in records:
         url = record['fields']['link']
         jail = record['fields']['jail']
@@ -64,7 +65,7 @@ def web_to_pdf(this_many=100):
             options['footer-font-size'] = 10
         if jail in {'mcdc', 'prcdf'}:
             try:
-                r = requests.get(url, headers=muh_headers)
+                r = requests.get(url, headers=muh_headers, timeout=60)
             except requests.ConnectionError as err:
                 print(f"Skipping {url}: {err}")
                 time.sleep(5)
@@ -88,7 +89,7 @@ def web_to_pdf(this_many=100):
 
 def pdf_to_dc(quiet=True):
     # uploads local PDF to DocumentCloud and updates the
-    # relevant Airtable record with the DocumentCloud data 
+    # relevant Airtable record with the DocumentCloud data
     t0, i = time.time(), 0
     for jail in jails_lst:
         if not quiet:
@@ -105,11 +106,11 @@ def pdf_to_dc(quiet=True):
             try:
                 obj = dc.documents.upload(fn)
             except requests.exceptions.ReadTimeout:
-                time.sleep(7)
+                time.sleep(5)
                 continue
             obj = dc.documents.get(obj.id)
             while obj.status != 'success':
-                time.sleep(7)
+                time.sleep(5)
                 obj = dc.documents.get(obj.id)
             obj.access = "public"
             this_dict = {"jail": jail[0]}
@@ -131,25 +132,26 @@ def pdf_to_dc(quiet=True):
             # record = airtab.match(jail[1], this_dict["dc_title"], view='needs pdf')
             record = airtab.match(jail[1], this_dict["dc_title"], sort=[('dc_id', 'asc'), ('initial_scrape', 'desc')])
             airtab.update(record["id"], this_dict, typecast=True)
-            if jail[0] == 'lcdc':
-                os.rename(fn, f'/Users/blakefeldman/code/daily-journal-jail-data/pdfs/lee/{this_dict["dc_title"]}.pdf')
-            else:
-                send2trash.send2trash(fn)
+            # if jail[0] == 'lcdc':
+            #     os.rename(fn, f'/Users/blakefeldman/code/daily-journal-jail-data/pdfs/lee/{this_dict["dc_title"]}.pdf')
+            # else:
+            #     send2trash.send2trash(fn)
+            send2trash.send2trash(fn)
             i += 1
-            time.sleep(3)
+            time.sleep(2)
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
 def get_dor_if_possible(this_many=50):
     t0, i = time.time(), 0
     # records = airtab.get_all(view="check for DOR")
-    dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc', jail = 'jcdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 48)"
+    dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc', jail = 'jcdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 24)"
     records = airtab.get_all(formula=dor_formula, max_records=this_many)
     total = len(records)
     for record in records:
         this_dict = {}
         try:
-            r = requests.get(record["fields"]["link"])
+            r = requests.get(record["fields"]["link"], timeout=60)
         except requests.ConnectionError as err:
             print(f"Skipping {record['fields']['link']}: {err}")
             time.sleep(5)
@@ -185,7 +187,7 @@ def main():
     pdf_to_dc()
     web_to_pdf()
     pdf_to_dc()
-    get_dor_if_possible()
+    # get_dor_if_possible()
 
 
 if __name__ == "__main__":
