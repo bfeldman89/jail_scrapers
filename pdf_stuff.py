@@ -142,7 +142,7 @@ def pdf_to_dc(quiet=True):
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
-def get_dor_if_possible(this_many=50):
+def get_dor_if_possible(this_many=30):
     t0, i = time.time(), 0
     # records = airtab.get_all(view="check for DOR")
     dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc', jail = 'jcdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 24)"
