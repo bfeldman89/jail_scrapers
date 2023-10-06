@@ -37,7 +37,7 @@ def ensure_dir(dir_path):
 wrap_it_up = wrap_from_module('jail_scrapers/pdf_stuff.py')
 
 
-def web_to_pdf(this_many=50):
+def web_to_pdf(this_many=30):
     # filters for recently verified intakes w/out dc_id.
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
@@ -187,7 +187,7 @@ def main():
     pdf_to_dc()
     web_to_pdf()
     pdf_to_dc()
-    # get_dor_if_possible()
+    get_dor_if_possible()
 
 
 if __name__ == "__main__":
