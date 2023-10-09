@@ -138,7 +138,7 @@ def pdf_to_dc(quiet=True):
             #     send2trash.send2trash(fn)
             send2trash.send2trash(fn)
             i += 1
-            time.sleep(2)
+            time.sleep(5)
     wrap_it_up(t0, new=i, total=i, function='pdf_to_dc')
 
 
