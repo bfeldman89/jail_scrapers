@@ -2,10 +2,12 @@
 import os
 import time
 
-from airtable import Airtable
+from pyairtable import Api
 
-airtab_active = Airtable(os.environ['jail_scrapers_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
-airtab_archive = Airtable(os.environ['jails_archive_db'], 'intakes', os.environ['AIRTABLE_API_KEY'])
+api = Api(os.environ['AIRTABLE_PAT'])
+
+airtab_active = api.table(os.environ['jail_scrapers_db'], 'intakes')
+airtab_archive = api.table(os.environ['jails_archive_db'], 'intakes')
 
 
 def archive_intakes():

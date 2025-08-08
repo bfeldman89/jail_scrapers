@@ -33,7 +33,7 @@ def get_pixelated_mug():
     then uploads the pixelated version to the airtable record."""
     t0, i = time.time(), 0
     needs_pix_img_formula = "AND(PHOTO != '', PIXELATED_IMG = '', hours_since_verification < 24, jail != 'jcdc')"
-    records = airtab.get_all(formula=needs_pix_img_formula)
+    records = airtab.all(formula=needs_pix_img_formula)
     for record in records:
         this_dict = {}
         url = record["fields"]["PHOTO"][0]["url"]
@@ -62,8 +62,8 @@ def update_summary(this_many=150):
     regularly be packed full of records, the default max records is 100."""
     t0, i = time.time(), 0
     # outdated_summary_formula = "AND(blurb != '#ERROR!', blurb != summary)"
-    # records = airtab.get_all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
-    records = airtab.get_all(view='needs updated summary', fields="blurb", max_records=this_many)
+    # records = airtab.all(formula=outdated_summary_formula, fields="blurb", max_records=this_many)
+    records = airtab.all(view='needs updated summary', fields="blurb", max_records=this_many)
     for record in records:
         this_dict = {}
         this_dict["summary"] = record["fields"]["blurb"]
@@ -76,7 +76,7 @@ def get_charges_from_recent_text():
     t0, i = time.time(), 0
     # this formula is the same as one used for `needs charges` view
     needs_charges_formula = "AND(charges_updated = '', html != '', recent_text != '', hours_since_verification < 72, DONT_DELETE != 'no charges')"
-    records = airtab.get_all(formula=needs_charges_formula)
+    records = airtab.all(formula=needs_charges_formula)
     for record in records:
         this_dict = {}
         if record["fields"]["jail"] == "lcdc":
@@ -162,7 +162,7 @@ def get_charges_from_recent_text():
 def retry_getting_mugshot():
     t0, i = time.time(), 0
     needs_pic_formula = "AND(PHOTO = '', hours_since_verification < 12, jail != 'lcdc')"
-    records = airtab.get_all(formula=needs_pic_formula)
+    records = airtab.all(formula=needs_pic_formula)
     print("we're gonna retry getting mugs for", len(records), "records...")
     for record in records:
         this_dict = {}
@@ -216,7 +216,7 @@ def retry_getting_mugshot():
 def parse_charge_1():
     t0, i = time.time(), 0
     needs_charge_1_parsed_formula = "AND(OR(jail = 'mcdc', jail = 'prcdf'), charge_1_statute = '', hours_since_initial_scrape < 48, charge_1 != '', charge_1 != 'HOLDHOLD', charge_1 != 'DRUGDRUG COURT', charge_1 != 'HLD Other AgencyHold for other Agency')"
-    records = airtab.get_all(formula=needs_charge_1_parsed_formula)
+    records = airtab.all(formula=needs_charge_1_parsed_formula)
     for record in records:
         this_dict = {}
         x = None
@@ -238,7 +238,7 @@ def parse_charge_1():
 
 def fix_charges_to_by_lines():
     t0, i = time.time(), 0
-    records = airtab.get_all(formula="AND(TEST_FORMULA != '', TEST_RESULT = '')", fields='charges')
+    records = airtab.all(formula="AND(TEST_FORMULA != '', TEST_RESULT = '')", fields='charges')
     for record in records:
         this_dict = {}
         cleaner = []
@@ -258,7 +258,7 @@ def fix_charges_to_by_lines():
 def remove_weird_character():
     t0, i = time.time(), 0
     remove_wierd_character_formula = "AND(hours_since_verification > 12, FIND('ã', recent_text) > 1)"
-    records = airtab.get_all(formula=remove_wierd_character_formula, fields='recent_text')
+    records = airtab.all(formula=remove_wierd_character_formula, fields='recent_text')
     for record in records:
         this_dict = {}
         x = record['fields']['recent_text'].find('ã')
@@ -272,8 +272,8 @@ def remove_weird_character():
 
 def get_full_text(this_many=150):
     t0, i = time.time(), 0
-    # records = airtab.get_all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'], max_records=this_many)
-    records = airtab.get_all(view="needs full text", fields=['dc_id'], max_records=this_many)
+    # records = airtab.all(formula="AND(dc_id != '', dc_full_text = '')", fields=['dc_id'], max_records=this_many)
+    records = airtab.all(view="needs full text", fields=['dc_id'], max_records=this_many)
     for record in records:
         this_dict = {}
         obj = dc.documents.get(record['fields']['dc_id'])
@@ -290,7 +290,7 @@ def get_full_text(this_many=150):
 def get_all_intake_deets():
     t0, i = time.time(), 0
     jcadc_deets_formula = "AND(jail = 'jcadc', charges = '', recent_text != '')"
-    records = airtab.get_all(formula=jcadc_deets_formula, fields='recent_text')
+    records = airtab.all(formula=jcadc_deets_formula, fields='recent_text')
     for record in records:
         charges = []
         bond_ammts = []
@@ -346,7 +346,7 @@ def get_all_intake_deets():
 
 
 def update_dc_fields():
-    records = airtab.get_all(view='need dc urls updated', fields='dc_id', max_records=100)
+    records = airtab.all(view='need dc urls updated', fields='dc_id', max_records=100)
     print(len(records), ' records need updated documentcloud URLs.')
     for record in records:
         this_dict = {}

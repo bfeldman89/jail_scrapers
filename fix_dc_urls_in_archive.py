@@ -5,7 +5,7 @@ from common import airtab_archive_intakes as airtab
 from common import dc
 
 def update_dc_fields(how_many, nap):
-    records = airtab.get_all(view='need dc urls updated', fields='dc_id', max_records=how_many)
+    records = airtab.all(view='need dc urls updated', fields='dc_id', max_records=how_many)
     print(len(records), ' archived records need updated documentcloud URLs.')
     for record in records:
         this_dict = {}

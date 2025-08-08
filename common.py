@@ -4,28 +4,20 @@ import os
 import time
 
 import cloudinary
-from airtable import Airtable
+from pyairtable import Api
 from documentcloud import DocumentCloud
 
-airtab_intakes = Airtable(os.environ['jail_scrapers_db'],
-                          table_name='intakes',
-                          api_key=os.environ['AIRTABLE_API_KEY'])
+api = Api(os.environ['AIRTABLE_PAT'])
 
-airtab_log = Airtable(os.environ['log_db'],
-                      table_name='log',
-                      api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_intakes = api.table(os.environ['jail_scrapers_db'], 'intakes')
 
-airtab_daily = Airtable(os.environ['jail_scrapers_db'],
-                        table_name='daily stats',
-                        api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_log = api.table(os.environ['log_db'], 'log')
 
-airtab_archive_intakes = Airtable(os.environ['jails_archive_db'],
-                                  table_name='intakes',
-                                  api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_daily = api.table(os.environ['jail_scrapers_db'], 'daily stats')
 
-airtab_tweets = Airtable(os.environ['botfeldman89_db'],
-                         table_name='scheduled_tweets',
-                         api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_archive_intakes = api.table(os.environ['jails_archive_db'], 'intakes')
+
+airtab_tweets = api.table(os.environ['botfeldman89_db'], 'scheduled_tweets')
 
 
 cloudinary.config(cloud_name='bfeldman89',

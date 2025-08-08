@@ -42,7 +42,7 @@ def web_to_pdf(this_many=30):
     # for records meeting that criteria, create pdf & store locally
     t0, i = time.time(), 0
     # pdf_formula = "AND(dc_id = '', hours_since_verification < 6, jail != 'jcj')"
-    records = airtab.get_all(view='needs pdf', max_records=this_many)
+    records = airtab.all(view='needs pdf', max_records=this_many)
     i = len(records)
     print(i, ' total records in "needs pdf" view')
     for record in records:
@@ -144,9 +144,9 @@ def pdf_to_dc(quiet=True):
 
 def get_dor_if_possible(this_many=30):
     t0, i = time.time(), 0
-    # records = airtab.get_all(view="check for DOR")
+    # records = airtab.all(view="check for DOR")
     dor_formula = "AND(OR(jail = 'kcdc', jail = 'tcdc', jail = 'ccdc', jail = 'jcdc'), DOR = '', hours_since_verification > 6, hours_since_verification < 24)"
-    records = airtab.get_all(formula=dor_formula, max_records=this_many)
+    records = airtab.all(formula=dor_formula, max_records=this_many)
     total = len(records)
     for record in records:
         this_dict = {}

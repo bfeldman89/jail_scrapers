@@ -3,14 +3,12 @@
 import os
 import time
 
-from airtable import Airtable
+from pyairtable import Api
 
 from common import airtab_intakes, airtab_archive_intakes, county_jails
 
-
-airtab_weekly = Airtable(os.environ['jail_scrapers_db'],
-                         table_name='weekly_stats',
-                         api_key=os.environ['AIRTABLE_API_KEY'])
+api = Api(os.environ['AIRTABLE_PAT'])
+airtab_weekly = api.table(os.environ['jail_scrapers_db'], 'weekly_stats')
 
 
 def get_weeks():
